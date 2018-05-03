@@ -2,16 +2,28 @@
 use strict;
 use warnings;
 
+my $device = $ARGV[0];
+
 sub pi_ping{
 	my $host = shift;
 	my $cnt = `sudo ping -c 1 $host |grep icmp |wc -l`;
 	return($cnt);
 }
 
-print "Google here\n" if pi_ping("8.8.8.8");
-print "yahoo here\n" if pi_ping("yahoo.com");
-print "vpn here\n" if pi_ping("10.50.0.1");
+my $network = pi_ping("8.8.8.8");
+my $naming = pi_ping("yahoo.com");
 
-print "test\n" if pi_ping("8.8.8.2"); 
+if ($network) {
+	print "Found network\n";
+} else {
+	print "Resetting $device\n";
+	`sudo ifdown $device`;
+	sleep(5);
+	`sudo ifup $device`;
+	sleep(5);
+	$network = pi_ping("8.8.8.8");
+	$naming = pi_ping("yahoo.com");
+	print "Results  Network: $network   Naming: $naming\n";
+}
 
 1;
