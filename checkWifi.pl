@@ -12,10 +12,11 @@ sub pi_ping{
 
 my $network = pi_ping("8.8.8.8");
 my $naming = pi_ping("yahoo.com");
-
+print "Checking network connection\n";
 if ($network > 0) {
-	print "Found network\n";
+	print "Network OK\n";
 } else {
+	print "No network found\n";
 	print "Resetting $device\n";
 	`sudo ifdown $device`;
 	sleep(5);
