@@ -13,7 +13,7 @@ sub pi_ping{
 my $network = pi_ping("8.8.8.8");
 my $naming = pi_ping("yahoo.com");
 
-if ($network) {
+if ($network > 0) {
 	print "Found network\n";
 } else {
 	print "Resetting $device\n";
