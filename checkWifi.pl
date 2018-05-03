@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-pi_ping{
+sub pi_ping{
 	my $host = shift;
 	my $cnt = `sudo ping -c 1 $host |grep icmp |wc -l`;
 	return($cnt);
