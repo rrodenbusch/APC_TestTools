@@ -4,8 +4,15 @@ use warnings;
 use Net::Ping;
 
 my $targCoach = $ARGV[0];
-die "checkVPN.pl  coach#\n" unless defined($targCoach);
-print "Checking coach $targCoach\n";
+warn "checkVPN.pl  coach#\n" unless defined($targCoach);
+
+my $p = Net::Ping->new();
+if ($p->ping("10.50.0.1")) {
+	print "\nVPN Online\n";
+} else {
+	print "\nVPN OFFLINE\n";
+}
+print "   Checking coach $targCoach\n";
 open(my $fh, "vpnDefn.ini") or die "Unable to open vpnDefn.ini\n";
 my $header = <$fh>;
 $header =~ s/\R//g;
@@ -19,7 +26,6 @@ while (my $line = <$fh>) {
 	my @alive;
 	my $coach = shift(@fields);
 	if ($coach eq $targCoach) {
-		my $p = Net::Ping->new();
 		for (my $i =0; $i < scalar(@names); $i++ ) {
 			if ( defined($fields[$i]) ) {
 				print "\t$names[$i]:\t$fields[$i]";
