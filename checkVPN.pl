@@ -4,16 +4,18 @@ use warnings;
 use Net::Ping;
 
 my $targCoach = $ARGV[0];
-warn "checkVPN.pl  coach#\n" unless defined($targCoach);
+warn "Usage:  checkVPN.pl  coach#\n" unless defined($targCoach);
 
 my $p = Net::Ping->new();
 if ($p->ping("10.50.0.1")) {
 	print "\nVPN Online\n";
+	exit 1 unless defined($targCoach);
 } else {
 	print "\nVPN OFFLINE\n";
+	exit 0;
 }
 print "   Checking coach $targCoach\n";
-open(my $fh, "vpnDefn.ini") or die "Unable to open vpnDefn.ini\n";
+open(my $fh, "/home/richard/git/APC_TestTools/vpnDefn.ini") or die "Unable to open vpnDefn.ini\n";
 my $header = <$fh>;
 $header =~ s/\R//g;
 $header =~ s/ //g;
@@ -26,14 +28,23 @@ while (my $line = <$fh>) {
 	my @alive;
 	my $coach = shift(@fields);
 	if ($coach eq $targCoach) {
-		for (my $i =0; $i < scalar(@names); $i++ ) {
+		my $cnt = scalar(@fields);
+		$cnt = scalar(@names) if (scalar(@names) > $cnt);
+		for (my $i =0; $i < $cnt; $i++ ) {
 			if ( defined($fields[$i]) ) {
+				$names[$i] = "OtherIP" unless defined($names[$i]);
 				print "\t$names[$i]:\t$fields[$i]";
-				if ($p->ping($fields[$i]) ) {
-					print "\tALIVE\n";
+				my $ip = $fields[$i];
+				$ip =~ s/ //g;
+				if ( ($ip ne '') ) {
+					if ($p->ping($fields[$i]) ) {
+						print "\tALIVE\n";
+					} else {
+						print "\tOffline\n";
+					}									
 				} else {
-					print "\tOffline\n";
-				}				
+					print "\n";
+				}
 			} else {
 				print "\t$names[$i]:\tUndef\n";
 			}
