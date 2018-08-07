@@ -3,10 +3,9 @@ use lib "$ENV{HOME}/bin6";
 use strict;
 use warnings;
 use ConsistStatus;
-use File::Copy;
 use POSIX qw(strftime);
+use Time::Local;
 use JSON;
-#use Date::Parse;
 
 ##########################################################################
 #
@@ -134,253 +133,62 @@ sub queryLastData {
 	return(\%EventTimes);
 }	# queryLastData
 
-sub findLastPositions {
-	#
-	#	FILE:	<	$coach.Schedule.csv
-	#
-	my ($curConsist,$ua,$coachNames) = @_;
-	my %lastPositions;
-
-	foreach my $coach (@$coachNames) {
-		my @data;
-		@data = `cat $coach.Schedule.csv` if (-e "$coach.Schedule.csv");
-		if (scalar @data > 0) {
-			shift(@data);  	# take off the header
-			do {
-				my $lastStop = pop(@data);
-				$lastStop =~ s/\R//g;
-				my @flds = split(',',$lastStop);
-				my $coach = $flds[0];
-				my $station = $flds[2];
-				my ($arr,$dep) = ($flds[11],$flds[12]);
-				my $atStation = $flds[13];
-				my $epoch = $arr;
-				if ($station ne 'InMotion') {		
-					$lastPositions{$coach}->{stop} = $station;
-					$lastPositions{$coach}->{stopTime} = $arr;
-					if ($atStation == 1) {
-						$lastPositions{$coach}->{station} = $station;
-						$lastPositions{$coach}->{stationTime} = $arr;				
-					}
-				}
-			} while ( (scalar @data > 0) && (!defined($lastPositions{$coach}->{station})) );
-		} else {
-			$lastPositions{$coach}->{station} = '';
-			$lastPositions{$coach}->{stop} = '';
-			$lastPositions{$coach}->{stationtime} = '';
-			$lastPositions{$coach}->{stoptime} = '';
-		}
-	}
-	return(\%lastPositions);
-}	# 	findLastPositions
-
-sub readLastOnline {
-	#
-	#		FILE:	<LastOnline.csv
-	#
-	my $prevdirname = shift;
-	my $lastOnline;
-
-	if (open(my $fh, "<../$prevdirname/LastOnline.csv") ) {
-		# Read in end of day yesterday first
-		<$fh>;
-		while (my $line = <$fh>) {
-			$line =~ s/\R//g;
-			my ($coach,$gpsepoch,$lat,$lon,$data1,$data2) = split(',',$line);
-			$lastOnline->{$coach}->{gps}->{lat} = $lat;
-			$lastOnline->{$coach}->{gps}->{lon} = $lat;
-			$lastOnline->{$coach}->{gps}->{epoch} = $gpsepoch;
-			$lastOnline->{$coach}->{1} = $data1;
-			$lastOnline->{$coach}->{2} = $data2;
-		}
-		close($fh);
-	} else {
-		print "Unable to open LastOnline.csv\t$!\n";
-	}
-
-	if (open(my $fh, "<LastOnline.csv") ) {
-		# Lay on top any data from today
-		<$fh>;
-		while (my $line = <$fh>) {
-			$line =~ s/\R//g;
-			my ($coach,$gpsepoch,$lat,$lon,$data1,$data2) = split(',',$line);
-			if (defined($gpsepoch) && ($gpsepoch ne '') && ($gpsepoch > 0)) {		
-				$lastOnline->{$coach}->{gps}->{lat} = $lat;
-				$lastOnline->{$coach}->{gps}->{lon} = $lat;
-				$lastOnline->{$coach}->{gps}->{epoch} = $gpsepoch;
-			}
-			$lastOnline->{$coach}->{1} = $data1 if ((defined($data1)) && ($data1 ne '') && ($data1 > 0));
-			$lastOnline->{$coach}->{2} = $data2 if ((defined($data2)) && ($data2 ne '') && ($data2 > 0));
-		}
-		close($fh);
-	} else {
-		print "Unable to open LastOnline.csv\t$!\n";
-	}
-
-	return($lastOnline);
-}	#	readLastOnline
-
-sub writeLastOnline {
-	#
-	#		FILE:	>	LastOnline.csv
-	#
-	my $lastOnline = shift;
-	
-	if (open(my $fh, ">LastOnline.csv") ) {
-		print $fh "Coach,GPStime,lat,lon,Data1Time,Data2Time\n";
-		foreach my $coach (sort(keys(%$lastOnline))) {
-			my ($gpsepoch,$lat,$lon,$data1,$data2) = ('','','','','');
-			if (defined($lastOnline->{$coach}->{gps})) {
-				$gpsepoch =	$lastOnline->{$coach}->{gps}->{epoch};
-				$lat = $lastOnline->{$coach}->{gps}->{lat};
-				$lon = $lastOnline->{$coach}->{gps}->{lon};
-			}
-			$data1 =  $lastOnline->{$coach}->{1} if (defined($lastOnline->{$coach}->{1}));
-			$data2 =  $lastOnline->{$coach}->{2} if (defined($lastOnline->{$coach}->{2}));
-			my $line = "$coach,$gpsepoch,$lat,$lon,$data1,$data2";
-			print $fh "$line\n";
-		}
-		close($fh);
-	} else {
-		print "Unable to open LastOnline.csv\t$!\n";
-	}
-}	#	writeLastOnline
-
-sub readLastData {
-	 #
-	 #	FILE:	<	LastEvents.csv
-	 #
-	 my $LastData;
-	if (open (my $fh, "<LastEvents.csv") ) {
-		while (	my $line = <$fh> ) {
-	 		$line =~ s/\R//g;
-	 		my ($coach,$end,$epoch) = split(',',$line);
-	 		$LastData->{$coach}->{$end} = $epoch;
-		}
-	}
-	 return($LastData);
-}	# 	readLastData
-
-sub readLastGPS {
-	 #
-	 #	FILE:	<	LastGPS.csv
-	 #
-	 my $LastGPS;
-	if (open (my $fh, "<LastGPS.csv") ) {
-		while (	my $line = <$fh> ) {
-	 		$line =~ s/\R//g;
-	 		my ($coach,$epoch,$lat,$lon) = split(',',$line);
-	 		$LastGPS->{$coach}->{epoch} = $epoch;
-	 		$LastGPS->{$coach}->{lat} = $lat;
-	 		$LastGPS->{$coach}->{lon} = $lon;
-		}
-	}
-	 return($LastGPS);
-}	# 	readLastGPS
-
 #
 #   MAIN
 #
 # Get the directory and current date and previous date for the GPS extraction
 #   The schedule determines the window for the entire report
 #
+#
 
-my ($startepoch,$stopepoch,$from,$end,$dirname,$predirname) = ConsistStatus::setupTimeWindow();
-my ($srcdir, $workdir,$outdir) = ConsistStatus::setupWorkingDirectory($dirname);
-chdir($workdir) or die "Unable to change to $workdir\t$!";
+my $srcdir = "$ENV{HOME}/bin6";
+my $fleetDefn = ConsistStatus->new($srcdir);
+my $coachNames = $fleetDefn->coachNames();
+my $curCoach = $ARGV[0];
+my $ua = $fleetDefn->NVFbrowser();
 
-my $curConsist = ConsistStatus->new($srcdir);
-my $ua = $curConsist->NVFbrowser();
-my $coachNames = $curConsist->coachNames();
-my $lastOnline = readLastOnline($predirname);
+my $gpsLastStatus = queryLastGPS($fleetDefn);
+my $dataLastStatus = queryLastData($fleetDefn,$ua);
 
-my ($gpsLastStatus,$dataLastStatus,$lastPositions,$epoch);
-if ($ARGV[0]) {
-	# Read end of day files
-	$gpsLastStatus = readLastGPS(); # read from $coach.SortedGPS.csv
-	$dataLastStatus = readLastData();	# read from $coach.SortedEvents.csv
-	$epoch = $stopepoch - 15*60; # back off 15 minutes for previous runtime;
+my @coaches;
+if (defined($curCoach) ) {
+	push(@coaches,$curCoach);
 } else {
-	# Get current status
-	$gpsLastStatus = queryLastGPS($curConsist);
-	$dataLastStatus = queryLastData($curConsist,$ua);
-	$lastPositions = findLastPositions($curConsist,$ua,$coachNames);
-	$epoch = time();
+	@coaches = sort @{$coachNames};
 }
-$lastPositions = findLastPositions($curConsist,$ua,$coachNames);	# read from $coach.Schedule.csv
-
-my $timeline = strftime("%Y%m%d,%H:%M",localtime($epoch+$EASTERN_OFFSET*3600));
-my $header = "Coach,Date,Time,LastGPSTime,GPSStatus,Lat,Lon,StopTime,LastStop,StationTime,LastStation,".
-				"Data1Time,Data1Status,Data2Time,Data2Status";
-my $curepoch = $epoch;
-if (open(my $outfh, ">CurrentStatus.csv") ) {
-	print $outfh "$header\n";
-	foreach my $coach (sort (@$coachNames) ) {
-		if ( (index(uc($coach),'ALT') == -1) && (uc($coach) ne 'LAB') ) {
-			my $stopepoch = $lastPositions->{$coach}->{stopTime};
-			my $stopname = $lastPositions->{$coach}->{stop};
-			my $stationepoch = $lastPositions->{$coach}->{stationTime};
-			my $stationname = $lastPositions->{$coach}->{station};
-			my $lat = '';
-			$lat = sprintf("%0.6f",$gpsLastStatus->{$coach}->{lat}) if (defined($gpsLastStatus->{$coach}->{lat}));
-			my $lon = '';
-			$lon = sprintf("%0.6f",$gpsLastStatus->{$coach}->{lon}) if (defined($gpsLastStatus->{$coach}->{lon}));
-			my $gpsepoch = $gpsLastStatus->{$coach}->{epoch};
-			
-			my $gpsStatus = 'Offline';
-			my $gpstimeline = '';
-			$gpstimeline = strftime("%Y%m%d %H:%M",localtime($gpsepoch+$EASTERN_OFFSET*3600)) if (defined($gpsepoch));
-			if ( defined($gpsepoch) ) {
-				$gpsStatus = 'Online' if ($curepoch - $gpsepoch < $GPSOfflineWindow);  # Less than 5 minutes old
-				$lastOnline->{$coach}->{gps}->{epoch} = $gpsepoch;
-				$lastOnline->{$coach}->{gps}->{lat} = $lat;
-				$lastOnline->{$coach}->{gps}->{lon} = $lon;
-			} elsif (defined($lastOnline->{$coach}) && defined($lastOnline->{$coach}->{gps})) {
-				$gpsepoch = $lastOnline->{$coach}->{gps}->{epoch};
-				$lat = $lastOnline->{$coach}->{gps}->{lat};
-				$lon = $lastOnline->{$coach}->{gps}->{lon};
-			}
-			
-			my $stoptimeline = '';
-			$stoptimeline = strftime("%Y%m%d %H:%M",localtime($stopepoch+$EASTERN_OFFSET*3600)) if (defined($stopepoch));
-			my $stationtimeline = '';
-			$stationtimeline = strftime("%Y%m%d %H:%M",localtime($stationepoch+$EASTERN_OFFSET*3600)) if (defined($stationepoch));
-			
-			my ($data1timeline,$data1Status,$data2timeline,$data2Status) = ('','Offline','','Offline');
-			if (defined($dataLastStatus->{$coach}) && defined($dataLastStatus->{$coach}->{1}) &&
-						  ($dataLastStatus->{$coach}->{1} ne '') && ($dataLastStatus->{$coach}->{1} > 0) )  {
-				$data1timeline = strftime("%Y%m%d %H:%M",localtime($dataLastStatus->{$coach}->{1}+$EASTERN_OFFSET*3600));
-				$lastOnline->{$coach}->{1} = $dataLastStatus->{$coach}->{1};
-			} elsif (defined($lastOnline->{$coach}) && defined($lastOnline->{$coach}->{1}) && 
-			                ($lastOnline->{$coach}->{1} ne '') && ($lastOnline->{$coach}->{1} > 0)) {
-				$data1timeline = strftime("%Y%m%d %H:%M",localtime($lastOnline->{$coach}->{1}+$EASTERN_OFFSET*3600));
-			}
-			if (defined($dataLastStatus->{$coach}) && defined($dataLastStatus->{$coach}->{2}) &&
-						  ($dataLastStatus->{$coach}->{2} ne '') && ($dataLastStatus->{$coach}->{2} > 0)) {
-				$data2timeline = strftime("%Y%m%d %H:%M",localtime($dataLastStatus->{$coach}->{2}+$EASTERN_OFFSET*3600)) ;
-				$lastOnline->{$coach}->{2} = $dataLastStatus->{$coach}->{2};
-			} elsif (defined($lastOnline->{$coach}) && defined($lastOnline->{$coach}->{2}) &&
-								 ($lastOnline->{$coach}->{2} ne '') && ($lastOnline->{$coach}->{2} > 0) ) {
-				$data2timeline = strftime("%Y%m%d %H:%M",localtime($lastOnline->{$coach}->{2}+$EASTERN_OFFSET*3600));
-			}
-			$data1Status = 'Online' if (defined($dataLastStatus->{$coach}) && defined($dataLastStatus->{$coach}->{1}) &&
-							 					(($curepoch - $dataLastStatus->{$coach}->{1}) < $DataOfflineWindow) );
-			$data2Status = 'Online' if (defined($dataLastStatus->{$coach}) && defined($dataLastStatus->{$coach}->{2}) &&
-							 					(($curepoch - $dataLastStatus->{$coach}->{2}) < $DataOfflineWindow) );
-
-			my $statusLine = "$coach,$timeline,$gpstimeline,$gpsStatus,$lat,$lon," .
-							"$stoptimeline,$stopname,$stationtimeline,$stationname," .
-							"$data1timeline,$data1Status,$data2timeline,$data2Status";
-							
-			print $outfh "$statusLine\n";
+my $curepoch = time();
+print "\n";
+foreach $curCoach (@coaches) {
+	my ($lat,$lon) = ('','');
+	my ($gpstime,$data1,$data2) = ('OFFLINE ','OFFLINE ','OFFLINE ');
+	$lat = $gpsLastStatus->{$curCoach}->{lat} if defined($gpsLastStatus->{$curCoach}->{lat});
+	$lat = $gpsLastStatus->{$curCoach}->{lon} if defined($gpsLastStatus->{$curCoach}->{lon});
+	if (defined($gpsLastStatus->{$curCoach}->{epoch})) {
+		if ( ($curepoch - $gpsLastStatus->{$curCoach}->{epoch}) < 300) {
+			$gpstime = "ONLINE ";
 		}
-	}	
-	close($outfh);
-	writeLastOnline($lastOnline);
-} else {
-	print "Unable to open CurrentStatus.csv\t$!\n";
+		$gpstime .= strftime("%Y%m%d %H:%M:%S",localtime($gpsLastStatus->{$curCoach}->{epoch}));
+	} else {
+		$gpstime .= "\t\t";
+	}
+	if (defined($dataLastStatus->{$curCoach}->{1})) {
+		if ( ($curepoch - $dataLastStatus->{$curCoach}->{1}) < 300) {
+			$data1 = "ONLINE ";
+		}
+		$data1 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{1}));
+		$data1 .= "\t";
+	} else {
+		$data1 .= "\t\t\t";
+	}
+	if (defined($dataLastStatus->{$curCoach}->{2})) {
+		if ( ($curepoch - $dataLastStatus->{$curCoach}->{2}) < 300) {
+			$data2 = "ONLINE ";
+		}
+		$data2 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{2}));
+	} else {
+		$data2 .= "\t\t\t";
+	}
+	print "$curCoach\tGPS:$gpstime\tEND1: $data1\tEND2 $data2\n";
 }
-
-copy("CurrentStatus.csv","$outdir/CurrentStatus.csv" );
 
 1;
