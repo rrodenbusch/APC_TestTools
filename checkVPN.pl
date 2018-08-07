@@ -15,40 +15,47 @@ if ($p->ping("10.50.0.1")) {
 	print "\nVPN OFFLINE\n";
 	exit 0;
 }
-print "   Checking coach $targCoach\n";
+print "   Checking coach $targCoach\t";
 open(my $fh, "$FleetFile") or die "Unable to open $FleetFile\n";
 my $header = <$fh>;
 $header =~ s/\R//g;
-$header =~ s/ //g;
 my @names = split(',',$header);
 shift(@names);
 while (my $line = <$fh>) {
 	$line =~ s/\R//g;
-	$line =~ s/ //g;
 	my @fields = split(',',$line);
 	my @alive;
 	my $coach = shift(@fields);
 	if ($coach eq $targCoach) {
 		my $cnt = scalar(@fields);
 		$cnt = scalar(@names) if (scalar(@names) > $cnt);
-		for (my $i =21; $i < $cnt; $i++ ) {
-			if ( defined($fields[$i]) ) {
-				$names[$i] = "OtherIP" unless defined($names[$i]);
-				print "\t$names[$i]:\t$fields[$i]";
-				my $ip = $fields[$i];
-				$ip =~ s/ //g;
-				if ( ($ip ne '') ) {
-					if ($p->ping($fields[$i]) ) {
-						print "\tALIVE\n";
+		print "\t$names[0]:\t$fields[0]\n";
+		for (my $i =0; $i < $cnt; $i++ ) {
+			my @parts = split(' ',$names[$i]);
+			my $last = pop(@parts);
+			if ($last eq 'VPN') {
+				if ( defined($fields[$i]) ) {
+					$names[$i] = "OtherIP" unless defined($names[$i]);
+					print "\t$names[$i]:\t$fields[$i]";
+					my $ip = $fields[$i];
+					$ip =~ s/ //g;
+					if ( ($ip ne '') ) {
+						if ($p->ping($fields[$i]) ) {
+							print "\tALIVE\n";
+						} else {
+							print "\tOffline\n";
+						}									
 					} else {
-						print "\tOffline\n";
-					}									
+						print "\n";
+					}
 				} else {
-					print "\n";
+					print "\t$names[$i]:\tUndef\n";
 				}
-			} else {
-				print "\t$names[$i]:\tUndef\n";
-			}
+			} elsif ( ($last eq 'MAC') && ($parts[0] eq 'CP') ) {
+				my ($p1,$p2,$p3) = (substr($fields[$i],6,2),substr($fields[$i],8,2),substr($fields[$i],10,2));
+				my $gpsID = hex($p1) . hex($p2) . hex($p3);
+				print "\tGPS ID\t$gpsID\n";
+			} 
 		}
 	}
 }
