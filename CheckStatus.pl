@@ -165,7 +165,7 @@ foreach $curCoach (@coaches) {
 	$lat = $gpsLastStatus->{$curCoach}->{lon} if defined($gpsLastStatus->{$curCoach}->{lon});
 	if (defined($gpsLastStatus->{$curCoach}->{epoch})) {
 		if ( ($curepoch - $gpsLastStatus->{$curCoach}->{epoch}) < 300) {
-			$gpstime = "ONLINE ";
+			$gpstime = "ONLINE  ";
 		}
 		$gpstime .= strftime("%Y%m%d %H:%M:%S",localtime($gpsLastStatus->{$curCoach}->{epoch}));
 	} else {
@@ -173,7 +173,7 @@ foreach $curCoach (@coaches) {
 	}
 	if (defined($dataLastStatus->{$curCoach}->{1})) {
 		if ( ($curepoch - $dataLastStatus->{$curCoach}->{1}) < 300) {
-			$data1 = "ONLINE ";
+			$data1 = "ONLINE  ";
 		}
 		$data1 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{1}));
 		$data1 .= "\t";
@@ -182,7 +182,7 @@ foreach $curCoach (@coaches) {
 	}
 	if (defined($dataLastStatus->{$curCoach}->{2})) {
 		if ( ($curepoch - $dataLastStatus->{$curCoach}->{2}) < 300) {
-			$data2 = "ONLINE ";
+			$data2 = "ONLINE  ";
 		}
 		$data2 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{2}));
 	} else {
