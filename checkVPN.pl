@@ -4,7 +4,8 @@ use warnings;
 use Net::Ping;
 
 my $targCoach = $ARGV[0];
-my $FleetFile = "/home/richard/git/MBTA/MBTA-Counts/FleetDefinition.csv";
+my $FleetFile = "$ENV{HOME}/bin6/FleetDefinition.csv";
+my $ipFile = "$ENV{HOME}/git/APC_TestTools/ipp.txt";
 warn "Usage:  checkVPN.pl  coach#\n" unless defined($targCoach);
 
 my $p = Net::Ping->new();
