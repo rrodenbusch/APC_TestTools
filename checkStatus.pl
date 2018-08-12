@@ -160,12 +160,15 @@ my $curepoch = time();
 print "\n";
 foreach $curCoach (@coaches) {
 	my ($lat,$lon) = ('','');
-	my ($gpstime,$data1,$data2) = ('OFFLINE ','OFFLINE ','OFFLINE ');
+	my ($OFFStatus,$ONStatus) = ('OFFLINE ','ONLINE  ');
+	my ($gpsStatus,$data1Status,$data2Status) = ($OFFStatus,$OFFStatus,$OFFStatus);
+	my ($gpstime,$data1,$data2) = ($OFFStatus,$OFFStatus,$OFFStatus);
 	$lat = $gpsLastStatus->{$curCoach}->{lat} if defined($gpsLastStatus->{$curCoach}->{lat});
 	$lat = $gpsLastStatus->{$curCoach}->{lon} if defined($gpsLastStatus->{$curCoach}->{lon});
 	if (defined($gpsLastStatus->{$curCoach}->{epoch})) {
 		if ( ($curepoch - $gpsLastStatus->{$curCoach}->{epoch}) < 300) {
-			$gpstime = "ONLINE  ";
+			$gpstime = $ONStatus;
+			$gpsStatus = $ONStatus;
 		}
 		$gpstime .= strftime("%Y%m%d %H:%M:%S",localtime($gpsLastStatus->{$curCoach}->{epoch}));
 	} else {
@@ -173,7 +176,8 @@ foreach $curCoach (@coaches) {
 	}
 	if (defined($dataLastStatus->{$curCoach}->{1})) {
 		if ( ($curepoch - $dataLastStatus->{$curCoach}->{1}) < 300) {
-			$data1 = "ONLINE  ";
+			$data1 = $ONStatus;
+			$data1Status = $ONStatus;
 		}
 		$data1 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{1}));
 		$data1 .= "\t";
@@ -182,12 +186,14 @@ foreach $curCoach (@coaches) {
 	}
 	if (defined($dataLastStatus->{$curCoach}->{2})) {
 		if ( ($curepoch - $dataLastStatus->{$curCoach}->{2}) < 300) {
-			$data2 = "ONLINE  ";
+			$data2 = $ONStatus;
+			$data2Status = $ONStatus;
 		}
 		$data2 .= strftime("%Y%m%d %H:%M:%S",localtime($dataLastStatus->{$curCoach}->{2}));
 	} else {
 		$data2 .= "\t\t\t";
 	}
+	$curCoach .= '**' if ( ($gpsStatus ne $data1Status) || ($data1Status ne $data2Status));	
 	print "$curCoach\tGPS:$gpstime\tEND1: $data1\tEND2 $data2\n";
 }
 
