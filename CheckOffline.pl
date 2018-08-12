@@ -1,134 +1,134 @@
-use lib "$ENV{HOME}/bin";
-#
-#	Reads all the GPS and Events files to find gaps 
-#
-#
+use lib "$ENV{HOME}/bin6";
 
 use strict;
 use warnings;
 use ConsistStatus;
 use POSIX qw(strftime);
-my $GAPTIME = 300;
+use Getopt::Std;
+
+my $EVENTGAPTIME = 300;
+my $GPSGAPTIME = 300;
+
+# declare the perl command line flags/options we want to allow
+my %options=();
+getopts("c:d:e:g:", \%options);
+if (defined $options{h})	{
+	print "Usage: CheckOffline -c coach [ALL] -d YYYYMMDD [today] -e Event Timeout [300] -g GPS Timeout [300]\n";
+	exit;
+}
 
 sub readGPS {
-	my ($SetID,$outfh) = @_;
+	#
+	#	FILE:	< $coach.GPS.csv
+	#
+	my ($fleetDefn,$coach,$outfh) = @_;
 	my (%lastTime);
-	my $stationData = ConsistStatus::loadStations();
-	my %gpsToCoach = ConsistStatus::GetGPStoCoach();
-	my $maxEpoch = 0;
 	
-	open(my $fh, "$SetID.SortedGPS.csv") or die "Unable to open $SetID.SortedGPS.csv\n\t$!\n";
-	while (my $line = <$fh> ) {
-		$line =~ s/\R//g;
-		my ($epoch,$coachID,$date1,$date2,$date3,$valid,$lat,$lon) = split(',',$line);
-		$coachID =~ s/ //g;
-		if (defined($lastTime{$coachID} )) {
-			my $delta = $epoch - $lastTime{$coachID}->{epoch};
-			if ($delta > $GAPTIME) {
-				my ($lastLat,$lastLon) = ($lastTime{$coachID}->{lat}, $lastTime{$coachID}->{lon});
-				my ($name1,$atStation1,$terminus1) = ConsistStatus::findStation($stationData,$lastLat,$lastLon);
-				my ($name2,$atStation2,$terminus2) = ConsistStatus::findStation($stationData,$lat,$lon);
-				my $coach = $gpsToCoach{$coachID};
-				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$coachID}->{epoch} + 3600));
+	my $fname = "$coach.GPS.csv";
+	my ($epoch,$gpsID,$date1,$date2,$date3,$valid,$lat,$lon,$line,$datestr,$speed,$coachID);
+	if (open(my $fh, $fname ) ) {
+		while (my $line = <$fh> ) {
+			$line =~ s/\R//g;
+			($epoch,$gpsID,$datestr,$valid,$lat,$lon,$speed,$coachID) = split(',',$line);
+			my $delta = $epoch - $lastTime{epoch} if (defined($lastTime{epoch}));
+			if (defined($lastTime{epoch}) && ($delta > $GPSGAPTIME)) {
+				my ($lastLat,$lastLon) = ($lastTime{lat}, $lastTime{lon});
+				my ($name1,$atStation1,$terminus1) = $fleetDefn->findStation($lastLat,$lastLon);
+				my ($name2,$atStation2,$terminus2) = $fleetDefn->findStation($lat,$lon);
+				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{epoch} + 3600));
 				my $timeStr2 = strftime("%H:%M:%S",localtime($epoch + 3600));
 				$delta = int(100*$delta/60) / 100; 
-				my $outline = "$timeStr1,$timeStr2,$coach,$delta,$name1,$name2,$SetID,$epoch\n";
+				my $outline = "$lastTime{epoch},$coach,0,GPS,$timeStr1,$timeStr2,$delta,$name1,$name2,$gpsID,$epoch\n";
 				print $outfh $outline;
 				print $outline;		
-				$lastTime{$coachID}->{epoch} = $epoch;
-			}
-			$maxEpoch = $epoch; 	
-		}
-		($lastTime{$coachID}->{lat}, $lastTime{$coachID}->{lon},$lastTime{$coachID}->{epoch}) = 
-																					($lat,$lon, $epoch);																			
-	
-	}
-		
-	foreach my $coachID (sort(keys(%lastTime))) {
-		if ($coachID ne 'coach') {
-			my $epoch = $lastTime{$coachID}->{epoch};
-			my $delta = $maxEpoch - $epoch;
-			if ($delta > $GAPTIME) {
-				my ($lastLat,$lastLon) = ($lastTime{$coachID}->{lat}, $lastTime{$coachID}->{lon});
-				my ($name1,$atStation1,$terminus1) = ConsistStatus::findStation($stationData,$lastLat,$lastLon);
-				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$coachID}->{epoch} + 3600));
-				my $timeStr2 = strftime("%H:%M:%S",localtime($maxEpoch + 3600));
-				$delta = int(100*$delta/60);
-				my $coach = $gpsToCoach{$coachID};
-				my $outline = "$timeStr1,$timeStr2,$coach,$delta,,,$SetID,$epoch\n";
+			} elsif (!defined($lastTime{epoch})) {
+				my ($name2,$atStation2,$terminus2) = $fleetDefn->findStation($lat,$lon);
+				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($epoch + 3600));
+				my $outline = "$epoch,$coach,0,GPS,$timeStr1,FIRSTREC,FIRSTREC,$name2,FIRSTREC,$gpsID,$epoch\n";
 				print $outfh $outline;
-				print $outline;
+				print $outline;		
 			}
+			($lastTime{lat}, $lastTime{lon},$lastTime{epoch}) = ($lat,$lon, $epoch);	
 		}
+		# last record
+		my ($name2,$atStation2,$terminus2) = $fleetDefn->findStation($lat,$lon);
+		my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{epoch} + 3600));
+		my $timeStr2 = strftime("%H:%M:%S",localtime($epoch + 3600));
+		my $outline = "$lastTime{epoch},$coach,0,GPS,$timeStr1,LASTREC,LASTREC,$name2,LASTREC,$gpsID,$epoch\n";
+		print $outfh $outline;
+		print $outline;		
+		close($fh);	
+	} else {
+		my $outline = "0,$coach,GPS,NODATA,$!\n";
+		print $outfh $outline;
+		print $outline;
 	}
 }	# readGPS
 
 sub readEvents {
-	my ($SetID,$outfh) = @_;
+	#
+	#	FILE:	< $coach.AllPCN.csv
+	#	FILE:	< $coach.AllNVF.csv
+	#
+	my ($fleetDefn,$coach,$outfh) = @_;
 	my (%lastTime);
-	my $stationData = ConsistStatus::loadStations();
-	my %gpsToCoach = ConsistStatus::GetGPStoCoach();
 	
-#	my $line =  $SetID.AllEventCounts.csv $SetID.AllEventCountsSorted.csv
-	system("../../../bin/SortShell.sh"); # Sort the events files
-	open(my $fh, "$SetID.AllEventCountsSorted.csv") or die "Unable to open $SetID.AllEventCountsSorted.csv\n\t$!\n";
-	<$fh>; # header
-	my $maxEpoch = 0;
-	while (my $line = <$fh> ) {
-		$line =~ s/\R//g;
-		my @fields = split(',',$line);
-		my ($timestr,$coach,$end,$inCnt,$outCnt,$delta,$epoch,$InCntr,$OutCntr,$mac,$host) = split(',',$line);
-		if (defined($lastTime{$coach} )) {
-			my $delta = $epoch - $lastTime{$coach}->{epoch};
-			if ($delta > $GAPTIME) {
-				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$coach}->{epoch} + 3600));
+	my $fname;
+	$fname = "$coach.AllNVF.csv" if (-e "$coach.AllNVF.csv");
+	$fname = "$coach.AllPCN.csv" if (-e "$coach.AllPCN.csv");
+	my ($timestr,$epoch,$type,$threshold,$mac,$host,$coachID,$end,$line,$inCnt,$outCnt);
+	if (open my $fh, $fname) {
+		while (my $line = <$fh> ) {
+			$line =~ s/\R//g;
+			my @fields = split(',',$line);
+			($timestr,$epoch,$type,$threshold,$mac,$host,$inCnt,$outCnt,$coachID,$end) = split(',',$line);
+			my $delta = $epoch - $lastTime{$end}->{epoch} if (defined($lastTime{$end}->{epoch}));
+			if (defined($delta) && ($delta > $EVENTGAPTIME) ) {
+				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$end}->{epoch} + 3600));
 				my $timeStr2 = strftime("%H:%M:%S",localtime($epoch + 3600));
 				$delta = int(100*$delta/60);
-				my $outline = "$timeStr1,$timeStr2,$coach,$delta,,,$SetID,$epoch\n";
+				my $outline = "$epoch,$coach,$end,EVENTS,$timeStr1,$timeStr2,$delta,,,$coachID,$epoch\n";
+				print $outfh $outline;
+				print $outline;
+			} elsif (!defined($delta)) {
+				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($epoch + 3600));
+				my $outline = "$epoch,$coach,$end,EVENTS,$timeStr1,FIRSTREC,FIRSTREC,,,$coachID,$epoch\n";
 				print $outfh $outline;
 				print $outline;
 			}
+			$lastTime{$end}->{epoch} = $epoch;
 		}
-		if ($coach ne 'coach') {
-			$lastTime{$coach}->{epoch} = $epoch;
-			$maxEpoch = $epoch; 	
+		foreach my $curEnd (keys(%lastTime)) {
+			my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$curEnd}->{epoch} + 3600));
+			my $outline = "$lastTime{$curEnd}->{epoch},$coach,$curEnd,EVENTS,$timeStr1,LASTREC,LASTREC,,,$coachID,LASTREC\n";
+			print $outfh $outline;
+			print $outline;
 		}
-	}
-	
-	foreach my $coach (sort(keys(%lastTime))) {
-		if ($coach ne 'coach') {
-			my $epoch = $lastTime{$coach}->{epoch};
-			my $delta = $maxEpoch - $epoch;
-			if ($delta > $GAPTIME) {
-				my $timeStr1 = strftime("%Y%m%d,%H:%M:%S",localtime($lastTime{$coach}->{epoch} + 3600));
-				my $timeStr2 = strftime("%H:%M:%S",localtime($maxEpoch + 3600));
-				$delta = int(100*$delta/60);
-				my $outline = "$timeStr1,$timeStr2,$coach,$delta,,,$SetID,$epoch\n";
-				print $outfh $outline;
-				print $outline;
-			}
-		}
+		close($fh);
+	} else {
+		my $outline = "0,$coach,3,EVENTS,NODATA,$!\n";
+		print $outfh $outline;
+		print $outline;
 	}
 }	# readEvents
 
-
 my ($startepoch,$stopepoch,$from,$end,$dirname) = ConsistStatus::setupTimeWindow();
-$dirname = $ARGV[0] if defined($ARGV[0]);
-chdir("$ENV{HOME}/MBTA/Working/$dirname");
-my @files = glob('*.SortedGPS.csv');
-my @Sets = ();
-foreach my $fname (@files) {
-	my @flds = split("\\.",$fname);
-	push(@Sets, $flds[0]);
+my $fleetDefn = ConsistStatus->new("$ENV{HOME}/bin6");
+my $coachNames = $fleetDefn->coachNames();
+$dirname = $options{d} if defined($options{d});
+$GPSGAPTIME = $options{g} if defined($options{g});
+$EVENTGAPTIME = $options{e} if defined($options{e});
+if (defined($options{c})) {
+	@{$coachNames} = ($options{c});
 }
+chdir("$ENV{HOME}/MBTA/Working/$dirname") or die "Unable to change to $dirname\n$!\n";
 
-open(my $outfh, ">CoachStatus.csv" ) or die "Unable to open CoachStatus.csv\n\t$!";
-print $outfh "Date,TimeOff,TimeOn,Coach,Delta (min),Offline,Online,SetID,Epoch\n";
-print "Date,TimeOff,TimeOn,Coach,Delta (min),Offline,Online,SetID,Epoch\n";
-foreach my $setID (@Sets) {
-	readGPS($setID,$outfh);
-	readEvents($setID,$outfh);
+open(my $outfh, ">OfflineStatus.csv" ) or die "Unable to open OfflineStatus.csv\n\t$!";
+foreach my $coach (@{$coachNames}) {
+	readGPS($fleetDefn,$coach,$outfh);
+	readEvents($fleetDefn,$coach,$outfh);
 }
 close($outfh);
+`/usr/bin/sort -k1 -t"," OfflineStatus.csv >SortedOfflineStatus.csv`;
 
 1;
