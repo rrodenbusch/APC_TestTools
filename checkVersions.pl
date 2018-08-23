@@ -14,12 +14,13 @@ warn "Usage:  checkVersions.pl  -c coach -d device -v version\n" if (defined$opt
 my ($coach,$device,$version) = ("*","*","*");
 
 $coach = $options{c} if defined($options{c});
-$device = $options{d} if defined($options{c});
-$version = $options{v} if defined($options{c});
+$device = $options{d} if defined($options{d});
+$version = $options{v} if defined($options{v});
 print "   Checking version $version on coach $coach device $device\n";
 
 chdir ($VersionDir) or die "Unable to access $VersionDir\n$!\n";
-my @files = glob("$coach.$device.$version.*.log");
+my $pattern = "$coach.$device.$version.*.log";
+my @files = glob("$pattern");
 foreach my $fname (@files) {
 	my ($coachStr,$deviceStr,$major,$minor,$dateStr,$ext) = split('\.',$fname);
 	if ( !defined($Versions{$coachStr}) || (!defined($Versions{$coachStr}->{$deviceStr})) ||
@@ -31,15 +32,21 @@ foreach my $fname (@files) {
 }
 
 foreach my $curCoach (sort(keys(%Versions))) {
-	print "$coach \t";
-	foreach my $curDevice (sort(keys(%{$Versions{$curCoach}}))) {
-		print "$curDevice\t" ;
-			foreach my $curMajor (sort(keys(%{$Versions{$curCoach}->{$curDevice}}))) {
-				print "$curMajor\t" ;
-				foreach my $curMinor (sort(keys(%{$Versions{$curCoach}->{$curDevice}->{$curMajor}}))) {
-					print "$curMajor\t" . $Versions{$curCoach}->{$curDevice}->{$curMajor} . "\n";
+	if ( ($curCoach ne '') && ($curCoach ne 'Lab') ) {
+		my $coachStr = $curCoach;
+		$coachStr =~ s/ //g;
+		$coachStr = sprintf( "%-9s",$coachStr);
+		foreach my $curDevice (sort(keys(%{$Versions{$curCoach}}))) {
+			my $deviceStr = $curDevice;
+			$curDevice =~ s/ //g;
+			$curDevice =~ s/MAC//g;
+			$curDevice = sprintf('%-9s',$curDevice);
+			foreach my $curMajor (sort(keys(%{$Versions{$curCoach}->{$deviceStr}}))) {
+				foreach my $curMinor (sort(keys(%{$Versions{$curCoach}->{$deviceStr}->{$curMajor}}))) {
+					print "$curCoach\t$curDevice\t$curMajor.$curMinor\t" . $Versions{$curCoach}->{$deviceStr}->{$curMajor}->{$curMinor} . "\n";
+				}
 			}
-		}
+		}		
 	}
 }
 

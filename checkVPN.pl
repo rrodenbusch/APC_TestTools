@@ -5,7 +5,7 @@ use Net::Ping;
 
 my $targCoach = $ARGV[0];
 my $FleetFile = "$ENV{HOME}/bin6/FleetDefinition.csv";
-my $ipFile = "$ENV{HOME}/git/APC_TestTools/ipp.txt";
+my $ipFile = "$ENV{HOME}/APC_TestTools/ipp.txt";
 warn "Usage:  checkVPN.pl  coach#\n" unless defined($targCoach);
 my %Devices = ('NUC1'=>1,'NUC2'=>1,'VB1'=>1,'VB2'=>1,
 					'Pi1-End1'=>1,'Pi2-End1'=>1,'Pi1-End2'=>1,'Pi2-End2'=>1,
@@ -25,7 +25,7 @@ if (open( my $infh, $ipFile)) {
 	while (my $line = <$infh>) {
 		$line =~ s/\R//g;
 		my @flds = split(',',$line);
-		$ipMap{$flds[0]} = $flds[1];
+		$ipMap{$flds[0]} = $flds[1] if (defined($flds[0]) && defined($flds[1]));
 	}
 }
 
