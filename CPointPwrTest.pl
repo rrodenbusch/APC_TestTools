@@ -23,37 +23,36 @@ my $buf = [1,2,3,4,5,6,7,8,9,10];
 my $len = 10;
 
 sub getCPgps {
-	my $lastTime = -1;
-	my $reqURL = '"https://mbta-gw4.mthinxiot.com/api/sql/query" -d "select * from KNOWNGPSFIX"';
+   my $lastFix = 0;
+   my $reqURL = '"https://mbta-gw4.mthinxiot.com/api/sql/query" -d "select * from KNOWNGPSFIX"';
    my $content = `curl -m 1000 --connect-timeout 800 -sS -X POST $reqURL 2>&1`;
-	if (substr($content,0,2) eq '[[') {
-		$content =~ s/],\[/\n/g;
-		$content =~ s/]//g;
-		$content =~ s/\[//g;
-		my @lines = split("\n",$content);
-		my $count = @lines;
-		if( $count > 0 ) {
-			while (my $line = shift(@lines)) {
-				my @fields = split(',',$line);
-				my ($startime,$id,$ibr,$coachNum,$lat,$lon,$speed) = ($fields[0],$fields[1],$fields[2],$fields[3],$fields[5],$fields[6],$fields[7]);
-	         if ($ibr eq 'IBR-605') {
-	         	$lastTime = $starttime
-	         }
-			}
-		}
-	} else {
-		print "GPS Error $content\n";
-	}
-	return($lastTime);
+   if (substr($content,0,2) eq '[[') {
+      $content =~ s/],\[/\n/g;
+      $content =~ s/]//g;
+      $content =~ s/\[//g;
+      my @lines = split( "\n",$content );
+      foreach my $line ( @lines ) {
+         my @fields = split( ',',$line );
+         my ( $start,$id,$ibr,$coachnum,$lat,$lon,$speed ) = @fields;
+         if ( $ibr eq '"IBR1100-605"' ) { 
+            $lastFix = $start / 1000;
+         }
+      }
+   }
+   return ( $lastFix );
 }
 
 sub checkCPstatus {
-   my $status = 0;
+   my $inetStatus = 0;
+   my $gpsStatus = 0;
    my $p = Net::Ping->new('icmp');
-   $status = 1 if ( $p->ping('8.8.8.8') );
-   getCPgps();
- 
-   return( $status);
+   $inetStatus = 1 if ( $p->ping('8.8.8.8') );
+   my $lastFix = getCPgps();
+   my $epoch = time();
+   my $delta = $epoch - $lastFix;
+   $gpsStatus = 1 if ( $epoch - $lastFix < 60 );
+
+   return( $inetStatus, $gpsStatus, $delta );
 }
 
 
@@ -81,12 +80,14 @@ sub getCPvoltage {
    return($vActual,$vScaled,$vRaw,$bitCnt);
 }
 
-my ($powerOnTime,$powerOffTime,$curStatus,$lastGoodStatus,$lastBadStatus) =
+my ( $powerOnTime,$powerOffTime,$lastGoodStatus,$lastBadStatus ) =
                           (0,0,0,0,0);
-$curStatus = -1;
+my ( $gpsStatus, $curStatus, $delta ) = (-1,-1,-10
+);
 
 ## Turn Power On
-my $lastStatus = 0;
+my $lastGPSstatus = 0;
+my $lastInetStatus = 0;
 my ($lastGoodTime,$lastBadTime) = (0,0);
 my $powerOn = `gpio -g read 27`;
 $powerOn =~ s/\R//g;
@@ -99,7 +100,7 @@ my $lastV = $vActual;
 my $vLine = sprintf("%0.3f,%0.3f,%0.3f,%d,%0X",
                    $vActual,$vScaled,$vRaw,$bitCnt,$bitCnt);
 my $powerCycles = 0;
-print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Startup Status,$powerOn,$vLine\n";
+print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Startup Status,$powerOn,$vLine\n";
 if ($powerOn == 0) {
    `gpio -g mode 27 out`;
    `gpio -g write 27 1`;
@@ -107,13 +108,13 @@ if ($powerOn == 0) {
    $powerOn =~ s/\R//g;
    if ( $powerOn ) {
      $powerOnTime = $epoch;
-     print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Power ON OK,$powerOffTime\n";
+     print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Power ON OK,$powerOffTime\n";
    }
 }
 
 while (1) {
    $epoch = time();
-   $timeStr = strftime( "%Y%m%d %H:%M:%S",localtime($epoch));
+   $timeStr = strftime( "%Y%m%d %H:%M:%S",localtime( $epoch ) );
    ($vActual,$vScaled,$vRaw,$bitCnt) = getCPvoltage();
    if (abs($vActual - $lastV ) > 2) {
       sleep 3;
@@ -128,30 +129,30 @@ while (1) {
    $powerOn =~ s/\R//g;
    $vLine = sprintf("%0.3f,%0.3f,%0.3f,%d,%0X",
                    $vActual,$vScaled,$vRaw,$bitCnt,$bitCnt);
-   print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Status,$powerOn,$vLine\n";
+   print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Status,$powerOn,$vLine\n";
    if ( $powerOn ) { # Power is ON
-      if ( ( $vActual > $maxTestV ) && ( $lastStatus ) )  {  # Power up on-line
+      if ( ( $vActual > $maxTestV ) && ( $lastGPSstatus ) )  {  # Power up on-line
          # turn off power and monitor
-         print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Powering Off, $vActual, $maxTestV\n";
+         print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Powering Off, $vActual, $maxTestV\n";
          `gpio -g mode 27 out`;
          `gpio -g write 27 0`;
          $powerOn = `gpio -g read 27`;
          $powerOn =~ s/\R//g;
          if ($powerOn == 0) {
-            print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Power OFF OK,$powerOnTime\n";
+            print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Power OFF OK,$powerOnTime\n";
             $powerOffTime = $epoch;
          }
       }
    } else { # Power is Off
-      if ($vActual < $minTestV) {
+      if ( $vActual < $minTestV ) {
          # turn on power
-         print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Powering On, $vActual < $minTestV\n";
+         print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Powering On, $vActual < $minTestV\n";
          `gpio -g mode 27 out`;
          `gpio -g write 27 1`;
          $powerOn = `gpio -g read 27`;
          $powerOn =~ s/\R//g;
-         if ($powerOn) { 
-             print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,Power ON OK,$powerOffTime\n";
+         if ( $powerOn ) { 
+             print $fh "$epoch,$timeStr,$powerCycles,WAN $lastInetStatus,GPS $lastGPSstatus,Power ON OK,$powerOffTime\n";
              $powerOnTime = $epoch;
              $powerCycles++;
          }
@@ -161,18 +162,18 @@ while (1) {
    #
    ## check the cradlepoint
    #
-   $curStatus = checkCPstatus();
-   $lastGoodTime = $epoch if ($curStatus);
-   $lastBadTime = $epoch unless($curStatus);
-   if ($curStatus != $lastStatus) {  # status change
-      if ($curStatus) {
-         print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,CPoint Online\n";
+   ( $curStatus, $gpsStatus, $delta ) = checkCPstatus();
+   $lastGoodTime = $epoch if ( $gpsStatus );
+   $lastBadTime = $epoch unless( $gpsStatus);
+   if ( $gpsStatus != $lastGPSstatus) {  # status change
+      if ( $gpsStatus) {
+         print $fh "$epoch,$timeStr,$powerCycles,WAN $curStatus,GPS $gpsStatus $delta,CPoint Online\n";
       } else {
-         print $fh "$epoch,$timeStr,$powerCycles,$lastStatus,CPoint Offline\n";
+         print $fh "$epoch,$timeStr,$powerCycles,WAN $curStatus,GPS $gpsStatus $delta,CPoint Offline\n";
       }
    }
-   $lastStatus = $curStatus;
-
+   $lastGPSstatus = $gpsStatus;
+   $lastInetStatus = $curStatus;
    sleep($loopDelay);
 }
 
