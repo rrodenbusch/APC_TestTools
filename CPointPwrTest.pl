@@ -22,11 +22,18 @@ my $spi = RPi::SPI->new(0);
 my $buf = [1,2,3,4,5,6,7,8,9,10];
 my $len = 10;
 
+sub getCPgps {
+	my $reqURL = '"https://mbta-gw4.mthinxiot.com/api/sql/query" -d "select * from KNOWNGPSFIX"';
+   my $content = `curl -m 1000 --connect-timeout 800 -sS -X POST $reqURL 2>&1`;
+   print $content;
+}
+
 sub checkCPstatus {
    my $status = 0;
    my $p = Net::Ping->new('icmp');
    $status = 1 if ( $p->ping('8.8.8.8') );
-   #print "CP Status : $status\n";
+   getCPgps();
+ 
    return( $status);
 }
 
