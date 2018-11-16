@@ -23,9 +23,28 @@ my $buf = [1,2,3,4,5,6,7,8,9,10];
 my $len = 10;
 
 sub getCPgps {
+	my $lastTime = -1;
 	my $reqURL = '"https://mbta-gw4.mthinxiot.com/api/sql/query" -d "select * from KNOWNGPSFIX"';
    my $content = `curl -m 1000 --connect-timeout 800 -sS -X POST $reqURL 2>&1`;
-   print $content;
+	if (substr($content,0,2) eq '[[') {
+		$content =~ s/],\[/\n/g;
+		$content =~ s/]//g;
+		$content =~ s/\[//g;
+		my @lines = split("\n",$content);
+		my $count = @lines;
+		if( $count > 0 ) {
+			while (my $line = shift(@lines)) {
+				my @fields = split(',',$line);
+				my ($startime,$id,$ibr,$coachNum,$lat,$lon,$speed) = ($fields[0],$fields[1],$fields[2],$fields[3],$fields[5],$fields[6],$fields[7]);
+	         if ($ibr eq 'IBR-605') {
+	         	$lastTime = $starttime
+	         }
+			}
+		}
+	} else {
+		print "GPS Error $content\n";
+	}
+	return($lastTime);
 }
 
 sub checkCPstatus {
