@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 use lib "$ENV{HOME}/bin6";
 
 use strict;
@@ -11,7 +12,7 @@ my $GPSGAPTIME = 300;
 
 # declare the perl command line flags/options we want to allow
 my %options=();
-getopts("c:d:e:g:", \%options);
+getopts("hc:d:e:g:", \%options);
 if (defined $options{h})	{
 	print "Usage: CheckOffline -c coach [ALL] -d YYYYMMDD [today] -e Event Timeout [300] -g GPS Timeout [300]\n";
 	exit;

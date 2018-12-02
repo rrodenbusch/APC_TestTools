@@ -37,6 +37,7 @@ sub queryLastGPS {
 	my ($curConsist) = @_;
 	my $KNOTS2MPH = 1.15;
 	my %gpsData;
+	my $curepoch = time();
 
 	print "Requesting GPS positions\n";
 	my $reqURL = '"https://mbta-gw4.mthinxiot.com/api/sql/query" -d "select * from KNOWNGPSFIX"';
@@ -58,6 +59,9 @@ sub queryLastGPS {
 				$speed *= $KNOTS2MPH;
 				my $datestr = strftime( "%Y%m%d %H:%M:%SZ", gmtime($epoch) );
 				my $output = "$epoch,$id,$datestr,true,$lat,$lon,$speed";
+				my $minAgo = ($curepoch - $epoch)/60;
+				my $minAgoStr = sprintf("%0.1f", $minAgo);
+				print join(',',@fields) . ",$minAgoStr(min)\n";
 				$gpsData{$coach}->{epoch} = $epoch;
 				$gpsData{$coach}->{id} = $id;
 				$gpsData{$coach}->{dateStr} = $datestr;
@@ -166,6 +170,7 @@ foreach $curCoach (@coaches) {
 	$lat = $gpsLastStatus->{$curCoach}->{lat} if defined($gpsLastStatus->{$curCoach}->{lat});
 	$lat = $gpsLastStatus->{$curCoach}->{lon} if defined($gpsLastStatus->{$curCoach}->{lon});
 	if (defined($gpsLastStatus->{$curCoach}->{epoch})) {
+		my $minAgo = ( $curepoch - $gpsLastStatus->{$curCoach}->{epoch}) / 60;
 		if ( ($curepoch - $gpsLastStatus->{$curCoach}->{epoch}) < 300) {
 			$gpstime = $ONStatus;
 			$gpsStatus = $ONStatus;
