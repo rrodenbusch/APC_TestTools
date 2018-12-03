@@ -82,8 +82,15 @@ sub queryEventRecords {
 	#
 	my ($curConsist,$ua,$reqURL,$type,$EventTimes) = @_;
 	
+#	my $response = $browser->post($req,{email => "software\@mthinx.com",password => "ThinxLab360"});
+#					die "Cant' post $req" , $response->content_type unless $response->is_success;
+#	my $u='AYc9EZG5H8rCQkqPNafu';
+#	my $p='ea0iTQOnGk1Ffsxb1XDe';
+	
 	my $req = new HTTP::Request GET => $reqURL;
 	my $response2 = $ua->request($req);
+	#	my $response = $browser->post($req,{email => "software\@mthinx.com",password => "ThinxLab360"});
+#					die "Cant' post $req" , $response->content_type unless $response->is_success;
 	if ($response2->is_success ) {
 		my $content = $response2->decoded_content;
 		my $hashref = decode_json($content);
@@ -122,14 +129,23 @@ sub queryLastData {
 	
 	my $end = time();
 	my $start = $end - 900;	# get last 15 minutes
-	my $NVFurl =  'https://influxserver.mthinx.com/db/sensor-events/series?p=pass79&q='.
-						'select+time,+host,+mac+from+%22universe.ember-count-both%22+where+'.
+#	my $NVFurl =  'https://influxserver.mthinx.com/db/sensor-events/series?p=pass79&q='.
+#						'select+time,+host,+mac+from+%22universe.ember-count-both%22+where+'.
+#						"time+%3E+$start"."s+and+time+%3C+$end"."s".
+#						'+group+by+time(1s)+order+asc&u=sensor-events';
+#	my $PCNurl =  'https://influxserver.mthinx.com/db/sensor-events/series?p=pass79&q='.
+#						'select+time,+host,+mac+from+%22universe.sensor%22+where+'.
+#						"time+%3E+$start"."s+and+time+%3C+$end"."s".
+#						'+group+by+time(1s)+order+asc&u=sensor-events';
+	my $NVFurl =  'https://hits.mthinxiot.com/db/sensor-events/series?p=ea0iTQOnGk1Ffsxb1XDe&q='.
+						'select+*+from+%22universe.ember-count-both%22+where+'.
 						"time+%3E+$start"."s+and+time+%3C+$end"."s".
-						'+group+by+time(1s)+order+asc&u=sensor-events';
-	my $PCNurl =  'https://influxserver.mthinx.com/db/sensor-events/series?p=pass79&q='.
-						'select+time,+host,+mac+from+%22universe.sensor%22+where+'.
+						'+group+by+time(1s)+order+asc&u=AYc9EZG5H8rCQkqPNafu';
+	my $PCNurl =  'https://hits.mthinxiot.com/db/sensor-events/series?p=ea0iTQOnGk1Ffsxb1XDe&q='.
+						'select+*+from+%22universe.sensor%22+where+'.
 						"time+%3E+$start"."s+and+time+%3C+$end"."s".
-						'+group+by+time(1s)+order+asc&u=sensor-events';
+						'+group+by+time(1s)+order+asc&u=AYc9EZG5H8rCQkqPNafu';
+
 
 	queryEventRecords($curConsist, $ua, $PCNurl, 'PCN', \%EventTimes);
 	queryEventRecords($curConsist, $ua, $NVFurl, 'NVF', \%EventTimes);
