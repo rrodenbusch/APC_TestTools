@@ -4,7 +4,7 @@ use warnings;
 
 use lib "$ENV{HOME}/RPi";
 
-#use RPi::I2C;
+use RPi::I2C;
 
 sub readI2Cbyte {
 	my ($device,$timeout) = @_;
@@ -60,18 +60,20 @@ sub attach {
 	return ($retval);
 }
 
-my ($cmd,$addy,$data) = @ARGV;
+my ($cmd,$addy,$field,$data) = @ARGV;
+$addy = hex $addy if (defined($addy));
+$field = hex $field if (defined($field));
+$data = hex $data if (defined($data));
 my $device;
-if ($cmd eq 'read') {
+if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-		my ($byte1,$cnt) = getI2CdataByte($device,$cmd);
-		my $str = sprintf("%f" ,$byte1 & 0xFF );
+		my ($byte1,$cnt) = getI2CdataByte($device,$field);
+		my $str = sprintf("%x" ,$byte1 & 0xFF );
 		print "$str\n";
-	my ($device,$cmd,$timeout)
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-} elsif ($cmd eq 'write') {
+} elsif (defined($cmd) && ($cmd eq 'write') ) {
 	if ($device = attach($addy)) {
 		warn "No write function yet\n";
 	} else {
@@ -80,5 +82,6 @@ if ($cmd eq 'read') {
 } else {
 	warn "Usage I2Cio.pl [read|write] addy data";
 }
+
 
 1;
