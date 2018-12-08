@@ -60,14 +60,15 @@ sub attach {
 	return ($retval);
 }
 
-my ($cmd,$addy,$field,$data) = @ARGV;
+my ($cmd,$addy,$register,$data) = @ARGV;
 $addy = hex $addy if (defined($addy));
-$field = hex $field if (defined($field));
+$register = hex $field if (defined($register));
 $data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-		my ($byte1,$cnt) = getI2CdataByte($device,$field);
+#		my ($byte1,$cnt) = getI2CdataByte($device,$register);
+		my $byte1 = $device->read_byte($register)
 		my $str = sprintf("%x" ,$byte1 & 0xFF );
 		print "$str\n";
 	} else {
@@ -76,6 +77,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 } elsif (defined($cmd) && ($cmd eq 'write') ) {
 	if ($device = attach($addy)) {
 		warn "No write function yet\n";
+		$device->write_byte($data & 0xFF, $register);
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
