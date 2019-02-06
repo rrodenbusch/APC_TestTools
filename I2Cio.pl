@@ -69,12 +69,14 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
 #		my ($byte1,$cnt) = getI2CdataByte($device,$register);
 		my $byte1 = $device->read_byte($register);
-		my $str = sprintf("%02X" ,$byte1 & 0xFF );
+		my $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
+				$byte1 & 0xFF, $byte1 & 0xFF );
                 $data--;
                 while ($data > 0) {
                    $register++;
 		   $byte1 = $device->read_byte($register);
-		   $str .= sprintf("%02X" ,$byte1 & 0xFF );
+		   $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
+				$byte1 & 0xFF, $byte1 & 0xFF );
                    $data --;
                 }
 		print "0x$str\n";
