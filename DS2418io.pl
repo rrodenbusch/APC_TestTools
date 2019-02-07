@@ -61,13 +61,14 @@ sub attach {
 }
 
 sub writeDS2482 {
-   my ($device,$addy,$register) = @_;
+   my ($addy,$register,$data,$retreg) = @_;
+   my ($device, $byte2);
    
    if ($device = attach($addy)) {
 	   my $byte1 = $device->read_byte($register);
 		$device->write_byte($data & 0xFF, $register);
       sleep(1);
-		my $byte2 = $device->read_byte($register);
+		$byte2 = $device->read_byte($register);
       my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
       print "$str";
 	} else {
@@ -110,14 +111,63 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-} elsif (defined($cmd) && ($cmd eq 'reset') {
-   my $status = writeDS2482($device,$addy,$register);
-   if ( ($status && 0xF7) == 0x10 ) {
-      print "Device Reset OK"\n;
-   } else {
-      print "Device Reset Error\n";
+} elsif (defined($cmd) && ($cmd eq 'reset')) {
+  if ($device = attach($addy)) {
+	   # my $byte1 = $device->read_byte($register);
+		$device->write_byte(0x00,0xF0);
+      my $status = $device->read();
+      if ( ($status & 0xF7) == 0x10 ) {
+         print "Device Reset OK\n";
+      } else {
+         print "Device Reset Error\n";
+      }  
+   }
+} elsif (defined($cmd) && ($cmd eq 'config')) {
+  if ($device = attach($addy)) {
+	   # my $byte1 = $device->read_byte($register);
+		$device->write_byte(0xE1, 0xD2);
+      my $config = $device->read();
+      if ( $config == 0x01 ) {
+         print "Device config OK\n";
+      } else {
+         print "Device config Error\n";
+      }
+   }   
+} elsif (defined($cmd) && ($cmd eq 'getconfig')) {
+  if ($device = attach($addy)) {
+		$device->write_byte(0xC3, 0xE1);
+      my $config = $device->read();
+      my $str = sprintf("Config is %02X %03d %08b\n",$config,$config,$config);
+      print $str;
+   }   
+} elsif (defined($cmd) && ($cmd eq 'getstatus')) {
+  if ($device = attach($addy)) {
+		$device->write_byte(0xF0, 0xE1);
+      my $status = $device->read();
+      my $str = sprintf("Status is %02X %03d %08b\n",$status,$status,$status);
+      print $str;
+   }   
+} elsif (defined($cmd) && ($cmd eq '1reset')) {
+  if ($device = attach($addy)) {
+		$device->write_byte(0, 0xB4);
+      #sleep(1);
+		my $status = 0;
+      my $cnt = 0;
+      do {
+         $status = $device->read();
+         if ($status & 0x01) {
+            my $l = sprintf("Status cnt %d is: %02x\n",$cnt,$status);
+            $cnt++;
+            #sleep(0.01);
+         }
+      } while (($status & 0x01) && ($cnt < 20));
+      my $str = sprintf("Cnt %d, Status is %02X %03d %08b\n",$cnt,$status,$status,$status);
+      print "$str";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}
 } else {
-	warn "Usage I2Cio.pl [read|write|reset] addy data";
+	warn "Usage I2Cio.pl [read|write|reset|config|1reset] addy data";
 }
 
 
