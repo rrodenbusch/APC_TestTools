@@ -77,8 +77,11 @@ sub bytesToint {
    my $retVal;
    if ($bytes[0] & 0x80) {
       $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
-      $retVal =~ $retVal;
+      print "$retVal\n";
+      $retVal = ~$retVal;
+      print "$retVal\n";
       $retVal = ($retVal + 1) & 0xFFFF;
+      print $retVal;      
       $retVal = -1 * $retVal;
    } else {  # Positive Int
       $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
