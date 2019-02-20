@@ -34,6 +34,19 @@ sub readI2Cword {
 	} while ( (!defined($bytes[0])) && ($cnt++ < $loopcnt) );
 	return (@bytes);
 }
+
+sub readI2Cblock {
+	my ($device,$cmd,$timeout,$cnt) = @_;
+	my ($data,$retData,@bytes);
+	my $delaytics = 10;
+	my $loopcnt = $timeout / $delaytics;
+
+	do {  # wait for return a max of one second
+		@bytes = $device->read_block($cnt,$cmd);
+		Time::HiRes::usleep($delaytics) if (!defined($bytes[0])); # milliseconds
+	} while ( (!defined($bytes[0])) && ($cnt++ < $loopcnt) );
+	return (@bytes);
+}
 sub getI2CdataByte {
 	my ($device,$cmd,$timeout) = @_;
 	$timeout = 1000 if !defined($timeout);  # default time is 1 second
@@ -90,6 +103,18 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
 				$word1 & 0xFFFF, $word1 & 0xFFFF );
 		print "Word $word1 :: $str\n";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}	
+}	elsif (defined($cmd) && ($cmd eq 'readblock')) {
+	if ($device = attach($addy)) {
+		my @buf = readI2Cblock($device,$register,1000,$data);
+      my $str;
+      for (my $i = 0; $i < $data; $i++ ) {
+         $str .= sprintf(" %02X %08b ",$buf[$i]& 0xFFFF);
+      }
+
+		print "Buf $str :: " . join(',',@buf) . "\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
