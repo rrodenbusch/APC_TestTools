@@ -72,6 +72,18 @@ sub attach {
 	}
 	return ($retval);
 }
+sub bytesToint {
+   my @bytes = @_;
+   my $retVal;
+   if ($byte[0] & 0x80) {
+      $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
+      $retVal ~= $retVal;
+      $retVal = -1 * $retVal;
+   } else {  # Positive Int
+      $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
+   }
+   return($retVal);
+}
 
 my ($cmd,$addy,$register,$data) = @ARGV;
 $addy = hex $addy if (defined($addy));
@@ -111,9 +123,10 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		my @buf = readI2Cblock($device,$register,1000,$data);
       my $str;
       for (my $i = 0; $i < $data; $i++ ) {
-         $str .= sprintf(" %02X %08b ",$buf[$i]& 0xFFFF);
+         $str .= sprintf(" %02X %08b ",$buf[$i]& 0xFFFF, $buf[1] & 0xFFFF);
       }
-
+      my $negVal = bytesToint(@buf);
+      print "NegVal $negVal\n";
 		print "Buf $str :: " . join(',',@buf) . "\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
