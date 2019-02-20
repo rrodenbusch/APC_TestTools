@@ -77,11 +77,8 @@ sub bytesToint {
    my $retVal;
    if ($bytes[0] & 0x80) {
       $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
-      print "$retVal\n";
       $retVal = ~$retVal;
-      print "$retVal\n";
-      $retVal = ($retVal + 1) & 0xFFFF;
-      print $retVal;      
+      $retVal = ($retVal + 1) & 0xFFFF; 
       $retVal = -1 * $retVal;
    } else {  # Positive Int
       $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
@@ -125,13 +122,10 @@ if (defined($cmd) && ($cmd eq 'read')) {
 }	elsif (defined($cmd) && ($cmd eq 'readblock')) {
 	if ($device = attach($addy)) {
 		my @buf = readI2Cblock($device,$register,1000,$data);
-      my $str;
-      for (my $i = 0; $i < $data; $i++ ) {
-         $str .= sprintf(" %02X %08b ",$buf[$i]& 0xFFFF, $buf[1] & 0xFFFF);
-      }
-      my $negVal = bytesToint(@buf);
-      print "NegVal $negVal\n";
-		print "Buf $str :: " . join(',',@buf) . "\n";
+      my $curVal = bytesToint($buf[0],$buf[1]) / 10;
+      my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
+      my $minVal = bytesToint($buf[4],$buf[5]) / 10;
+      print "$curVal  $maxVal $minVal\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
