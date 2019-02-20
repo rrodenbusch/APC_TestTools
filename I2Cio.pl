@@ -83,7 +83,18 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-} elsif (defined($cmd) && ($cmd eq 'write') ) {
+} elsif (defined($cmd) && ($cmd eq 'readword')) {
+	if ($device = attach($addy)) {
+#		my ($byte1,$cnt) = getI2CdataByte($device,$register);
+		my $byte1 = $device->read_word($register);
+		my $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFFFF,
+				$byte1 & 0xFFFF, $byte1 & 0xFFFF );
+		print "0x$str\n";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}	
+}
+elsif (defined($cmd) && ($cmd eq 'write') ) {
 	if ($device = attach($addy)) {
 		my $byte1 = $device->read_byte($register);
 		$device->write_byte($data & 0xFF, $register);
