@@ -75,7 +75,7 @@ sub attach {
 sub bytesToint {
    my @bytes = @_;
    my $retVal;
-   if ($byte[0] & 0x80) {
+   if ($bytes[0] & 0x80) {
       $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
       $retVal ~= $retVal;
       $retVal = ($retVal + 1) & 0xFFFF;
