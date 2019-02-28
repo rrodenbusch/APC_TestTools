@@ -8,8 +8,6 @@ use lib "$ENV{HOME}/RPi";
 use strict;
 use warnings;
 use RPi::I2C;
-use RPiConfig;
-use RemoteLog;
 
 sub readI2Cbyte {
 	my ($self,$timeout) = @_;
@@ -166,10 +164,6 @@ sub new {
 	
 	$self->{directory} = "/home/pi/RPi";
 	chdir($self->{directory});
-	if (!defined($config)) {
-		$config = new RPiConfig();
-		$config->mapNetwork();	
-	}
 	$self->{config} = $config;
 	$self->{logconf} = $config->{logconf};
 	$self->{myRole}= $config->{myRole};
