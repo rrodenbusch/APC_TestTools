@@ -105,8 +105,8 @@ sub queryI2Cbus {
             if ( ($curAddy ne "  ") && ($curAddy ne "--")) {
                my $numAddy = hex("0x".$curAddy);
                $ValidI2C[$addy] = ($numAddy == $addy);
-               $offset += $inc;
             }
+            $offset += $inc;
             $addy++;
          }
       }
