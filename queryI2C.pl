@@ -5,6 +5,7 @@ use warnings;
 use lib "$ENV{HOME}/RPi";
 
 use RPi::I2C;
+use MPU6050;
 
 sub readI2Cbyte {
 	my ($device,$timeout) = @_;
@@ -97,11 +98,10 @@ sub queryI2Cbus {
    foreach my $line (@lines) {
       my $lineNum = substr($line,0,2);
       my $offset = 4;
-      my $inc = 3;
+      my $inc = 3;         
       for (my $i = 0; $i<16; $i++) {
          if ($addy <= 0x7F) {
             my $curAddy = substr($line,$offset,2);
-            print "Checking $curAddy\n";
             if ( ($curAddy ne "  ") && ($curAddy ne "--")) {
                my $numAddy = hex("0x".$curAddy);
                $ValidI2C[$addy] = ($numAddy == $addy);
@@ -121,66 +121,20 @@ sub queryI2Cbus {
    return(\@ValidI2C);
 }
 
-queryI2Cbus();
-
-my ($cmd,$addy,$register,$data) = @ARGV;
-$addy = hex $addy if (defined($addy));
-$register = hex $register if (defined($register));
-$data = hex $data if (defined($data));
-my $device;
-if (defined($cmd) && ($cmd eq 'read')) {
-	if ($device = attach($addy)) {
-#		my ($byte1,$cnt) = getI2CdataByte($device,$register);
-		my $byte1 = $device->read_byte($register);
-		my $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                $data--;
-                while ($data > 0) {
-                   $register++;
-		   $byte1 = $device->read_byte($register);
-		   $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                   $data --;
-                }
-		print "0x$str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} elsif (defined($cmd) && ($cmd eq 'readword')) {
-	if ($device = attach($addy)) {
-		my $word1 = getI2CdataWord($device,$register);
-		#my $byte1 = $device->read_word($register);
-		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
-				$word1 & 0xFFFF, $word1 & 0xFFFF );
-		print "Word $word1 :: $str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}	elsif (defined($cmd) && ($cmd eq 'readblock')) {
-	if ($device = attach($addy)) {
-		my @buf = readI2Cblock($device,$register,1000,$data);
-      my $curVal = bytesToint($buf[0],$buf[1]) / 10;
-      my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
-      my $minVal = bytesToint($buf[4],$buf[5]) / 10;
-      print "$curVal  $maxVal $minVal\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}
-elsif (defined($cmd) && ($cmd eq 'write') ) {
-	if ($device = attach($addy)) {
-		my $byte1 = $device->read_byte($register);
-		$device->write_byte($data & 0xFF, $register);
-                sleep(1);
-		my $byte2 = $device->read_byte($register);
-                my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
-                print "$str";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} else {
-	warn "Usage I2Cio.pl [read|write] addy data";
+$ValidI2C = queryI2Cbus();
+if ($ValidI2C->[0x0e]) {
+   my $device = attach(0x0E);
+   my $uid = readI2Cblock($device,0xFF,4);
+   my $str = "UID 0x0E [Arduino]: %02X %02X %02X %02X\n",$uid[0], $uid[1], $uid[2], $uid[3]);
+   print $str;
 }
 
+if ($ValidI2C->[0x68] ) { # check the MPU6050
+   my $device = MPU6050->new(0x68);
+   $device->wakeMPU(4);
+	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+	my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2tmpF\n", $AcX,$AcY,$AcZ,$tmpf);
+	print "$line\n";
 
 1;
