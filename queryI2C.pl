@@ -88,7 +88,7 @@ sub bytesToint {
 }
 
 sub queryI2Cbus {
-   my @ValidI2C;
+   my $ValidI2C = shift;
    
    my $return = `i2cdetect -y 1`;
    print $return;
@@ -104,7 +104,7 @@ sub queryI2Cbus {
             my $curAddy = substr($line,$offset,2);
             if ( ($curAddy ne "  ") && ($curAddy ne "--")) {
                my $numAddy = hex("0x".$curAddy);
-               $ValidI2C[$addy] = ($numAddy == $addy);
+               ${$ValidI2C}[$addy] = ($numAddy == $addy);
             }
             $offset += $inc;
             $addy++;
@@ -113,23 +113,23 @@ sub queryI2Cbus {
    }
 
    for (my $i =0; $i<=0x7F; $i++) {
-      if ($ValidI2C[$i]) {
+      if (${$ValidI2C}[$i]) {
          my $str = sprintf("Found %02X\n",$i);
          print $str;
       }
    }
-   return(\@ValidI2C);
 }
 
-$ValidI2C = queryI2Cbus();
-if ($ValidI2C->[0x0e]) {
+my @ValidI2C;
+queryI2Cbus(\@ValidI2C);
+if ($ValidI2C[0x0e]) {
    my $device = attach(0x0E);
    my $uid = readI2Cblock($device,0xFF,4);
    my $str = "UID 0x0E [Arduino]: %02X %02X %02X %02X\n",$uid[0], $uid[1], $uid[2], $uid[3]);
    print $str;
 }
 
-if ($ValidI2C->[0x68] ) { # check the MPU6050
+if ($ValidI2C[0x68] ) { # check the MPU6050
    my $device = MPU6050->new(0x68);
    $device->wakeMPU(4);
 	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
