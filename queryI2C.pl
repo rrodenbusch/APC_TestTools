@@ -139,58 +139,78 @@ queryI2Cbus(\@ValidI2C);
 foreach my $curAddy (@Ards) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
-      my $line= sprintf( "Version: %04X\n",$byte1);
-      print "$line\n";
+      if (my $device = attach($curAdd)) {
+         my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
+         my $line= sprintf( "Version: %04X\n",$byte1);
+         print "$line\n";
+      } else {
+         print "Error attaching to $curAddy\n";
+      }
    }
 }
 
 foreach (my $curAddy (@UIDs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
-      my ($byte2,$cnt2) = getI2CdataByte($device,0xFD); 
-      my ($byte3,$cnt3) = getI2CdataByte($device,0xFE); 
-      my ($byte4,$cnt4) = getI2CdataByte($device,0xFF); 
-      my $line= sprintf( "UID: %02X %02X %02X %02X\n",$byte1,$byte2,$byte3,$byte4);
-      print "$line\n";
+      if (my $device = attach($curAdd)) {
+         my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
+         my ($byte2,$cnt2) = getI2CdataByte($device,0xFD); 
+         my ($byte3,$cnt3) = getI2CdataByte($device,0xFE); 
+         my ($byte4,$cnt4) = getI2CdataByte($device,0xFF); 
+         my $line= sprintf( "UID: %02X %02X %02X %02X\n",$byte1,$byte2,$byte3,$byte4);
+         print "$line\n";
+      } else {
+         print "Error attaching to $curAddy\n";
+      }
    }
 }
 
 foreach (my $curAddy (@GPIOs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 5
-      
-      my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
-      my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b",$byte1,$byte2);
-      print "$line\n";
+      if (my $device = attach($curAdd)) {
+         my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 5
+         
+         my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
+         my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b",$byte1,$byte2);
+         print "$line\n";
+      } else {
+         print "Error attaching to $curAddy\n";
+      }
    }
 }
 
 foreach (my $curAddy (@MPUs)) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "Checking $DeviceNames->{$curAddy}\n"; 
-      my $device = MPU6050->new(0x68);
-      $device->wakeMPU(4);
-      sleep(2);
-      my ($AcX,$AcY,$AcZ) = $device->readAccelG();
-      my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-      my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
-      print "$line\n";
+      if (my $device = attach($curAdd)) {
+         my $device = MPU6050->new(0x68);
+         $device->wakeMPU(4);
+         sleep(2);
+         my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+         my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+         my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
+         print "$line\n";
+      } else {
+         print "Error attaching to $curAddy\n";
+      }
    }
 }
 
 foreach (my $curAddy (@OneWires)) {
    if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
       print "Checking $DeviceNames->{$curAddy}\n"; 
-      my $device = MPU6050->new(0x68);
-      $device->wakeMPU(4);
-      sleep(2);
-      my ($AcX,$AcY,$AcZ) = $device->readAccelG();
-      my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-      my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
-      print "$line\n";
+      if (my $device = attach($curAdd)) {
+         my $device = MPU6050->new(0x68);
+         $device->wakeMPU(4);
+         sleep(2);
+         my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+         my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+         my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
+         print "$line\n";
+      } else {
+         print "Error attaching to $curAddy\n";
+      }
    }
 }
 
