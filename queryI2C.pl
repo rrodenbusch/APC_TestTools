@@ -121,26 +121,6 @@ sub queryI2Cbus {
    }
 }
 
-my @ValidI2C;
-queryI2Cbus(\@ValidI2C);
-#if ($ValidI2C[0x0e]) {
-#   my $device = attach(0x0E);
-#   my $uid = readI2Cblock($device,0xFF,4);
- #  my $str = "UID 0x0E [Arduino]: %02X %02X %02X %02X\n",$uid[0], $uid[1], $uid[2], $uid[3]);
- #  print $str;
-#}
-
-if ($ValidI2C[0x68] ) { # check the MPU6050
-   print "Checking MPU\n"; 
-   my $device = MPU6050->new(0x68);
-   $device->wakeMPU(4);
-   sleep(2);
-	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
-	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-	my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
-	print "$line\n";
-}
-
 my @Ards = (0x0e, 0x0f);
 my @UIDs = (0x51,0x52,0x53,0x54,0x55,0x56,0x57);
 my @GPIOs = (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27);
@@ -149,11 +129,14 @@ my @OneWire = (0x1b);
 my $DeviceNames = { 0x0e => "RelayArd", 0x0f => "FBDArd", 0x1b => "1WireCtrl",
             0x20 => "TBD", 0x21 =>"RelaySns", 0x22=>"RelayCtrl", 0x23=>"PowerSns",
             0x26=> "FBDSns", 0x27 => "FBDDIO", 
-            0x48=>  "FBDa2d"
+            0x48=>  "FBDa2d",
             0x51 => "RelayCtrl", 0x52=> "Breaker", 0x55 => "Bridge", 0x57 => "FBD",
             0x68 => "RelayMPU" };
 
-for (my $curAddy (@Ards)) {
+my @ValidI2C;
+queryI2Cbus(\@ValidI2C);
+
+foreach my $curAddy (@Ards) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
@@ -162,7 +145,7 @@ for (my $curAddy (@Ards)) {
    }
 }
 
-for (my $curAddy (@UIDs)) {
+foreach (my $curAddy (@UIDs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
@@ -174,17 +157,18 @@ for (my $curAddy (@UIDs)) {
    }
 }
 
-for (my $curAddy (@GPIOs)) {
+foreach (my $curAddy (@GPIOs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 
+      my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 5
+      
       my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
       my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b",$byte1,$byte2);
       print "$line\n";
    }
 }
 
-for (my $curAddy (@MPUs)) {
+foreach (my $curAddy (@MPUs)) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "Checking $DeviceNames->{$curAddy}\n"; 
       my $device = MPU6050->new(0x68);
@@ -197,7 +181,7 @@ for (my $curAddy (@MPUs)) {
    }
 }
 
-for (my $curAddy (@OneWires)) {
+foreach (my $curAddy (@OneWires)) {
    if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
       print "Checking $DeviceNames->{$curAddy}\n"; 
       my $device = MPU6050->new(0x68);
