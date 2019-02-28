@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 
-use lib "$ENV{HOME}/RPi";
+use lib "$ENV{HOME}/APC_TestTools";
+#use lib "$ENV{HOME}/RPi";
 
 use RPi::I2C;
 use MPU6050;
