@@ -102,6 +102,7 @@ sub queryI2Cbus {
          if ($addy <= 0x7F) {
             my $curAddy = substr($line,$offset,2);
             if ( ($curAddy ne "  ") && ($curAddy ne "--")) {
+            print "Chekcing $curAddy\n");
                my $numAddy = hex("0x".$curAddy);
                $ValidI2C[$addy] = ($numAddy == $addy);
                $offset += $inc;
@@ -111,7 +112,7 @@ sub queryI2Cbus {
       }
    }
 
-   for (my $i =0; $i<=0xFF; $i++) {
+   for (my $i =0; $i<=0x7F; $i++) {
       if ($ValidI2C[$i]) {
          my $str = sprintf("Found %02X\n",$i);
          print $str;
