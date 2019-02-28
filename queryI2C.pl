@@ -92,7 +92,7 @@ sub queryI2Cbus {
    my $ValidI2C = shift;
    
    my $return = `i2cdetect -y 1`;
-   print $return;
+   # print $return;
    my @lines = split("\n",$return);
    shift(@lines); # header
    my $addy = 0x00;
@@ -112,20 +112,13 @@ sub queryI2Cbus {
          }
       }
    }
-
-   for (my $i =0; $i<=0x7F; $i++) {
-      if (${$ValidI2C}[$i]) {
-         my $str = sprintf("Found %02X\n",$i);
-         print $str;
-      }
-   }
 }
 
 my @Ards = (0x0e, 0x0f);
 my @UIDs = (0x51,0x52,0x53,0x54,0x55,0x56,0x57);
 my @GPIOs = (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27);
 my @MPUs = (0x68);
-my @OneWire = (0x1b);
+my @OneWires = (0x1b);
 my $DeviceNames = { 0x0e => "RelayArd", 0x0f => "FBDArd", 0x1b => "1WireCtrl",
             0x20 => "TBD", 0x21 =>"RelaySns", 0x22=>"RelayCtrl", 0x23=>"PowerSns",
             0x26=> "FBDSns", 0x27 => "FBDDIO", 
@@ -137,6 +130,13 @@ my @ValidI2C;
 my $device;
 my $curAddy;
 queryI2Cbus(\@ValidI2C);
+
+for (my $i =0; $i<=0x7F; $i++) {
+   if ($ValidI2C[$i]) {
+      my $str = sprintf("Found %02X\n :: $DeviceNames->{$i}\n",$i);
+      print $str;
+   }
+}
 
 foreach $curAddy (@Ards) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
