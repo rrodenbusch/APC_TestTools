@@ -9,8 +9,8 @@ gpio -g write 17 1
 ./I2Cio.pl read 0x21 0x09
 echo "Switch pulled down by RPi"
 sleep 4
-gpio -g write 27 0
-gpio -g mode 27 in
+gpio -g write 17 0
+gpio -g mode 17 in
 ./I2Cio.pl read 0x21 0x09
 echo "Switch on"
 sleep 4
