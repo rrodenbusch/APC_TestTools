@@ -115,6 +115,8 @@ sub queryI2Cbus {
    return(\@ValidI2C);
 }
 
+queryI2Cbus();
+
 my ($cmd,$addy,$register,$data) = @ARGV;
 $addy = hex $addy if (defined($addy));
 $register = hex $register if (defined($register));
