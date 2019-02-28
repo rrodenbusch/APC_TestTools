@@ -14,10 +14,9 @@ echo "Enter to continue..."
 read  Cont
 gpio -g write 11 0
 gpio -g mode 11 in
+./I2Cio.pl read 0x21 0x09
 echo "NVN on"
 echo "Enter to continue..."
-read Cont
-./I2Cio.pl read 0x21 0x09
 read Cont
 ./I2Cio.pl write 0x22 0x00 0xBF
 ./I2Cio.pl write 0x22 0x0A 0x40
