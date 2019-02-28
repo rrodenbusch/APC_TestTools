@@ -140,4 +140,75 @@ if ($ValidI2C[0x68] ) { # check the MPU6050
 	my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
 	print "$line\n";
 }
+
+my @Ards = (0x0e, 0x0f);
+my @UIDs = (0x51,0x52,0x53,0x54,0x55,0x56,0x57);
+my @GPIOs = (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27);
+my @MPUs = (0x68);
+my @OneWire = (0x1b);
+my $DeviceNames = { 0x0e => "RelayArd", 0x0f => "FBDArd", 0x1b => "1WireCtrl",
+            0x20 => "TBD", 0x21 =>"RelaySns", 0x22=>"RelayCtrl", 0x23=>"PowerSns",
+            0x26=> "FBDSns", 0x27 => "FBDDIO", 
+            0x48=>  "FBDa2d"
+            0x51 => "RelayCtrl", 0x52=> "Breaker", 0x55 => "Bridge", 0x57 => "FBD",
+            0x68 => "RelayMPU" };
+
+for (my $curAddy (@Ards)) {
+   if ($ValidI2C[$curAddy] ) { # check the Arduinos
+      print "Checking $DeviceNames->{$curAddy}\n";
+      my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
+      my $line= sprintf( "Version: %04X\n",$byte1);
+      print "$line\n";
+   }
+}
+
+for (my $curAddy (@UIDs)) {
+   if ($ValidI2C[$curAddy] ) { # check the Arduinos
+      print "Checking $DeviceNames->{$curAddy}\n";
+      my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
+      my ($byte2,$cnt2) = getI2CdataByte($device,0xFD); 
+      my ($byte3,$cnt3) = getI2CdataByte($device,0xFE); 
+      my ($byte4,$cnt4) = getI2CdataByte($device,0xFF); 
+      my $line= sprintf( "UID: %02X %02X %02X %02X\n",$byte1,$byte2,$byte3,$byte4);
+      print "$line\n";
+   }
+}
+
+for (my $curAddy (@GPIOs)) {
+   if ($ValidI2C[$curAddy] ) { # check the Arduinos
+      print "Checking $DeviceNames->{$curAddy}\n";
+      my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 
+      my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
+      my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b",$byte1,$byte2);
+      print "$line\n";
+   }
+}
+
+for (my $curAddy (@MPUs)) {
+   if ($ValidI2C[$curAddy] ) { # check the MPU6050
+      print "Checking $DeviceNames->{$curAddy}\n"; 
+      my $device = MPU6050->new(0x68);
+      $device->wakeMPU(4);
+      sleep(2);
+      my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+      my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+      my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
+      print "$line\n";
+   }
+}
+
+for (my $curAddy (@OneWires)) {
+   if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
+      print "Checking $DeviceNames->{$curAddy}\n"; 
+      my $device = MPU6050->new(0x68);
+      $device->wakeMPU(4);
+      sleep(2);
+      my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+      my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+      my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
+      print "$line\n";
+   }
+}
+
+
 1;
