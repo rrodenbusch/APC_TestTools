@@ -87,7 +87,8 @@ sub bytesToint {
 }
 
 sub queryI2Cbus {
-
+   my @ValidI2C;
+   
    my $return = `i2cdetect -y 1`;
    print $return;
    my @lines = split($return,"\n");
@@ -111,6 +112,7 @@ sub queryI2Cbus {
          print $str;
       }
    }
+   return(\@ValidI2C);
 }
 
 my ($cmd,$addy,$register,$data) = @ARGV;
