@@ -91,18 +91,21 @@ sub queryI2Cbus {
    
    my $return = `i2cdetect -y 1`;
    print $return;
-   my @lines = split($return,"\n");
+   my @lines = split("\n",$return);
+   shift(@lines); // header
    my $addy = 0x00;
    foreach my $line (@lines) {
       my $lineNum = substr($line,0,2);
       my $offset = 4;
       my $inc = 3;
       for (my $i = 0; $i<16; $i++) {
-         my $curAddy = substr($line,$offset,2);
-         my $numAddy = hex("0x".$curAddy);
-         $ValidI2C[$addy] = ($numAddy == $addy);
-         $offset += $inc;
-         $addy++;
+         if ($addy <= 0x7F) {
+            my $curAddy = substr($line,$offset,2);
+            my $numAddy = hex("0x".$curAddy);
+            $ValidI2C[$addy] = ($numAddy == $addy);
+            $offset += $inc;
+            $addy++;
+         }
       }
    }
 
