@@ -138,7 +138,7 @@ my $device;
 my $curAddy;
 queryI2Cbus(\@ValidI2C);
 
-foreach ($curAddy (@Ards)) {
+foreach $curAddy (@Ards) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
@@ -151,7 +151,7 @@ foreach ($curAddy (@Ards)) {
    }
 }
 
-foreach ($curAddy (@UIDs)) {
+foreach $curAddy (@UIDs) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
@@ -167,12 +167,11 @@ foreach ($curAddy (@UIDs)) {
    }
 }
 
-foreach ($curAddy (@GPIOs)) {
+foreach $curAddy (@GPIOs) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
-         my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 5
-         
+         my ($byte1,$cnt1) = getI2CdataByte($device,0x0E);
          my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
          my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b",$byte1,$byte2);
          print "$line\n";
@@ -182,7 +181,7 @@ foreach ($curAddy (@GPIOs)) {
    }
 }
 
-foreach ($curAddy (@MPUs)) {
+foreach $curAddy (@MPUs) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "Checking $DeviceNames->{$curAddy}\n"; 
       if ($device = MPU6050->new(0x68)) {
@@ -198,10 +197,10 @@ foreach ($curAddy (@MPUs)) {
    }
 }
 
-foreach ($curAddy (@OneWires)) {
+foreach $curAddy (@OneWires) {
    if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
       print "Checking $DeviceNames->{$curAddy}\n"; 
-      if (my $device = attach($curAddy)) {
+      if ($device = attach($curAddy)) {
          print "Found 1Wire\n";
       } else {
          print "Error attaching to $curAddy\n";
