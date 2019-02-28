@@ -135,9 +135,10 @@ my $DeviceNames = { 0x0e => "RelayArd", 0x0f => "FBDArd", 0x1b => "1WireCtrl",
 
 my @ValidI2C;
 my $device;
+my $curAddy;
 queryI2Cbus(\@ValidI2C);
 
-foreach (my $curAddy (@Ards)) {
+foreach ($curAddy (@Ards)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
@@ -150,7 +151,7 @@ foreach (my $curAddy (@Ards)) {
    }
 }
 
-foreach (my $curAddy (@UIDs)) {
+foreach ($curAddy (@UIDs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
@@ -166,7 +167,7 @@ foreach (my $curAddy (@UIDs)) {
    }
 }
 
-foreach (my $curAddy (@GPIOs)) {
+foreach ($curAddy (@GPIOs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
@@ -181,7 +182,7 @@ foreach (my $curAddy (@GPIOs)) {
    }
 }
 
-foreach (my $curAddy (@MPUs)) {
+foreach ($curAddy (@MPUs)) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "Checking $DeviceNames->{$curAddy}\n"; 
       if ($device = MPU6050->new(0x68)) {
@@ -197,7 +198,7 @@ foreach (my $curAddy (@MPUs)) {
    }
 }
 
-foreach (my $curAddy (@OneWires)) {
+foreach ($curAddy (@OneWires)) {
    if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
       print "Checking $DeviceNames->{$curAddy}\n"; 
       if (my $device = attach($curAddy)) {
