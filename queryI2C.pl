@@ -136,7 +136,7 @@ if ($ValidI2C[0x68] ) { # check the MPU6050
    sleep(2);
 	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
 	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-	my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2tmpF\n", $AcX,$AcY,$AcZ,$tmpF);
+	my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
 	print "$line\n";
 }
 1;
