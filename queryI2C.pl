@@ -136,10 +136,10 @@ my $DeviceNames = { 0x0e => "RelayArd", 0x0f => "FBDArd", 0x1b => "1WireCtrl",
 my @ValidI2C;
 queryI2Cbus(\@ValidI2C);
 
-foreach my $curAddy (@Ards) {
+foreach (my $curAddy (@Ards)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      if (my $device = attach($curAdd)) {
+      if (my $device = attach($curAddy\n)) {
          my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
          my $line= sprintf( "Version: %04X\n",$byte1);
          print "$line\n";
@@ -152,7 +152,7 @@ foreach my $curAddy (@Ards) {
 foreach (my $curAddy (@UIDs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      if (my $device = attach($curAdd)) {
+      if (my $device = attach($curAddy)) {
          my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
          my ($byte2,$cnt2) = getI2CdataByte($device,0xFD); 
          my ($byte3,$cnt3) = getI2CdataByte($device,0xFE); 
@@ -168,7 +168,7 @@ foreach (my $curAddy (@UIDs)) {
 foreach (my $curAddy (@GPIOs)) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "Checking $DeviceNames->{$curAddy}\n";
-      if (my $device = attach($curAdd)) {
+      if (my $device = attach($curAddy)) {
          my ($byte1,$cnt1) = getI2CdataByte($device,0x0E); 5
          
          my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
@@ -183,7 +183,7 @@ foreach (my $curAddy (@GPIOs)) {
 foreach (my $curAddy (@MPUs)) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "Checking $DeviceNames->{$curAddy}\n"; 
-      if (my $device = attach($curAdd)) {
+      if (my $device = attach($curAddy)) {
          my $device = MPU6050->new(0x68);
          $device->wakeMPU(4);
          sleep(2);
@@ -200,7 +200,7 @@ foreach (my $curAddy (@MPUs)) {
 foreach (my $curAddy (@OneWires)) {
    if ($ValidI2C[$curAddy] ) { # check the One Wire Controllers
       print "Checking $DeviceNames->{$curAddy}\n"; 
-      if (my $device = attach($curAdd)) {
+      if (my $device = attach($curAddy)) {
          my $device = MPU6050->new(0x68);
          $device->wakeMPU(4);
          sleep(2);
