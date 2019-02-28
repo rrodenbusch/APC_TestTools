@@ -1,5 +1,5 @@
 package MPU6050;
-use lib "$ENV{HOME}/RPi";
+use lib "$ENV{HOME}/APC_TestTools";
 ##########################################
 #
 #  Basic Socket configuration for NVF
@@ -162,13 +162,13 @@ sub new {
 	my $mpuaddy = shift;
 	my $config = shift;
 	
-	$self->{directory} = "/home/pi/RPi";
-	chdir($self->{directory});
-	$self->{config} = $config;
-	$self->{logconf} = $config->{logconf};
-	$self->{myRole}= $config->{myRole};
-	Log::Log4perl::init($self->{logconf});
-	$self->{logger} = Log::Log4perl->get_logger();
+	#$self->{directory} = "/home/pi/RPi";
+	#chdir($self->{directory});
+	#$self->{config} = $config;
+	#$self->{logconf} = $config->{logconf};
+	#$self->{myRole}= $config->{myRole};
+	#Log::Log4perl::init($self->{logconf});
+	#$self->{logger} = Log::Log4perl->get_logger();
 	$self->{expectedAddy} = $config->{MPUAddy};
 	$self->{expectedAddy} = 0x68 unless defined $self->{expectedAddy};
 	$mpuaddy = $self->{expectedAddy} + 0;
