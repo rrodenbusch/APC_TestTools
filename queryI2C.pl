@@ -101,10 +101,12 @@ sub queryI2Cbus {
       for (my $i = 0; $i<16; $i++) {
          if ($addy <= 0x7F) {
             my $curAddy = substr($line,$offset,2);
-            my $numAddy = hex("0x".$curAddy);
-            $ValidI2C[$addy] = ($numAddy == $addy);
-            $offset += $inc;
-            $addy++;
+            if ( ($curAddy ne "  ") && ($curAddy ne "--")) {
+               my $numAddy = hex("0x".$curAddy);
+               $ValidI2C[$addy] = ($numAddy == $addy);
+               $offset += $inc;
+               $addy++;
+            }
          }
       }
    }
