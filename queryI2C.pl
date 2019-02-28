@@ -92,7 +92,7 @@ sub queryI2Cbus {
    my $return = `i2cdetect -y 1`;
    print $return;
    my @lines = split("\n",$return);
-   shift(@lines); // header
+   shift(@lines); # header
    my $addy = 0x00;
    foreach my $line (@lines) {
       my $lineNum = substr($line,0,2);
