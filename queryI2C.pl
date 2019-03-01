@@ -142,7 +142,7 @@ foreach $curAddy (@Ards) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "\nChecking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
-         my ($byte1,$cnt) = getI2CdataByte($device,0x00); 
+         my $byte1 = $device->read_byte(0x00);
          my $line= sprintf( "Version: %04X\n",$byte1);
          print "$line\n";
       } else {
