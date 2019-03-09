@@ -82,7 +82,7 @@ while (1) {
 		($snd1Tot,$snd1Cnt,$snd2Tot,$snd2Cnt) = (0,0,0,0);
 		($snd1Max,$snd1Min,$snd2Max,$snd2Min) = (-999,999,-999,999);
 		print "$line\n";
-	} elsif ( ( $doors == -1) || ($cnt == 0) ) {
+	} elsif ( ( !defined($doors) ) || ($doors == -1) ) {
 		print "$UID,$epoch,DoorError\n";
 	} else {
                 #$doors != $prevdoor) {
