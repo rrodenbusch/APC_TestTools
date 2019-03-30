@@ -154,13 +154,12 @@ do {
       $chksum = (~$word2 & 0xFFFF);
       if ($word1 == $chksum) {
          my $temp = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8);
-         $str = sprintf("Temp %d %04X %04X  try:%d",$temp, $word1,$chksum,$cnt);
+         $str = sprintf("Temp %d                        %04X %04X  try:%d",$temp, $word1,$chksum,$cnt);
          print "$str\n";
          $Tok = 1 
       }
    } else {
       sleep(0);
-#      print "Bad attach try:$cnt\n";
    }
 } while ($Tok == 0);
    return($word1,$word2,$cnt);
@@ -195,22 +194,27 @@ do {
    }
 } while ($Vok == 0);
 
-while (1) {
-   my $tempCnt = getTempCnt();
-   my ($tempData,$tempSum,$tempCnt) = getTemp();
-   sleep(5);
-   }
-
+my $epoch = time();
+my $tempCnt = getTempCnt();
+my ($tempData,$tempSum,$tempCnt) = getTemp();
+my $tempTime = time();
 my ($door1,$door2) = getDoors();
+my ($prevDoor1,$prevDoor2) = ($door1,$door2);
 $str = sprintf("%02X %02X",$databyte,$chkbyte);
 print "$door1  $door2 $str \n";
-my ($prevDoor1,$prevDoor2) = ($door1,$door2);
-while (1) { 
+while (1) {
+   ######### Check the temp ##############
+   if (time() - $tempTime > 20) {  # get temp every 20 seconds
+      my $tempCnt = getTempCnt();
+      my ($tempData,$tempSum,$tempCnt) = getTemp();
+      $tempTime = time();
+   }
+   #########  Check the doors ############
    ($door1,$door2,$databyte,$chkbyte) = getDoors();
-   $str = sprintf("%02X %02X",$databyte,$chkbyte);
    if ( ($door1 ne $prevDoor1) || ($door2 ne $prevDoor2)) {
-      print "$door1  $door2\n";
+      print "$door1  $door2      $str\n";
       ($prevDoor1,$prevDoor2) = ($door1,$door2);
    }
 }
+
 1;
