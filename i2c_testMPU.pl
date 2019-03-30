@@ -36,11 +36,11 @@ sub getRouterMACaddress {
 }
 
 
-my $myMAC = getMACaddress();
-my $routerMAC = getRouterMACaddress();
-my $UID = "$routerMAC::$myMAC";
-$UID =~ s/://g;
-print "Found MAC: $myMAC\nRouter: $routerMAC\n";
+#my $myMAC = getMACaddress();
+#my $routerMAC = getRouterMACaddress();
+#my $UID = "$routerMAC::$myMAC";
+#$UID =~ s/://g;
+#print "Found MAC: $myMAC\nRouter: $routerMAC\n";
 $device->wakeMPU(2);
 
 while (1) {

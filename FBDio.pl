@@ -116,6 +116,31 @@ sub getDoors {
    return($door1str,$door2str,$databyte,$chkbyte);
 }
 
+sub getTempCnt {
+   my $cnt = 0;
+   my $CntOk = 0;
+   my ($device,$word1,$databyte,$chkbyte,$chksum,$str);
+   do {
+      $cnt ++;
+      if ($device = attach(0x0f) ) {
+         # Get Temp Count
+         $word1 = $device->read_word(0x04);
+         $databyte = $word1 & 0xFF;
+         $chkbyte = ($word1 >> 8) & 0xFF;
+         $chksum = (~$chkbyte) & 0xFF;
+         if ($databyte == $chksum) {
+            $str = sprintf("Num temps %02X %02X  try:%d",$databyte,$chkbyte,$cnt);
+            print "Num Temps $str\n";
+            $CntOk = 1 
+         }
+      } else {
+         sleep(0);
+   #      print "Bad attach try:$cnt\n";
+      }
+   } while ($CntOk == 0);
+   return($databyte);
+}
+
 sub getTemp {
 my $Tok = 0;
 my $cnt = 0;
@@ -126,14 +151,15 @@ do {
       # Get Version
       $word1 = $device->read_word(0x06);
       $word2 = $device->read_word(0x07);
-      $chksum = ~$word2;
-      #if ($word1 == $chksum) {
-         $str = sprintf("Temp %d %04X %04X  try:%d",$word1, $word1,$word2,$chksum,$cnt);
+      $chksum = (~$word2 & 0xFFFF);
+      if ($word1 == $chksum) {
+         my $temp = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8);
+         $str = sprintf("Temp %d %04X %04X  try:%d",$temp, $word1,$chksum,$cnt);
          print "$str\n";
          $Tok = 1 
-      #}
+      }
    } else {
-      sleep(1);
+      sleep(0);
 #      print "Bad attach try:$cnt\n";
    }
 } while ($Tok == 0);
@@ -170,7 +196,9 @@ do {
 } while ($Vok == 0);
 
 while (1) {
+   my $tempCnt = getTempCnt();
    my ($tempData,$tempSum,$tempCnt) = getTemp();
+   sleep(5);
    }
 
 my ($door1,$door2) = getDoors();
