@@ -17,13 +17,24 @@ def write_temp(temp):
 def graph(temp):
     y.append(temp)
     x.append(time())
-    plt.clf()
+
+    plt.figure(1)
+    plt.subplot(211)
+#    plt.clf()
     plt.scatter(x,y)
     plt.plot(x,y)
     plt.draw()
+#    plt.pause(0.05);
+
+    plt.subplot(212)
+#    plt.clf()
+    plt.scatter(x,y)
+    plt.plot(x,y)
+    plt.draw()
+#    plt.pause(0.05);
 
 while True:
     temp = cpu.temperature
     write_temp(temp)
     graph(temp)
-    sleep(1)
+    #sleep(.1)

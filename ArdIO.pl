@@ -15,11 +15,12 @@ sub attach {
 		$retval = $device if ( $device->check_device($addy) );		
 	}
 	return ($retval);
-}
+
 
 sub get10Bit {
    my ($addy,$cmd) = @_;
-   my ($word1,$databyte,$chkbyte,$chksum);
+   my ($device,$word1,$databyte,$chkbyte,$chksum);
+   my $cnt = 0;
    do {
       if ($device = attach($addy) ) {   
          $word1 = $device->read_word($cmd);
@@ -28,12 +29,12 @@ sub get10Bit {
          my $n3 = ($word1 & 0xF00) >> 8;
          my $n4 = ($word1 & 0xFF00) >> 12;
          $chkbyte = 0;
-         $chkbyte ~= $n1;
-         $chkbyte ~= $n2;
-         $chkbyte ~= $n3;
-         $chkbyte ~= $n4;
+         $chkbyte ^= $n1;
+         $chkbyte ^= $n2;
+         $chkbyte ^= $n3;
+         $chkbyte ^= $n4;
       } else {
-         cnt++;
+         $cnt++;
       }         
    } while ( $chkbyte != 0);
    return( $word1 & 0x3FF);
@@ -41,7 +42,8 @@ sub get10Bit {
 
 sub getByte {
    my ($addy,$cmd) = @_;
-   my ($word1,$databyte,$chkbyte,$chksum);
+   my ($device,$word1,$databyte,$chkbyte,$chksum);
+   my $cnt = 0;
    do {
       if ($device = attach($addy) ) {   
          $word1 = $device->read_word($cmd);
@@ -49,7 +51,7 @@ sub getByte {
          $chkbyte = ($word1 >> 8) & 0xFF;
          $chksum = (~$chkbyte) & 0xFF;
       } else {
-         cnt++;
+         $cnt++;
       }         
    } while ( $databyte != $chksum );
    return( $databyte );
