@@ -53,6 +53,7 @@ sub getByte {
          $chksum = (~$chkbyte) & 0xFF;
       } else {
          $cnt++;
+         $chksum = ~$databyte;
       }         
    } while ( $databyte != $chksum );
    return( $databyte );
