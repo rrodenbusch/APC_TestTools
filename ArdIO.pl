@@ -72,8 +72,8 @@ sub getDoors {
       my $doorRight = $doors & 0x01;
       my $doorLeft = ($doors & 0x02) >> 1;
       #  Old FBD has pin high on open door1
-      $doorStat[0] = ($doorLeft == 0) ? "CLOSED" : "OPEN   ";
-      $doorStat[1] = ($doorRight == 0) ? "CLOSED" : "OPEN   ";
+      $doorStat[0] = ($doorLeft == 0) ? "CLOSED " : "OPEN   ";
+      $doorStat[1] = ($doorRight == 0) ? "CLOSED " : "OPEN   ";
    }
    # Return Left / Right
    return($doorStat[0],$doorStat[1]);
@@ -105,11 +105,13 @@ while (1) {
    my ($temp1, $temp2) = (-255.0,-255.0);
    if ($tempCnt > 0) {
       $temp1 = get10Bit(0x08,0x13);
+      $temp1 = $temp1 /10.0;
       }
    if ($tempCnt > 1) {
       $temp2 = get10Bit(0x08,0x14);
+      $temp2 = $temp2 / 10.0;
       }
-   my $str = sprintf("Version:%d %04.2fV Left:%d Right:%d Blower:%06.1f Intake%d %d GPIO %08b\n", 
+   my $str = sprintf("Version:%d %04.2fV Left:%06s Right:%06s Blower:%4.1f Intake:%4.1f GPIO %08b\n", 
                $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $GPIO);
    print $str;
    sleep (1);
