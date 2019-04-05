@@ -94,12 +94,87 @@ sub getLowerGPIO { # Pins 2 through 9
    return ($GPIO);
 }
 
+sub getUpperGPIO { # Pins 2 through 9
+   my ($addy) = @_;
+   my $cmd = 0x11;
+   my $GPIO = getByte($addy,$cmd);
+   return ($GPIO);
+}
+sub setGPIOstr {
+   my ($lower,$upper) = @_;
+   my $str = '';
+   if ($lower & 0x01) {
+      $str .= " 1Wire  HIGH";
+      } else {
+      $str .= " 1Wire  LOW ";
+      }
+   if ($lower & 0x02) {
+      $str .= " NUC    HIGH";
+      } else {
+      $str .= " NUC    LOW ";
+      }
+   if ($lower & 0x04) {
+      $str .= " Bridge HIGH";
+      } else {
+      $str .= " Bridge LOW ";
+      }
+      
+   if ($lower & 0x08) {
+      $str .= " ORIDE  HIGH";
+      } else {
+      $str .= " ORIDE  LOW ";
+      }
+   if ($lower & 0x10) {
+      $str .= " RPi    HIGH";
+      } else {
+      $str .= " RPi    LOW ";
+      }
+   if ($lower & 0x20) {
+      $str .= " NVN    HIGH";
+      } else {
+      $str .= " NVN    LOW ";
+      }
+   if ($lower & 0x40) {
+      $str .= " Door1  HIGH";
+      } else {
+      $str .= " Door1  LOW ";
+      }
+   if ($lower & 0x80) {
+      $str .= " Door2   HIGH";
+      } else {
+      $str .= " Door2   LOW ";
+      }
+   if ($upper & 0x01) {
+      $str .= " Batt2   HIGH";
+      } else {
+      $str .= " Batt2   LOW ";
+      }
+   if ($upper & 0x02) {
+      $str .= " Pwr2    HIGH";
+      } else {
+      $str .= " Pwr2    LOW ";
+      }
+   if ($upper & 0x04) {
+      $str .= " Batt1   HIGH";
+      } else {
+      $str .= " Batt1   LOW ";
+      }
+   if ($upper & 0x08) {
+      $str .= " Pwr1    HIGH";
+      } else {
+      $str .= " Pwr1    LOW ";
+      }
+
+   return($str);
+}
+
 my $version = getByte(0x08,0x00);
 while (1) {
    # end of 
    my ($doorLeft,$doorRight) = getDoors(0x08);
    my $voltage = getVoltage(0x08);
-   my $GPIO = getLowerGPIO(0x08);
+   my $lower = getLowerGPIO(0x08);
+   my $upper = getUpperGPIO(0x08);
    
    my $tempCnt = getByte(0x08,0x12);
    my ($temp1, $temp2) = (-255.0,-255.0);
@@ -111,6 +186,7 @@ while (1) {
       $temp2 = get10Bit(0x08,0x14);
       $temp2 = $temp2 / 10.0;
       }
+   my $gpStr = setGPIOstr($lower,$upper);
    my $str = sprintf("Version:%d %04.2fV Left:%06s Right:%06s Blower:%4.1f Intake:%4.1f GPIO %08b\n", 
                $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $GPIO);
    print $str;
