@@ -87,11 +87,19 @@ sub getVoltage {
    return ($voltage);
 }
 
+sub getLowerGPIO { # Pins 2 through 9
+   my ($addy) = @_;
+   my $cmd = 0x10;
+   my $GPIO = getByte($addy,$cmd);
+   return ($GPIO);
+}
+
 my $version = getByte(0x08,0x00);
 while (1) {
    # end of 
    my ($doorLeft,$doorRight) = getDoors(0x08);
    my $voltage = getVoltage(0x08);
+   my $GPIO = getLowerGPIO(0x08);
    
    my $tempCnt = getByte(0x08,0x12);
    my ($temp1, $temp2) = (-255.0,-255.0);
@@ -101,7 +109,8 @@ while (1) {
    if ($tempCnt > 1) {
       $temp2 = get10Bit(0x08,0x14);
       }
-   my $str = sprintf("Version:%d %04.2fV Left:%d Right:%d Blower:%06.1f Intake%d %d\n", $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2);
+   my $str = sprintf("Version:%d %04.2fV Left:%d Right:%d Blower:%06.1f Intake%d %d GPIO %08b\n", 
+               $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $GPIO);
    print $str;
    sleep (1);
 }
