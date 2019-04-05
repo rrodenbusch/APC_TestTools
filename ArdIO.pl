@@ -15,6 +15,7 @@ sub attach {
 		$retval = $device if ( $device->check_device($addy) );		
 	}
 	return ($retval);
+}
 
 
 sub get10Bit {
