@@ -187,9 +187,10 @@ while (1) {
       $temp2 = $temp2 / 10.0;
       }
    my $gpStr = setGPIOstr($lower,$upper);
-   my $str = sprintf("Version:%d %04.2fV Left:%06s Right:%06s Blower:%4.1f Intake:%4.1f GPIO %08b\n", 
-               $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $GPIO);
+   my $str = sprintf("Version:%d %04.2fV Left:%06s Right:%06s Blower:%4.1f Intake:%4.1f Lower:%08b Upper:%04b\n", 
+               $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $lower, $upper & 0x0F);
    print $str;
+#   print "$gpStr\n";
    sleep (1);
 }
 
