@@ -168,6 +168,19 @@ sub setGPIOstr {
    return($str);
 }
 
+getSoundVals {
+   my ($addy) = @_;
+   my $max0 = get10Bit($addy,0x30);
+   my $avg0 = get10Bit($addy,0x31);
+   my $sig0 = get10Bit($addy,0x32);
+   my $max1 = get10Bit($addy,0x33);
+   my $avg1 = get10Bit($addy,0x34);
+   my $sig1 = get10Bit($addy,0x35);
+   my $events0 = getByte($addy,0x36);
+   my $events1 = getByte($addy,0x37);
+   return($max0,$avg0,$sig0,$events0,$max1,$avg1,$sig1,$events1);
+}
+
 my $version = getByte(0x08,0x00);
 while (1) {
    # end of 
@@ -187,8 +200,11 @@ while (1) {
       $temp2 = $temp2 / 10.0;
       }
    my $gpStr = setGPIOstr($lower,$upper);
+   my @Sounds = getSoundVal9(0x08);
+   my $sndStr = join(",",@Sounds);
    my $str = sprintf("Version:%d %04.2fV Left:%06s Right:%06s Blower:%4.1f Intake:%4.1f Lower:%08b Upper:%04b\n", 
                $version,$voltage,$doorLeft,$doorRight,$temp1,$temp2, $lower, $upper & 0x0F);
+   print "$sndStr\n";
    print $str;
 #   print "$gpStr\n";
    sleep (1);
