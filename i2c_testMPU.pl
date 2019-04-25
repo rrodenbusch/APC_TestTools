@@ -49,7 +49,7 @@ while (1) {
 	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
 	my $line= join(',',($epoch,$msec,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF));
 	print "$line\n";
-	sleep(1); 
+	sleep(0); 
 	#Time::HiRes::sleep(0.333);
 }
 
