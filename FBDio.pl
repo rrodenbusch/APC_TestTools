@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use lib "$ENV{HOME}/RPi";
+my $FBDaddy = 0x0F;
 
 use RPi::I2C;
 
@@ -87,13 +88,14 @@ sub bytesToint {
 }
 
 sub getDoors {
-   my $cnt = 0;
-   my ($word1,$chkbyte,$databyte,$chksum);
-   my $Dok = 0;
-   my ($door1,$door2,$door1str,$door2str);
-   do {
+	my $i2cAddy = $_[0];
+   	my $cnt = 0;
+   	my ($word1,$chkbyte,$databyte,$chksum);
+   	my $Dok = 0;
+   	my ($door1,$door2,$door1str,$door2str);
+   	do {
       $cnt ++;
-      if (my $device = attach(0x0f) ) {
+      if (my $device = attach($i2cAddy) ) {
          # Get Doors
          $word1 = $device->read_word(0x03);
          $databyte = $word1 & 0xFF;
@@ -117,12 +119,13 @@ sub getDoors {
 }
 
 sub getTempCnt {
-   my $cnt = 0;
-   my $CntOk = 0;
-   my ($device,$word1,$databyte,$chkbyte,$chksum,$str);
-   do {
+	my $i2cAddy = $_[0];
+	my $cnt = 0;
+   	my $CntOk = 0;
+   	my ($device,$word1,$databyte,$chkbyte,$chksum,$str);
+   	do {
       $cnt ++;
-      if ($device = attach(0x0f) ) {
+      if ($device = attach($i2cAddy) ) {
          # Get Temp Count
          $word1 = $device->read_word(0x04);
          $databyte = $word1 & 0xFF;
@@ -142,27 +145,38 @@ sub getTempCnt {
 }
 
 sub getTemp {
-my $Tok = 0;
-my $cnt = 0;
-my ($word1,$word2,$chksum,$str);
-do {
-   $cnt ++;
-   if (my $device = attach(0x0f) ) {
-      # Get Version
-      $word1 = $device->read_word(0x06);
-      $word2 = $device->read_word(0x07);
-      $chksum = (~$word2 & 0xFFFF);
-      if ($word1 == $chksum) {
-         my $temp = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8);
-         $str = sprintf("Temp %d                        %04X %04X  try:%d",$temp, $word1,$chksum,$cnt);
-         print "$str\n";
-         $Tok = 1 
-      }
-   } else {
-      sleep(0);
-   }
-} while ($Tok == 0);
-   return($word1,$word2,$cnt);
+	my ($i2cAddy,$tempCnt) = @_;
+	my ($temp1, $temp2) = (-2550,-2550);
+	my $Tok = 0;
+	my $cnt = 0;
+	my ($word1,$word2,$chksum,$str);
+	do {
+	   $cnt ++;
+	   if (my $device = attach($i2cAddy) ) {
+	      # Get Version
+	      $word1 = $device->read_word(0x06);
+	      $word2 = $device->read_word(0x07);
+	      $chksum = (~$word2 & 0xFFFF);
+	      if ($word1 == $chksum) {
+	         $temp1 = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8);
+	         $temp1 = $temp1 / 10.0;
+	         $Tok = 1 
+	      }
+	      $word1 = $device->read_word(0x08);
+	      $word2 = $device->read_word(0x09);
+	      $chksum = (~$word2 & 0xFFFF);
+	      if ($word1 == $chksum) {
+	         $temp2 = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8);
+	         $temp2 = $temp2/10.0;
+	         $Tok = 1 
+	      }
+	   } else {
+	      sleep(0);
+	   }
+	} while ($Tok == 0);
+	my $str = sprintf("T1 %04.1d T2 %04.1d Count %d",$temp1,$temp2,$tempCnt);
+	print "$str\n";
+	return($word1,$word2,$cnt);
 }  # end getTemp
 
 my ($cmd,$addy,$register,$data) = @ARGV;
@@ -177,7 +191,7 @@ my ($str,$word1,$chkbyte,$databyte,$chksum);
 
 do {
    $cnt ++;
-   if ($device = attach(0x0f) ) {
+   if ($device = attach($FBDaddy) ) {
       # Get Version
       $word1 = $device->read_word(0x00);
       $databyte = $word1 & 0xFF;
@@ -195,22 +209,22 @@ do {
 } while ($Vok == 0);
 
 my $epoch = time();
-my $tempCnt = getTempCnt();
-my ($tempData,$tempSum,$tempCnt) = getTemp();
+my $tempCnt = getTempCnt($FBDaddy);
+my ($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
 my $tempTime = time();
-my ($door1,$door2) = getDoors();
+my ($door1,$door2) = getDoors($FBDaddy);
 my ($prevDoor1,$prevDoor2) = ($door1,$door2);
 $str = sprintf("%02X %02X",$databyte,$chkbyte);
 print "$door1  $door2 $str \n";
 while (1) {
    ######### Check the temp ##############
    if (time() - $tempTime > 20) {  # get temp every 20 seconds
-      my $tempCnt = getTempCnt();
-      my ($tempData,$tempSum,$tempCnt) = getTemp();
+      my $tempCnt = getTempCnt($FBDaddy);
+      my ($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
       $tempTime = time();
    }
    #########  Check the doors ############
-   ($door1,$door2,$databyte,$chkbyte) = getDoors();
+   ($door1,$door2,$databyte,$chkbyte) = getDoors($FBDaddy);
    if ( ($door1 ne $prevDoor1) || ($door2 ne $prevDoor2)) {
       print "$door1  $door2      $str\n";
       ($prevDoor1,$prevDoor2) = ($door1,$door2);
