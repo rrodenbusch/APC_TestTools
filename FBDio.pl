@@ -219,8 +219,8 @@ print "$door1  $door2 $str \n";
 while (1) {
    ######### Check the temp ##############
    if (time() - $tempTime > 20) {  # get temp every 20 seconds
-      my $tempCnt = getTempCnt($addy);
-      my ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
+      $tempCnt = getTempCnt($addy);
+      ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
       $tempTime = time();
    }
    #########  Check the doors ############
