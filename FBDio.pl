@@ -210,22 +210,22 @@ do {
 
 my $epoch = time();
 my ($tempData,$tempSum,$tempCnt);
-$tempCnt = getTempCnt($addy);
-($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
+$tempCnt = getTempCnt($FBDaddy);
+($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
 my $tempTime = time();
-my ($door1,$door2) = getDoors($addy);
+my ($door1,$door2) = getDoors($FBDaddy);
 my ($prevDoor1,$prevDoor2) = ($door1,$door2);
 $str = sprintf("%02X %02X",$databyte,$chkbyte);
 print "$door1  $door2 $str \n";
 while (1) {
    ######### Check the temp ##############
    if (time() - $tempTime > 20) {  # get temp every 20 seconds
-      $tempCnt = getTempCnt($addy);
-      ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
+      $tempCnt = getTempCnt($FBDaddy);
+      ($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
       $tempTime = time();
    }
    #########  Check the doors ############
-   ($door1,$door2,$databyte,$chkbyte) = getDoors($addy);
+   ($door1,$door2,$databyte,$chkbyte) = getDoors($FBDaddy);
    if ( ($door1 ne $prevDoor1) || ($door2 ne $prevDoor2)) {
       print "$door1  $door2      $str\n";
       ($prevDoor1,$prevDoor2) = ($door1,$door2);
