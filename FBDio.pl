@@ -174,7 +174,7 @@ sub getTemp {
 	      sleep(0);
 	   }
 	} while ($Tok == 0);
-	my $str = sprintf("T1 %04.1d T2 %04.1d Count %d",$temp1,$temp2,$tempCnt);
+	my $str = sprintf("T1 %04.1f T2 %04.1f Count %d",$temp1,$temp2,$tempCnt);
 	print "$str\n";
 	return($word1,$word2,$cnt);
 }  # end getTemp
