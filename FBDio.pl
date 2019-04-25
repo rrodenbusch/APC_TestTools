@@ -179,10 +179,6 @@ sub getTemp {
 	return($word1,$word2,$cnt);
 }  # end getTemp
 
-my ($cmd,$addy,$register,$data) = @ARGV;
-$addy = hex $FBDaddy if (defined($FBDaddy));
-$register = hex $register if (defined($register));
-$data = hex $data if (defined($data));
 my ($cnt,$device,$Vok,$Dok);
 $Dok = 0;
 $Vok = 0;
@@ -191,7 +187,7 @@ my ($str,$word1,$chkbyte,$databyte,$chksum);
 
 do {
    $cnt ++;
-   if ($device = attach($addy) ) {
+   if ($device = attach($FBDaddy) ) {
       # Get Version
       $word1 = $device->read_word(0x00);
       $databyte = $word1 & 0xFF;
