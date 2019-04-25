@@ -215,12 +215,13 @@ my $line = sprintf("Version %04X ",$Version);
 #$line .= sprintf("UID: %02X %02X %02X %02X ", $UID [0],$UID [1],$UID [2],$UID [3]);
 #print "$line\n";
 while (1) {
+	my $epoch = time();
    $line = "";
 #   my $Mode = $device->read_word(0x07);
 #   $line .= sprintf("PowerMode %08b RunMode %08b ",($Mode>>8) & 0xFF,$Mode & 0xFF);
    my $load = getI2CdataWord($device,0x0A); 
    my $scap = getI2CdataWord($device,0x0B);
-   $line .= sprintf("Load:%04.2f Cap:%04.2f ",($load/10.0),0.4+($scap/10.0));
+   $line .= sprintf("$epoch,%04.2f,%04.2f ",($load/10.0),0.4+($scap/10.0));
 #   my $GPIO = $device->read_word(0x0D);
 #   my $RX = $GPIO & 0x01;
 #   my $TX = ($GPIO >> 1) & 0x01;
