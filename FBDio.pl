@@ -174,7 +174,7 @@ sub getTemp {
 	      sleep(0);
 	   }
 	} while ($Tok == 0);
-	my $str = sprintf("T1 %04.1f T2 %04.1f Count %d",$temp1,$temp2,$tempCnt);
+	$str = sprintf("T1 %04.1f T2 %04.1f Count %d",$temp1,$temp2,$tempCnt);
 	print "$str\n";
 	return($word1,$word2,$cnt);
 }  # end getTemp
@@ -209,8 +209,9 @@ do {
 } while ($Vok == 0);
 
 my $epoch = time();
-my $tempCnt = getTempCnt($addy);
-my ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
+my ($tempData,$tempSum,$tempCnt);
+$tempCnt = getTempCnt($addy);
+($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
 my $tempTime = time();
 my ($door1,$door2) = getDoors($addy);
 my ($prevDoor1,$prevDoor2) = ($door1,$door2);
