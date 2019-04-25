@@ -208,7 +208,7 @@ foreach $curAddy (@OneWires) {
    }
 }
 
-$device = attach(0x0E);
+$device = attach(0x0A);
 my $Version = getI2CdataWord($device,0x00);
 my $line = sprintf("Version %04X ",$Version);
 #my @UID = $device->read_block(4,0xFC);
@@ -216,24 +216,24 @@ my $line = sprintf("Version %04X ",$Version);
 #print "$line\n";
 while (1) {
    $line = "";
-   my $Mode = $device->read_word(0x07);
-   $line .= sprintf("PowerMode %08b RunMode %08b ",($Mode>>8) & 0xFF,$Mode & 0xFF);
-   my $A2 = getI2CdataWord($device,0x0D); 
-   my $A3 = getI2CdataWord($device,0x0E);
-   $line .= sprintf("Load:%04.2f Cap:%04.2f ",0.4+($A2*20/1024),0.4+($A3*20/1024));
-   my $GPIO = $device->read_word(0x0D);
-   my $RX = $GPIO & 0x01;
-   my $TX = ($GPIO >> 1) & 0x01;
-   my $Pi = ($GPIO >> 2) & 0x01;
-   my $NUC = ($GPIO >> 3) & 0x01;
-   my $Cam = ($GPIO >> 4) & 0x01;
-   my $NVN = ($GPIO >> 5) & 0x01;
-   my $Load10 = ($GPIO >> 6) & 0x01;
-   my $Cap7  = ($GPIO >> 7) & 0x01;
-   my $Load2 = ($GPIO >> 8) & 0x01;
-   my $Powr1 = ($GPIO >> 9) & 0x01;
-   $line .= sprintf("Pi:%01b NUC:%01b FBD:%01b NVN:%01b Load>10:%01b Cap>7:%01b Load2>13:%01b PowerOn:%01b",
-			$Pi,$NUC,$Cam,$NVN,$Load10,$Cap7,$Load2,$Powr1);
+#   my $Mode = $device->read_word(0x07);
+#   $line .= sprintf("PowerMode %08b RunMode %08b ",($Mode>>8) & 0xFF,$Mode & 0xFF);
+   my $load = getI2CdataWord($device,0x0A); 
+   my $scap = getI2CdataWord($device,0x0B);
+   $line .= sprintf("Load:%04.2f Cap:%04.2f ",($load/10.0),0.4+($scap/10.0));
+#   my $GPIO = $device->read_word(0x0D);
+#   my $RX = $GPIO & 0x01;
+#   my $TX = ($GPIO >> 1) & 0x01;
+#   my $Pi = ($GPIO >> 2) & 0x01;
+#   my $NUC = ($GPIO >> 3) & 0x01;
+#   my $Cam = ($GPIO >> 4) & 0x01;
+#   my $NVN = ($GPIO >> 5) & 0x01;
+#   my $Load10 = ($GPIO >> 6) & 0x01;
+#   my $Cap7  = ($GPIO >> 7) & 0x01;
+#   my $Load2 = ($GPIO >> 8) & 0x01;
+#   my $Powr1 = ($GPIO >> 9) & 0x01;
+#   $line .= sprintf("Pi:%01b NUC:%01b FBD:%01b NVN:%01b Load>10:%01b Cap>7:%01b Load2>13:%01b PowerOn:%01b",
+#			$Pi,$NUC,$Cam,$NVN,$Load10,$Cap7,$Load2,$Powr1);
    print "$line\n";
    sleep(1);
 }
