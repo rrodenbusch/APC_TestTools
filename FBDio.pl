@@ -180,7 +180,7 @@ sub getTemp {
 }  # end getTemp
 
 my ($cmd,$addy,$register,$data) = @ARGV;
-$addy = hex $addy if (defined($addy));
+$addy = hex $FBDaddy if (defined($FBDaddy));
 $register = hex $register if (defined($register));
 $data = hex $data if (defined($data));
 my ($cnt,$device,$Vok,$Dok);
@@ -191,7 +191,7 @@ my ($str,$word1,$chkbyte,$databyte,$chksum);
 
 do {
    $cnt ++;
-   if ($device = attach($FBDaddy) ) {
+   if ($device = attach($addy) ) {
       # Get Version
       $word1 = $device->read_word(0x00);
       $databyte = $word1 & 0xFF;
@@ -209,22 +209,22 @@ do {
 } while ($Vok == 0);
 
 my $epoch = time();
-my $tempCnt = getTempCnt($FBDaddy);
-my ($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
+my $tempCnt = getTempCnt($addy);
+my ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
 my $tempTime = time();
-my ($door1,$door2) = getDoors($FBDaddy);
+my ($door1,$door2) = getDoors($addy);
 my ($prevDoor1,$prevDoor2) = ($door1,$door2);
 $str = sprintf("%02X %02X",$databyte,$chkbyte);
 print "$door1  $door2 $str \n";
 while (1) {
    ######### Check the temp ##############
    if (time() - $tempTime > 20) {  # get temp every 20 seconds
-      my $tempCnt = getTempCnt($FBDaddy);
-      my ($tempData,$tempSum,$tempCnt) = getTemp($FBDaddy,$tempCnt) if ($tempCnt > 0);
+      my $tempCnt = getTempCnt($addy);
+      my ($tempData,$tempSum,$tempCnt) = getTemp($addy,$tempCnt) if ($tempCnt > 0);
       $tempTime = time();
    }
    #########  Check the doors ############
-   ($door1,$door2,$databyte,$chkbyte) = getDoors($FBDaddy);
+   ($door1,$door2,$databyte,$chkbyte) = getDoors($addy);
    if ( ($door1 ne $prevDoor1) || ($door2 ne $prevDoor2)) {
       print "$door1  $door2      $str\n";
       ($prevDoor1,$prevDoor2) = ($door1,$door2);
