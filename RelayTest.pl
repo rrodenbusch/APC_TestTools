@@ -216,7 +216,7 @@ while (1) {
 	sleep(1);
 	NUC2On();
 	sleep(1);
-	NUC1Off()
+	NUC1Off();
 	sleep(1);
 	
 	BrdgOn();
@@ -233,7 +233,7 @@ while (1) {
 	sleep(1);
 	NUC2Off();
 	sleep(1);
-	NUC1Off()
+	NUC1Off();
 	sleep(1);
 	
 	
