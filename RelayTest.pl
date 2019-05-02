@@ -365,27 +365,35 @@ sub relaySweepPi {
 	checkPower(5,"Brdg");
 	checkPower(7,"Snsr");
 	sleep(1);
+
 	sensorOffPi();
+	sleep(1);
 	checkPower(7,"Snsr");
+
 	sleep(1);
 	camOffPi();
+
 	checkPower(6,"NVN ");
 	sleep(1);
 	NVNOffPi();
+	sleep(1);
 	checkPower(6,"NVN ");
 	checkPower(4,"tNet");
 	sleep(1);
-	checkPower(4,"tNet");
-	checkPower(3,"NUC");
 	tNetOffPi();
 	sleep(1);
+	checkPower(4,"tNet");
+	checkPower(3,"NUC");
 	NUC2OffPi();
+	sleep(1);
 	checkPower(3,"NUC");
 	sleep(1);
 	NUC1OnPi();
+	sleep(1);
 	checkPower(3,"NUC");
 	sleep(1);
 	NUC1OffPi();
+	sleep(1);
 	checkPower(3,"NUC");
 	sleep(1);
 	
