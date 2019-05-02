@@ -327,7 +327,7 @@ sub relaySweepPi {
 	sleep(1);
 	sensorOnPi();
 	sleep(1);
-	camOnPI();
+	camOnPi();
 	sleep(1);
 	NVNOnPi();
 	sleep(1);
