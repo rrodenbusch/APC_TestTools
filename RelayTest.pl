@@ -343,6 +343,7 @@ while (1) {
 	camOff();
 	sleep(1);
 	camOn();
+	sleep(1);
 	relaySweepGPIO();
 
 	# Bounce Camera twice to start Pi relay control
@@ -353,8 +354,8 @@ while (1) {
 	camOff();
 	sleep(1);
 	camOn();
-	
-	relaySweepPI();
+	sleep(1);
+	relaySweepPi();
 }
 
 
