@@ -94,7 +94,7 @@ sub GPIO_setPinValue {
 		my $curVal = $device->read_byte(0x0A);
 		my $pinBit = $Bits[$pin];
 		if (defined($pinBit)) {
-			$curCfg = $curCfg | $pinBit;
+			$curCfg &= ~$pinBit;
 			if ($value == 0) {
 				$curVal &= ~$pinBit;
 			} else {
