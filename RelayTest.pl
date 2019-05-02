@@ -5,6 +5,7 @@ use warnings;
 use lib "$ENV{HOME}/RPi";
 
 use RPi::I2C;
+my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
 sub readI2Cbyte {
 	my ($device,$timeout) = @_;
@@ -95,17 +96,19 @@ sub GPIO_setPinValue {
 		if (defined($pinBit)) {
 			$curCfg = $curCfg | $pinBit;
 			if ($value == 0) {
-				$curVal ~= $pinBit;
+				$curVal &= ~$pinBit;
 			} else {
 				$curVal |= $pinBit;
 			}
 			$device->write_byte(0x0A,$curVal);
 			$device->write_byte(0x00,$curCfg);
 		} else {
-			print(STDERR,"Unable to get pin id for pin %02d\n",$pin);
+			my $line = sprintf("Unable to get pin id for pin %02d\n",$pin);
+			print STDERR $line;
 		}
 	} else {
-		print(STDERR,"Unable to attach to device %02X\n",$addy);
+		my $line = sprintf("Unable to attach to device %02X\n",$addy);
+		print STDERR $line;
 	}
 }
 sub GPIO_setPinMode {
@@ -117,17 +120,19 @@ sub GPIO_setPinMode {
 		if (defined($pinBit)) {
 			$curCfg = $curCfg | $pinBit;
 			if ($value == 0) {
-				$curVal ~= $pinBit;
+				$curVal &= ~$pinBit;
 			} else {
 				$curVal |= $pinBit;
 			}
 			$device->write_byte(0x0A,$curVal);
 			$device->write_byte(0x00,$curCfg);
 		} else {
-			print(STDERR,"Unable to get pin id for pin %02d\n",$pin);
+			my $line = sprintf("Unable to get pin id for pin %02d\n",$pin);
+			print STDERR $line
 		}
 	} else {
-		print(STDERR,"Unable to attach to device %02X\n",$addy);
+		my $line = sprintf("Unable to attach to device %02X\n",$addy);
+		print STDERR $line;
 	}
 }
 
@@ -137,6 +142,6 @@ my($addy,$pin,$value) = (0x22,0x00,0x01);
 GPIO_setPinValue($addy,$pin,$value);
 sleep(30);
 GPIO_setPinValue($addy,$pin,~$value);
-GPIO_setPinMode($add,0);
+GPIO_setPinMode($addy,0);
 
 1;
