@@ -100,8 +100,8 @@ sub GPIO_setPinValue {
 			} else {
 				$curVal |= $pinBit;
 			}
-			$device->write_byte(0x0A,$curVal);
-			$device->write_byte(0x00,$curCfg);
+			$device->write_byte($curVal,0x0A);
+			$device->write_byte($curCfg,0x00);
 		} else {
 			my $line = sprintf("Unable to get pin id for pin %02d\n",$pin);
 			print STDERR $line;
