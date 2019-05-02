@@ -313,7 +313,7 @@ sub getPwrBits {
 		print STDERR "Unable to pull sens bits\n";
 		$badVal = -1
 	}	
-	return($curBits,$badVal);
+	return($curbits,$badVal);
 }
 
 sub getBitVal {
@@ -352,7 +352,7 @@ sub PwrOK {
 }
 sub checkPower {
 	my ($pin,$name) = @_; 
-	my($power,$valid) = getBitVal();
+	my($power,$valid) = getBitVal($pin);
 	print "Bad $name Pwr Call\n" if ($valid != 0);
 	print "$name Pwr ON\n" if ($valid == 0) && ($power); 
 	print "$name Pwr OFF\n" if ($valid == 0) && (!$power); 
