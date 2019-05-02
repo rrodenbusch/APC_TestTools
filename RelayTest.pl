@@ -313,7 +313,7 @@ sub getPwrBits {
 		print STDERR "Unable to pull sens bits\n";
 		$badVal = -1
 	}	
-	return($curbits,$badVal);
+	return($curBits,$badVal);
 }
 
 sub getBitVal {
