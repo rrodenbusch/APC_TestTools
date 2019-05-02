@@ -85,52 +85,7 @@ sub bytesToint {
    }
    return($retVal);
 }
-my @Bits[8] = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
-
-sub GPIO_setPinValue {
-	my ($addy,$pin,$value) = @_;
-	if (my $device = attach($addy)) {
-		my $curCfg = $device->read_byte(0x00);
-		my $curVal = $device->read_byte(0x0A);
-		my $pinBit = $Bits[$pin];
-		if (defined($pinBit)) {
-			$curCfg = $curCfg | $pinBit;
-			if ($value == 0) {
-				$curVal ~= $pinBit;
-			} else {
-				$curVal |= $pinBit;
-			}
-			$device->write_byte(0x0A,$curVal);
-			$device->write_byte(0x00,$curCfg);
-		} else {
-			print(STDERR,"Unable to get pin id for pin %02d\n",$pin);
-		}
-	} else {
-		print(STDERR,"Unable to attach to device %02X\n",$addy);
-	}
-}
-sub GPIO_setPinMode {
-	my ($addy,$pin,$value) = @_;
-	if (my $device = attach($addy)) {
-		my $curCfg = $device->read_byte(0x00);
-		my $curVal = $device->read_byte(0x0A);
-		my $pinBit = $Bits[$pin];
-		if (defined($pinBit)) {
-			$curCfg = $curCfg | $pinBit;
-			if ($value == 0) {
-				$curVal ~= $pinBit;
-			} else {
-				$curVal |= $pinBit;
-			}
-			$device->write_byte(0x0A,$curVal);
-			$device->write_byte(0x00,$curCfg);
-		} else {
-			print(STDERR,"Unable to get pin id for pin %02d\n",$pin);
-		}
-	} else {
-		print(STDERR,"Unable to attach to device %02X\n",$addy);
-	}
-}
+my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
 my ($cmd,$addy,$register,$data) = @ARGV;
 $addy = hex $addy if (defined($addy));
