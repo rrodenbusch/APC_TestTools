@@ -139,9 +139,105 @@ sub GPIO_setPinMode {
 my($addy,$pin,$value) = (0x22,0x00,0x01);
 ($addy,$pin,$value) = @_ if (defined($_[0]));
 
-GPIO_setPinValue($addy,$pin,$value);
-sleep(30);
-GPIO_setPinValue($addy,$pin,~$value);
-GPIO_setPinMode($addy,0);
+sub sensorOff {
+	GPIO_setPinValue(0x22,0,1);
+}
+sub sensorOn {
+	GPIO_setPinValue(0x22,0,0);
+	GPIO_setPinMode(0x22,0,1)
+}
+sub camOff {
+	GPIO_setPinValue(0x22,1,1);
+}
+sub camOn {
+	GPIO_setPinValue(0x22,1,0);
+	GPIO_setPinMode(0x22,1,1)
+}
+
+sub BrdgOff {
+	GPIO_setPinValue(0x22,2,1);
+}
+sub BrdgOn {
+	GPIO_setPinValue(0x22,2,0);
+	GPIO_setPinMode(0x22,2,1)
+}
+
+sub PiOff {
+	GPIO_setPinValue(0x22,3,1);
+}
+sub PiOn {
+	GPIO_setPinValue(0x22,3,0);
+	GPIO_setPinMode(0x22,3,1)
+}
+
+sub tNetOff {
+	GPIO_setPinValue(0x22,5,1);
+}
+sub tNetOn {
+	GPIO_setPinValue(0x22,5,0);
+	GPIO_setPinMode(0x22,5,1)
+}
+sub NUC1Off {
+	GPIO_setPinValue(0x22,7,1);
+}
+sub NUC1On {
+	GPIO_setPinValue(0x22,7,0);
+	GPIO_setPinMode(0x22,7,1)
+}
+
+sub NVNOff {
+	GPIO_setPinValue(0x22,4,0);
+}
+sub NVNOn {
+	GPIO_setPinValue(0x22,4,0);
+	GPIO_setPinMode(0x22,4,1)
+}
+
+sub NUC2Off {
+	GPIO_setPinValue(0x22,6,0);
+}
+sub NUC2On {
+	GPIO_setPinValue(0x22,6,0);
+	GPIO_setPinMode(0x22,6,1)
+}
+
+while (1) {
+	BrdgOff();
+	sleep(1);
+	sensorOff();
+	sleep(1);
+	camOff();
+	sleep(1);
+	NVNOff();
+	sleep(1);
+	tNetOff();
+	sleep(1);
+	NUC2Off();
+	sleep(1);
+	NUC2On();
+	sleep(1);
+	NUC1Off()
+	sleep(1);
+	
+	BrdgOn();
+	sleep(1);
+	sensorOn();
+	sleep(1);
+	camOn();
+	sleep(1);
+	NVNOn();
+	sleep(1);
+	tNetOn();
+	sleep(1);
+	NUC2On();
+	sleep(1);
+	NUC2Off();
+	sleep(1);
+	NUC1Off()
+	sleep(1);
+	
+	
+}
+
 
 1;
