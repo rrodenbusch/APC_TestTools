@@ -202,7 +202,77 @@ sub NUC2On {
 	GPIO_setPinMode(0x22,6,1)
 }
 
-while (1) {
+
+sub sensorOffPi {
+	`gpio -g mode 18 out`;
+	`gpio -g write 18 1`;
+}
+sub sensorOnPi {
+	`gpio -g write 18 0`;
+	`gpio -g mode 18 in`;
+}
+sub camOffPi {
+	`gpio -g mode 23 out`;
+	`gpio -g write 23 1`;
+}
+sub camOnPi {
+	`gpio -g write 23 0`;
+	`gpio -g mode 23 in`;
+}
+
+sub BrdgOffPi {	
+	`gpio -g mode 24 out`;
+	`gpio -g write 24 1`;
+}
+sub BrdgOnPi {
+	`gpio -g write 24 0`;
+	`gpio -g mode 24 in`;
+}
+
+sub PiOffPi {
+	`gpio -g mode 25 out`;
+	`gpio -g write 25 1`;
+}
+
+sub PiOnPi {
+	`gpio -g write 25 0`;
+	`gpio -g mode 25 in`;
+}
+
+sub tNetOffPi {
+	`gpio -g mode 12 out`;
+	`gpio -g write 12 1`;
+}
+sub tNetOnPi {
+	`gpio -g write 12 0`;
+	`gpio -g mode 12 in`;
+}
+sub NUC1OffPi {
+	`gpio -g write 16 0`;
+	`gpio -g mode 16 in`;
+}
+sub NUC1OnPi {	
+	`gpio -g mode 16 out`;
+	`gpio -g write 16 1`;
+}
+
+sub NVNOffPi {
+	`gpio -g mode 19 out`;
+	`gpio -g write 19 0`;
+}
+sub NVNOnPi {
+	`gpio -g mode 19 in`;
+}
+
+sub NUC2OffPi {
+	`gpio -g mode 26 out`;
+	`gpio -g write 26 0`;
+}
+sub NUC2OnPi {
+	`gpio -g mode 26 in`;
+}
+
+sub relaySweepGPIO {
 	BrdgOff();
 	sleep(1);
 	sensorOff();
@@ -231,9 +301,60 @@ while (1) {
 	tNetOn();
 	sleep(1);
 	NUC2On();
+	sleep(1);	
+}
+
+
+sub relaySweepPi {
+	BrdgOffPi();
+	sleep(1);
+	sensorOffPi();
+	sleep(1);
+	camOffPi();
+	sleep(1);
+	NVNOffPi();
+	sleep(1);
+	tNetOffPi();
+	sleep(1);
+	NUC2OffPi();
+	sleep(1);
+	NUC1OnPi();
+	sleep(1);
+	NUC1OffPi();
 	sleep(1);
 	
+	BrdgOnPi();
+	sleep(1);
+	sensorOnPi();
+	sleep(1);
+	camOnPI();
+	sleep(1);
+	NVNOnPi();
+	sleep(1);
+	tNetOnPi();
+	sleep(1);
+	NUC2OnPi();
+	sleep(1);	
+}
+
+
+while (1) {
+	# Bounce camera once to start GPIO relay control
+	camOff();
+	sleep(1);
+	camOn();
+	relaySweepGPIO();
+
+	# Bounce Camera twice to start Pi relay control
+	camOff();
+	sleep(1);
+	camOn();
+	sleep(1);
+	camOff();
+	sleep(1);
+	camOn();
 	
+	relaySweepPI();
 }
 
 
