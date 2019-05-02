@@ -303,24 +303,90 @@ sub relaySweepGPIO {
 	NUC2On();
 	sleep(1);	
 }
+sub getPwrBits {
+	my $curBits = 0;
+	my $badVal = 0;
+	
+	if (my $device = attach(0x21)) {
+		$curBits = $device->read_byte(0x09);
+	} else {
+		print STDERR "Unable to pull sens bits\n";
+		$badVal = -1
+	}	
+	return($curbits,$badVal);
+}
+
+sub getBitVal {
+	my ($pin) = @_;
+	my ($bits,$val) = getPwrBits();
+	my $retVal = -1;
+	if ($val == 0) {
+		$retVal = (($bits & $Bits[$pin]) > 0);
+	}
+	return($retVal,$val);
+}
+	
+sub SensorPwr {
+	return(getBitVal(7));
+}
+sub NNVPwr {
+	return(getBitVal(6));
+}
+sub BrdgPwr{
+	return(getBitVal(5));
+}
+sub tNetPwr{
+	return(getBitVal(4));
+}
+sub NVNPwr {
+	return(getBitVal(3));
+}
+sub PiPwr {
+	return(getBitVal(2));
+}
+sub CapOK {
+	return(getBitVal(1));	
+}
+sub PwrOK {
+	return(getBitVal(0));	
+}
+sub checkPower {
+	my ($pin,$name) = @_; 
+	my($power,$valid) = getBitVal();
+	print "Bad $name Pwr Call\n" if ($valid != 0);
+	print "$name Pwr ON\n" if ($valid == 0) && ($power); 
+	print "$name Pwr OFF\n" if ($valid == 0) && (!$power); 
+}
 
 
 sub relaySweepPi {
+	checkPower(5,"Brdg");
 	BrdgOffPi();
+	checkPower(5,"Brdg");
+	checkPower(7,"Snsr");
 	sleep(1);
 	sensorOffPi();
+	checkPower(7,"Snsr");
 	sleep(1);
 	camOffPi();
+	checkPower(6,"NVN ");
 	sleep(1);
 	NVNOffPi();
+	checkPower(6,"NVN ");
+	checkPower(4,"tNet");
 	sleep(1);
+	checkPower(4,"tNet");
+	checkPower(3,"NUC");
 	tNetOffPi();
 	sleep(1);
 	NUC2OffPi();
+	checkPower(3,"NUC");
 	sleep(1);
 	NUC1OnPi();
+	checkPower(3,"NUC");
 	sleep(1);
 	NUC1OffPi();
+	checkPower(3,"NUC");
 	sleep(1);
 	
 	BrdgOnPi();
