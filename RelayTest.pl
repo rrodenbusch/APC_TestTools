@@ -85,7 +85,6 @@ sub bytesToint {
    }
    return($retVal);
 }
-my @Bits[8] = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
 sub GPIO_setPinValue {
 	my ($addy,$pin,$value) = @_;
@@ -114,7 +113,7 @@ sub GPIO_setPinMode {
 	if (my $device = attach($addy)) {
 		my $curCfg = $device->read_byte(0x00);
 		my $curVal = $device->read_byte(0x0A);
-		my $pinBit = $Bits[$pin];
+		my $pinBit = $Bits[$pin]; 
 		if (defined($pinBit)) {
 			$curCfg = $curCfg | $pinBit;
 			if ($value == 0) {
@@ -132,64 +131,9 @@ sub GPIO_setPinMode {
 	}
 }
 
-my ($cmd,$addy,$register,$data) = @ARGV;
-$addy = hex $addy if (defined($addy));
-$register = hex $register if (defined($register));
-$data = hex $data if (defined($data));
-my $device;
-if (defined($cmd) && ($cmd eq 'read')) {
-	if ($device = attach($addy)) {
-#		my ($byte1,$cnt) = getI2CdataByte($device,$register);
-		my $byte1 = $device->read_byte($register);
-		my $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                $data--;
-                while ($data > 0) {
-                   $register++;
-		   $byte1 = $device->read_byte($register);
-		   $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                   $data --;
-                }
-		print "0x$str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} elsif (defined($cmd) && ($cmd eq 'readword')) {
-	if ($device = attach($addy)) {
-		my $word1 = getI2CdataWord($device,$register);
-		#my $byte1 = $device->read_word($register);
-		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
-				$word1 & 0xFFFF, $word1 & 0xFFFF );
-		print "Word $word1 :: $str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}	elsif (defined($cmd) && ($cmd eq 'readblock')) {
-	if ($device = attach($addy)) {
-		my @buf = readI2Cblock($device,$register,1000,$data);
-      my $curVal = bytesToint($buf[0],$buf[1]) / 10;
-      my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
-      my $minVal = bytesToint($buf[4],$buf[5]) / 10;
-      print "$curVal  $maxVal $minVal\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}
-elsif (defined($cmd) && ($cmd eq 'write') ) {
-	if ($device = attach($addy)) {
-		my $byte1 = $device->read_byte($register);
-		$device->write_byte($data & 0xFF, $register);
-                sleep(1);
-		my $byte2 = $device->read_byte($register);
-                my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
-                print "$str";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} else {
-	warn "Usage I2Cio.pl [read|write] addy data";
-}
-
+GPIO_setPinValue(0x22,0x00,0x01);
+sleep(30);
+GPIO_setPinValue(0x22,0x00,0x00);
+GPIO_setPinMode(0x22,0);
 
 1;
