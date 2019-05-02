@@ -118,11 +118,11 @@ sub GPIO_setPinMode {
 		my $curVal = $device->read_byte(0x0A);
 		my $pinBit = $Bits[$pin]; 
 		if (defined($pinBit)) {
-			$curCfg = $curCfg | $pinBit;
-			if ($value == 0) {
+			if ($value == 1) { # set it to input
 				$curVal &= ~$pinBit;
-			} else {
-				$curVal |= $pinBit;
+				$curCfg = $curCfg | $pinBit;
+			} else {   # set it to output
+				$curCfg &= ~$pinBit;
 			}
 			$device->write_byte(0x0A,$curVal);
 			$device->write_byte(0x00,$curCfg);
