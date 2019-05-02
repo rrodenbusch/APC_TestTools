@@ -179,11 +179,11 @@ sub tNetOn {
 	GPIO_setPinMode(0x22,5,1)
 }
 sub NUC1Off {
-	GPIO_setPinValue(0x22,7,1);
-}
-sub NUC1On {
 	GPIO_setPinValue(0x22,7,0);
 	GPIO_setPinMode(0x22,7,1)
+}
+sub NUC1On {
+	GPIO_setPinValue(0x22,7,1);
 }
 
 sub NVNOff {
