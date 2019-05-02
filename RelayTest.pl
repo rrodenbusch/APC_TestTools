@@ -215,7 +215,7 @@ while (1) {
 	sleep(1);
 	NUC2Off();
 	sleep(1);
-	NUC2On();
+	NUC1On();
 	sleep(1);
 	NUC1Off();
 	sleep(1);
@@ -231,10 +231,6 @@ while (1) {
 	tNetOn();
 	sleep(1);
 	NUC2On();
-	sleep(1);
-	NUC2Off();
-	sleep(1);
-	NUC1Off();
 	sleep(1);
 	
 	
