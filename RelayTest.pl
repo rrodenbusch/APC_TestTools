@@ -131,9 +131,12 @@ sub GPIO_setPinMode {
 	}
 }
 
-GPIO_setPinValue(0x22,0x00,0x01);
+my($addy,$pin,$value) = (0x22,0x00,0x01);
+($addy,$pin,$value) = @_ if (defined($_[0]));
+
+GPIO_setPinValue($addy,$pin,$value);
 sleep(30);
-GPIO_setPinValue(0x22,0x00,0x00);
-GPIO_setPinMode(0x22,0);
+GPIO_setPinValue($addy,$pin,~$value);
+GPIO_setPinMode($add,0);
 
 1;
