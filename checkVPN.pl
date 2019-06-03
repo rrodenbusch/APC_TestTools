@@ -48,23 +48,23 @@ while (my $line = <$fh>) {
 			my @parts = split(' ',$names[$i]);
 			my $last = pop(@parts);
 			if ($last eq 'VPN') {
-#				if ( defined($fields[$i]) ) {
-#					$names[$i] = "OtherIP" unless defined($names[$i]);
-#					print "\t$names[$i]:\t$fields[$i]";
-#					my $ip = $fields[$i];
-#					$ip =~ s/ //g;
-#					if ( ($ip ne '') ) {
-#						if ($p->ping($fields[$i]) ) {
-#							print "\tALIVE\n";
-#						} else {
-#							print "\tOffline\n";
-#						}									
-#					} else {
-#						print "\n";
-#					}
-#				} else {
-#					print "\t$names[$i]:\tUndef\n";
-#				}
+				if ( defined($fields[$i]) ) {
+					$names[$i] = "OtherIP" unless defined($names[$i]);
+					print "\t$names[$i]:\t$fields[$i]";
+					my $ip = $fields[$i];
+					$ip =~ s/ //g;
+					if ( ($ip ne '') ) {
+						if ($p->ping($fields[$i]) ) {
+							print "\tALIVE\n";
+						} else {
+							print "\tOffline\n";
+						}									
+					} else {
+						print "\n";
+					}
+				} else {
+					print "\t$names[$i]:\tUndef\n";
+				}
 			} elsif ( ($last eq 'MAC') ) {
 				if ($parts[0] eq 'CP') {
 					my ($p1,$p2,$p3) = (substr($fields[$i],6,2),substr($fields[$i],8,2),substr($fields[$i],10,2));
