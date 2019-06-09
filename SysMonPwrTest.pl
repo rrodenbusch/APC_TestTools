@@ -69,14 +69,14 @@ sub getCPvoltage {
    my $highByte = ($highBits << 7) & 0x0F80;
    my $bitCnt = $highByte | $lowByte;
    my $vRaw = $Vref * ($bitCnt/4096);
-   my $charging = `gpio -g read 27`;
+#   my $charging = `gpio -g read 27`;
    my $divider = $divider0;
    $divider = $divider1 if ($charging == 1);
    my $vScaled = ($vRaw / $divider);
    my $vActual = $vScaled + $VfPos + $VfGnd;
-   #my $line = sprintf("%0.3f %0.3f %0.3f %d %0X",
-   #                $vActual,$vScaled,$vRaw,$bitCnt,$bitCnt);
-   #print "$line\n";
+   my $line = sprintf("%0.3f %0.3f %0.3f %d %0X",
+                   $vActual,$vScaled,$vRaw,$bitCnt,$bitCnt);
+   print "$line\n";
    return($vActual,$vScaled,$vRaw,$bitCnt);
 }
 
