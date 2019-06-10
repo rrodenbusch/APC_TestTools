@@ -71,7 +71,7 @@ sub getCPvoltage {
    my $vRaw = $Vref * ($bitCnt/4096);
 #   my $charging = `gpio -g read 27`;
    my $divider = $divider0;
-   $divider = $divider1 if ($charging == 1);
+#   $divider = $divider1 if ($charging == 1);
    my $vScaled = ($vRaw / $divider);
    my $vActual = $vScaled + $VfPos + $VfGnd;
    my $line = sprintf("%0.3f %0.3f %0.3f %d %0X",
