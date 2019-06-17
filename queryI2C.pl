@@ -172,9 +172,10 @@ foreach $curAddy (@GPIOs) {
    if ($ValidI2C[$curAddy] ) { # check the Arduinos
       print "\nChecking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
-         my ($byte1,$cnt1) = getI2CdataByte($device,0x0E);
-         my ($byte2,$cnt2) = getI2CdataByte($device,0x09); 
-         my $line= sprintf( "GPIO: Control: %08b PinLevels: %08b\n",$byte1,$byte2);
+         my ($byte1,$cnt1) = getI2CdataByte($device,0x00);
+         my ($byte2,$cnt2) = getI2CdataByte($device,0x09);
+         my ($byte3,$cnt3) = getI2CdataByte($device,0x0A); 
+         my $line= sprintf( "GPIO: IODIR: %08b OLAT: %08b GPIO: %08b\n",$byte1,$byte3,$byte2);
          print $line;
       } else {
          print "Error attaching to $curAddy\n";
@@ -185,16 +186,16 @@ foreach $curAddy (@GPIOs) {
 foreach $curAddy (@MPUs) {
    if ($ValidI2C[$curAddy] ) { # check the MPU6050
       print "\nChecking $DeviceNames->{$curAddy}\n"; 
-      if ($device = MPU6050->new(0x68)) {
-         $device->wakeMPU(4);
-         sleep(2);
-         my ($AcX,$AcY,$AcZ) = $device->readAccelG();
-         my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-         my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
-         print $line;
-      } else {
-         print "Error attaching to $curAddy\n";
-      }
+#      if ($device = MPU6050->new(0x68)) {
+#         $device->wakeMPU(4);
+#         sleep(2);
+#         my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+#         my ($tmp,$tmpC,$tmpF) = $device->readTemp();
+#         my $line= sprintf( "MPU Data:: Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $AcX,$AcY,$AcZ,$tmpF);
+#         print $line;
+#      } else {
+#         print "Error attaching to $curAddy\n";
+#      }
    }
 }
 
