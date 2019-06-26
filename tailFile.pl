@@ -42,6 +42,7 @@ sub getFile {
 	foreach my $fname (@fileNames) {
 		my @fields = split(/\./,$fname);
 		$maxName = $fname if ($fields[$idx] > $maxIdx);
+		$maxIdx = $idx if ($fields[$idx] > $maxIdx);
 	}
 	return($maxName);
 }	# getFile
