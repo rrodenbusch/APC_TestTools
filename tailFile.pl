@@ -58,7 +58,7 @@ setupSignals($config);
 my $dir = getcwd();
 
 my ($idx,$names,$fname) = (0,"$dir/*",'');
-$names = "$dir/$options{f}" if defined($options{f});
+$names = "$options{f}" if defined($options{f});
 $idx = $options{n} if (defined($options{n}));
 $fname = getFile($names,$idx);
 my $prevFname = '';
