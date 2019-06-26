@@ -29,7 +29,6 @@ sub setupSignals {
 }	# setupSignals
 
 sub processSignals{
-	my $config = shift;
 	if ( getSig('HUP')) {
  		resetSig('HUP');
 		warn "Received HUP"; 		
@@ -76,8 +75,8 @@ $fname = getFile($names,$idx);
 my $prevFname = '';
 my $fh;	
 
-while( getSig($config,'ABRT') == 0) {
-	processSignals($config);
+while( getSig('ABRT') == 0) {
+	processSignals();
 	if ($fname ne $prevFname) {
 		close($fh) if defined($fh);
 		if ( open $fh, '-|', "/usr/bin/tail -f $fname" ) {
