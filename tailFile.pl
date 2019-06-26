@@ -80,6 +80,9 @@ while( getSig('ABRT') == 0) {
 	if ($fname ne $prevFname) {
 		close($fh) if defined($fh);
 		if ( open $fh, "/usr/bin/tail -f $fname |" ) {
+			my $oldfh = select($fh); # default
+			$| = 1;
+			select($oldfh);
 			$prevFname = $fname;
 		} else {
 			warn "Unable to to open $fname\n$!\n";
