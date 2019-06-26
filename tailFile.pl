@@ -7,6 +7,17 @@ use Cwd;
 
 # Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0 );
+
+sub getSig{
+	my $name = shift;
+	return $sig{$name};
+}
+
+sub resetSig{
+	my $name = shift;
+	$sig{$name} = 0;
+}
+
 sub setupSignals {
 	my $config = shift;
 	$config->{signals} = \%sig;
@@ -19,16 +30,16 @@ sub setupSignals {
 
 sub processSignals{
 	my $config = shift;
-	if ( $config->getSig('HUP')) {
- 		$config->resetSig('HUP');
+	if ( getSig('HUP')) {
+ 		resetSig('HUP');
 		warn "Received HUP"; 		
  	}	
- 	if ( $config->getSig('USR1')) {
- 		$config->resetSig('USR1');
+ 	if ( getSig('USR1')) {
+ 		resetSig('USR1');
 		warn "Received USR1"; 		 		
  	}
- 	if ( $config->getSig('USR2')) {
- 		$config->resetSig('USR2');
+ 	if ( getSig('USR2')) {
+ 		resetSig('USR2');
 		warn "Received USR2"; 		 		
  	}
 }	#	processSignals
@@ -65,7 +76,7 @@ $fname = getFile($names,$idx);
 my $prevFname = '';
 my $fh;	
 
-while( $config->getSig('ABRT') == 0) {
+while( getSig($config,'ABRT') == 0) {
 	processSignals($config);
 	if ($fname ne $prevFname) {
 		close($fh) if defined($fh);
