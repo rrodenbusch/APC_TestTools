@@ -59,7 +59,7 @@ my $dir = getcwd();
 
 my ($idx,$names,$fname) = (0,"$dir/*",'');
 $names = "$options{f}" if defined($options{f});
-$idx = $options{n} if (defined($options{n}));
+$idx = $options{e} if (defined($options{e}));
 $fname = getFile($names,$idx);
 my $prevFname = '';
 my $fh;	
