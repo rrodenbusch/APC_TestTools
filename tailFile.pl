@@ -79,7 +79,7 @@ while( getSig('ABRT') == 0) {
 	processSignals();
 	if ($fname ne $prevFname) {
 		close($fh) if defined($fh);
-		if ( open $fh, '-|', "/usr/bin/tail -f $fname" ) {
+		if ( open $fh, "/usr/bin/tail -f $fname |" ) {
 			$prevFname = $fname;
 		} else {
 			warn "Unable to to open $fname\n$!\n";
