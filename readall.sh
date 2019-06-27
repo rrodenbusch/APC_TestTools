@@ -2,6 +2,6 @@
 while  [ 1 ]; do
    gpio readall
    date
-   sleep 5
+   sleep 2
 done
 
