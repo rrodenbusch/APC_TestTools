@@ -20,7 +20,7 @@ while ($line = <$fh>) {
 	my $epoch = shift(@fields);
 	my $msec = shift(@fields);
  	my $x = 1000*($epoch - $startTime) + int($msec/1000);
-	my $line = "$x,".join(',',@fields);
+	my $line = "$x,".join(' ',@fields);
 	print "$line\n"; 
 }
 
