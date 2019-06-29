@@ -4,7 +4,7 @@ use warnings;
 
 my %options;
 use Getopt::Std;
-getopts("pam",%options);
+getopts("pam",\%options);
 my @mykeys = keys(%options);
 if ($#mykeys == -1 ) {
 	$options{p} = 1;
