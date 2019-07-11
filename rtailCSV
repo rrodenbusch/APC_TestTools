@@ -1,0 +1,8 @@
+#!/bin/bash
+IP="192.168.0.$1"
+RPATH="$2"
+echo "$RPATH at $IP"
+ssh pi@"$IP" "/home/pi/APC_TestTools/tailCSV $2"
+FNAME=`ls -Art $FPATH | tail -n 1`
+echo $FNAME
+tail -f $FNAME
