@@ -17,15 +17,15 @@ then
    cd ~/APC_TestTools
    git pull origin master
 fi
-if [ -d ~/Arduino ]
+if [ -d ~/Arduino/Arduino ]
 then
    echo "Update Arduino"
-   cd ~/Arduiono
+   cd ~/Arduiono/Arduino
    git pull origin master
 fi
 if [ -d ~/updates/NUC ]
 then
-   echo "Update NU"
+   echo "Update NUC"
    cd /updates/NUC
    git pull origin master
 fi

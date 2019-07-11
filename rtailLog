@@ -1,8 +1,9 @@
 #!/bin/bash
 IP="192.168.0.$1"
 RPATH="$2"
+[ "$2" == "rLog" ] && export RPATH="/data/rLog"
+[ "$2" == "Watch" ] && export RPATH="/home/pi"
+[ "$2" == "WatchDog" ] && export RPATH="/home/pi/RPi"
+[ "$2" == "sysmon" ] && export RPATH="/var/log/sysmon"
 echo "$RPATH at $IP"
-ssh pi@"$IP" "/home/pi/APC_TestTools/tailLog $2"
-FNAME=`ls -Art $FPATH | tail -n 1`
-echo $FNAME
-tail -f $FNAME
+ssh pi@"$IP" "/home/pi/APC_TestTools/tailLog $RPATH"
