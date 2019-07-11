@@ -1,4 +1,10 @@
 #!/bin/bash
-FNAME=`ls -Art *.log | tail -n 1`
+if [ -z "$1" ] 
+then
+   FPATH="*.log"
+else
+   FPATH="$1/*.log"
+fi
+FNAME=`ls -Art $FPATH | tail -n 1`
+echo $FNAME
 tail -f $FNAME
-
