@@ -1,0 +1,6 @@
+#!/bin/bash
+rcmd 211 gitAll
+rcmd 212 gitAll
+rcmd 221 gitAll
+rcmd 222 gitAll
+rcmd 231 gitAll
