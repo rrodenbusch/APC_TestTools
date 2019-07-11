@@ -1,0 +1,6 @@
+#!/bin/bash
+IP="192.168.0.$1"
+RCMD="$2"
+[ "$2" == "gitAll" ] && export RCMD="/home/pi/APC_TestTools/gitAll"
+echo "$RCMD at $IP"
+ssh pi@"$IP" "$RCMD"
