@@ -20,7 +20,7 @@ fi
 if [ -d ~/Arduino/Arduino ]
 then
    echo "Update Arduino"
-   cd ~/Arduiono/Arduino
+   cd ~/Arduino/Arduino
    git pull origin master
 fi
 if [ -d ~/updates/NUC ]
