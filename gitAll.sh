@@ -1,5 +1,6 @@
 #!/bin/bash
 if [ -d ~/updates/PiInstall ]
+then
    echo "Update PiInstall"
    cd ~/updates/PiInstall
    git pull origin master
