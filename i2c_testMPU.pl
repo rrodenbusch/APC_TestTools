@@ -41,13 +41,21 @@ sub getRouterMACaddress {
 #my $UID = "$routerMAC::$myMAC";
 #$UID =~ s/://g;
 #print "Found MAC: $myMAC\nRouter: $routerMAC\n";
+my $maxG = 2;
+$maxG = $ARGV[0] if (defined($ARGV[0]));
+my $cal = 1.0;
+$cal = $ARGV[1] if (defined($ARGV[1]));
 $device->wakeMPU(2);
 
 while (1) {
 	my ($epoch,$msec) = Time::HiRes::gettimeofday();
 	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
 	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-	my $line= join(',',($epoch,$msec,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF));
+        $AcX *= $cal;
+        $AcY *= $cal;
+        $AcZ *= $cal;
+        my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
+	my $line= join(',',($epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF));
 	print "$line\n";
 	sleep(0); 
 	#Time::HiRes::sleep(0.333);
