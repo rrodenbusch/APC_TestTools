@@ -5,7 +5,7 @@ use warnings;
 my @pidList;
 my @ProcList = ('SystemMonitor.pl','MapNetwork.pl','WatchDog.pl','ConfigServer.pl','ShutdownNUC.pl','i2c_apc_v6.pl',
 				'RemoteLog.pl', 'RunNVR.pl', 'RemoteData.pl','WatchSSD.pl','i2c_apc_v6.pl','Watcher.pl','WatchRPi.pl');
-				
+`ps -elf |grep perl`;
 foreach my $curProc (@ProcList) {
 	my $return = `ps -C $curProc -o pid`;
  	my @lines = split("\n",$return);
@@ -19,5 +19,5 @@ foreach my $curProc (@ProcList) {
 }
 my $cmd = "kill " . join(" ",@pidList);
 `$cmd`;
-
+`ps -elf |grep perl`;
 1;
