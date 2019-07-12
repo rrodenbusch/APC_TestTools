@@ -17,7 +17,7 @@ foreach my $curProc (@ProcList) {
  	}
 	push(@pidList,$pid) unless $pid == -1;
 }
-my $cmd = "kill " . join(",",@pidList);
+my $cmd = "kill " . join(" ",@pidList);
 `$cmd`;
 
 1;
