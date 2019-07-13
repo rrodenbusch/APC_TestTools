@@ -6,19 +6,14 @@ use warnings;
 my @pidList;
 my @ProcList = ('SystemMonitor.pl','MapNetwork.pl','WatchDog.pl','ConfigServer.pl','ShutdownNUC.pl','i2c_apc_v6.pl',
 				'RemoteLog.pl', 'RunNVR.pl', 'RemoteData.pl','WatchSSD.pl','i2c_apc_v6.pl','Watcher.pl','WatchRPi.pl');
-my $ret;
-if (( defined($ARGV[0])) && ($ARGV[0] eq 'kill')) {
-	my $ret = `ps -elf |grep perl` ;
-	print $ret;
-} else {
-	print "Listing only, cmd line option 'kill' to kill all\n";
-}
+my $ret = `ps -elf |grep perl` ;
 foreach my $curProc (@ProcList) {
 	my $return = `ps -C $curProc -o pid`;
  	my @lines = split("\n",$return);
  	my $pid = -1;
  	if ( scalar @lines > 1) {
 		my @fields = split(" ",$lines[0]);
+		my $proc = pop(@fields);
  		$pid = $lines[1];
  		$pid =~ s/ //g;	
  	}
@@ -29,6 +24,8 @@ if ( (scalar @pidList > 0) && defined($ARGV[0]) && ($ARGV[0] eq 'kill')) {
 	`$cmd`;	
 	$ret = `ps -elf |grep perl`;
 } else {
+	my @list = split()
+	print 
 	
 }
 print $ret;
