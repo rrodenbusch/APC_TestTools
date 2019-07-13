@@ -24,9 +24,6 @@ if ( (scalar @pidList > 0) && defined($ARGV[0]) && ($ARGV[0] eq 'kill')) {
 	`$cmd`;	
 	$ret = `ps -elf |grep perl`;
 } else {
-	my @list = split()
-	print 
-	
 }
 print $ret;
 
