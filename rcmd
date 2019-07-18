@@ -2,5 +2,6 @@
 IP="192.168.0.$1"
 RCMD="$2"
 [ "$2" == "gitAll" ] && export RCMD="/home/pi/APC_TestTools/gitAll"
+[ "$2" == "getvpn" ] && export RCMD="/home/pi/APC_TestTools/getvpn"
 echo "$RCMD at $IP"
 ssh pi@"$IP" "$RCMD"

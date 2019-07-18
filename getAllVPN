@@ -1,0 +1,6 @@
+#!/bin/bash
+rcmd 211 getvpn
+rcmd 212 getvpn
+rcmd 221 getvpn
+rcmd 222 getvpn
+rcmd 231 getvpn
