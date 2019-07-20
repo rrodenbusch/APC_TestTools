@@ -1,0 +1,14 @@
+#!/bin/bash
+curCmd=diff
+if [ $# -eq 1 ];
+then
+curCmd=$1
+fi
+if [ $curCmd == 'diff' ];
+then
+   diff $HOME/RPi/config.org $HOME/RPi/config.ini
+fi
+if [ $curCmd == 'update' ];
+then
+   $HOME/APC_TestTools/iniUpdate
+fi
