@@ -1,6 +1,6 @@
 if [ -d /data/NVR/Working ]; 
 then
-   find /data/NVR/Working/*.mp4 -type f -mmin 5
+   find /data/NVR/Working/*.mp4 -type f -mmin -5
 else 
    echo '/data/NVR/Working not mounted'
 fi
