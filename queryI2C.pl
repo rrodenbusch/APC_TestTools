@@ -192,7 +192,7 @@ foreach $curAddy (@MPUs) {
          my ($AcX,$AcY,$AcZ) = $device->readAccelG();
          my ($tmp,$tmpC,$tmpF) = $device->readTemp();
          my $totG = sqrt($AcX*$AcX + $AcY*$AcY + $AcZ*$AcZ);
-         my $line= sprintf( "MPU Data::G: %4.2f Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $toG,$AcX,$AcY,$AcZ,$tmpF);
+         my $line= sprintf( "MPU Data::G: %4.2f Ax: %4.2f Ay: %4.2f Az: %4.2f TempF %4.2f\n", $totG,$AcX,$AcY,$AcZ,$tmpF);
          print $line;
       } else {
          print "Error attaching to $curAddy\n";
