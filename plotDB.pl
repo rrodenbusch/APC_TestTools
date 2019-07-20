@@ -11,8 +11,9 @@ if ($#mykeys == -1 ) {
 	$options{a} = 1;
 	$options{m} = 1;
 }
-
-my $cmd = 'ssh pi@192.168.0.221 "cd /home/pi/I2C/i2cdata/dB;/home/pi/APC_TestTools/tailCSV.sh"';
+my $ip = '221';
+$ip = $ARGV[0] if (defined($ARGV[0]));
+my $cmd = 'ssh pi@192.168.0.$ip "cd /home/pi/I2C/i2cdata/dB;/home/pi/APC_TestTools/tailCSV.sh"';
 open(my $fh, "$cmd |");
 my $cnt = 0;
 

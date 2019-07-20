@@ -7,6 +7,7 @@ use lib "$ENV{HOME}/APC_TestTools";
 ##########################################
 use strict;
 use warnings;
+use Time::HiRes;
 use RPi::I2C;
 
 sub readI2Cbyte {
