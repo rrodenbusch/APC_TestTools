@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home/pi/updates/RPi
+git pull origin master
+cp -p /home/pi/updates/RPi/* /home/pi/RPi
+cd /home/pi/RPi
