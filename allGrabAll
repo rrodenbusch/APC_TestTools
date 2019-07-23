@@ -1,0 +1,7 @@
+#!/bin/bash
+rcmd 211 grabRPi
+rcmd 212 grabRPi
+rcmd 221 grabRPi
+rcmd 222 grabRPi
+rcmd 231 grabRPi
+
