@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/home/pi/RPi/WatchDog.pl >>/home/pi/RPi/WatchDog.log 2>&1 &
+
