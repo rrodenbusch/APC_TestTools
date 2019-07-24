@@ -1,0 +1,3 @@
+#!/bin/bash
+xxd /sys/class/i2c-adapter/i2c-1/of_node/clock-frequency
+
