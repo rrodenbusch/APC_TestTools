@@ -58,6 +58,7 @@ sub getI2CdataWord {
 
 sub readRawGyro {
 	my $self = shift;
+	my $device = $self->{MPU};
 	
 	my $GyX= $self->getI2CdataWord(0x43);		# 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
   	my $GyY= $self->getI2CdataWord(0x45);		# 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
@@ -80,10 +81,17 @@ sub readRawTemp {
 }
 sub readAccelRaw {
 	my $self = shift;
+	my $device = $self->{MPU};
 	
-  	my $AcX= $self->getI2CdataWord(0x3B); 	# 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  	my $AcY= $self->getI2CdataWord(0x3D); 	# 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  	my $AcZ= $self->getI2CdataWord(0x3F);	# 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  	my $tmp = $device->read_word(0x3B); 	# 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+  	$tmp = $device->read_word(0x3B) if ($tmp == 0xFFFF); 	# 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+  	my $AcX = (($tmp >> 8) & 0xFF) | (($tmp << 8) & 0xFF00);
+  	$tmp= $device->read_word(0x3D); 	# 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  	$tmp= $device->read_word(0x3D) if ($tmp == 0xFFFF); 	# 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  	my $AcY = (($tmp >> 8 & 0xFF) | ($tmp << 8) & 0xFF00);
+  	$tmp= $device->read_word(0x3F);	# 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  	$tmp= $device->read_word(0x3F) if ($tmp == 0xFFFF);	# 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  	my $AcZ = (($tmp >> 8 & 0xFF) | ($tmp << 8) & 0xFF00);
 	return($AcX,$AcY,$AcZ);
 }
 sub readAccelG {
