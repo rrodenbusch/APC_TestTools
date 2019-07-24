@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "VPN Query"
-/sbin/ifconfig |grep "10.50\|ether\|192."
+/$HOME/APC_TestTools/getvpn.pl
