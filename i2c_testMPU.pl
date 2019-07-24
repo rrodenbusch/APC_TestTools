@@ -45,7 +45,10 @@ my $maxG = 2;
 $maxG = $ARGV[0] if (defined($ARGV[0]));
 my $cal = 1.0;
 $cal = $ARGV[1] if (defined($ARGV[1]));
-$device->wakeMPU(2);
+my $maxG=`grep maxG /home/pi/RPi/config.ini`;
+my @fields=split('=',$maxG) if (defined($maxG));
+$maxG=$fields[1] if ($fields[0] eq 'maxG');
+$device->wakeMPU($maxG);
 
 while (1) {
 	my ($epoch,$msec) = Time::HiRes::gettimeofday();
