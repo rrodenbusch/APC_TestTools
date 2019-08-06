@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use lib "$ENV{HOME}/RPi";
+use Time::HiRes qw(time sleep usleep);
 
 use RPi::I2C;
 
@@ -57,10 +58,15 @@ sub getI2CdataByte {
 sub getI2CdataWord {
 	my ($device,$cmd,$timeout) = @_;
 	my @bytes;
-	$timeout = 1000 if !defined($timeout);  # default time is 1 second
-	@bytes = readI2Cword($device,$cmd,$timeout);
-	my $retVal = (($bytes[0] & 0xFF) << 8) | ($bytes[1] & 0xFF);
-	return($retVal);
+	my $retries = 50;
+	my $word1 = $device->read_word($cmd);
+	while (($word1 == -1) && ($retries > 0) ) {
+		usleep(50);
+		$retries--;
+		$word1 = $device->read_word($cmd);
+	}
+	$word1 = (($word1 & 0xFF00)>>8) |(($word1 & 0x00FF) << 8) unless ($word1 == -1);
+	return($word1,(50-$retries));
 }
 
 sub attach {
@@ -112,10 +118,9 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'readword')) {
 	if ($device = attach($addy)) {
-		my $word1 = getI2CdataWord($device,$register);
-		#my $byte1 = $device->read_word($register);
-		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
-				$word1 & 0xFFFF, $word1 & 0xFFFF );
+		my ($word1,$retries) = getI2CdataWord($device,$register);
+		my $str = sprintf("%04X %06d %16b @%02d" ,$word1 & 0xFFFF,
+				$word1 & 0xFFFF, $word1 & 0xFFFF, $retries );
 		print "Word $word1 :: $str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
