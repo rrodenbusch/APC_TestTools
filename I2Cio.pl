@@ -124,6 +124,26 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		print "Word $word1 :: $str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}
+} elsif (defined($cmd) && ($cmd eq 'readwordchk')) {
+	if ($device = attach($addy)) {
+		my $cnt = 0;
+		my ($word1,$retries1) = getI2CdataWord($device,$register);
+		my ($word2,$retries2) = getI2CdataWord($device,$register+1);
+		my $totTries = $retries1 + $retries2;
+		while (~$word1 != $word2) {
+			$cnt++;
+			my $str2 = sprintf("Chksum Error $cnt %04X %04X\n",$word1,$word2);
+			usleep(50);
+			($word1,$retries1) = getI2CdataWord($device,$register);
+			($word2,$retries2) = getI2CdataWord($device,$register+1);
+			$totTries += $retries1 + $retries2;
+		}
+		my $str = sprintf("%04X %06d %16b @%02d" ,$word1 & 0xFFFF,
+				$word1 & 0xFFFF, $word1 & 0xFFFF, $totTries );
+		print "Word $word1 :: $str\n";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 }	elsif (defined($cmd) && ($cmd eq 'readblock')) {
 	if ($device = attach($addy)) {
