@@ -33,8 +33,8 @@ while ($line = <$fh>) {
 #	print $line;
 	$line =~ s/\R//g;
 	my @fields = split(',',$line);
-	my ($epoch,$msec,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF) = @fields;
-	if ($#fields == 7) {
+	my ($epoch,$msec,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF,$totG) = @fields;
+	if ($#fields == 8) {
  		my $x = 1000*($epoch - $startTime) + int($msec/1000);
 		my $line = "$x";
 		$line .= " $AcX" if (defined($options{X}));
@@ -44,7 +44,8 @@ while ($line = <$fh>) {
 			my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
 			$line .= " $totG"
 		}
-		print "$line\n"; 
+                warn "Bad line\t$line\n" if ($tmp == 65535);
+		print "$line\n" if ($tmp != 65535); 
 	} else {
 		warn "Bad line\t$line\n";
 	}
