@@ -36,13 +36,37 @@ if (my $device = attach(0x57)) {
 	print "Unable to read FBD UID\n";
 }
          
+## 1 Wire master
+if ($device = attach(0x1b)) {
+   print "Found $DeviceNames->{$curAddy}\n";
+} else {
+    print "Error attaching to 1Wire\n";
+}
+
+## A2D
+if ($device = attach(0x48)) {
+   print "Found $DeviceNames->{$curAddy}\n";
+} else {
+    print "Error attaching to 1Wire\n";
+}
+
+## GPIOs
+foreach $curAddy (0x26, 0x27) {
+   print "\nChecking $DeviceNames->{$curAddy}\n";
+   if ($device = attach($curAddy)) {
+      	my $byte1 = $device->get_byte(0x00);
+     	my $byte2 = $device->get_byte(0x09);
+		my $byte3 = $device->get_byte(0x0A); 
+    	my $line= sprintf( "GPIO: IODIR: %08b OLAT: %08b GPIO: %08b\n",$byte1,$byte3,$byte2);
+  		print $line;
+  } else {
+     print "Error attaching to $curAddy\n";
+  }
+}       
          
 if (my $device = attach(0x0f)) {
-    	my $byte1 = $device->read_byte(0x00);
-	my $line= sprintf( "FBD ARD Version: %02X\n",$byte1);
- 	print $line;
 	my $numDevs = $device->read_byte(0x04);
-	$line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
+	my $line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
 	print $line;
 	my $devNum = 0;
 	while ($numDevs > 0) {
