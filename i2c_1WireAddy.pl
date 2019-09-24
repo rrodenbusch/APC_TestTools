@@ -12,7 +12,9 @@ use lib "$ENV{HOME}/APC_TestTools";
 use warnings;
 use strict;
 use RPi::I2C;
-
+my $DeviceNames = { 0x0f => "FBD_Ard",
+     0x1b => "FBD_1Wire", 0x26 => "FBD_Sns",
+     0x27 => "FBD_DIO", 0x48=>"FBD_A2D"};
 sub attach {
 	my $addy = shift;
 	my ($device,$retval);
@@ -37,26 +39,26 @@ if (my $device = attach(0x57)) {
 }
          
 ## 1 Wire master
-if ($device = attach(0x1b)) {
-   print "Found $DeviceNames->{$curAddy}\n";
+if (my $device = attach(0x1b)) {
+   print "Found $DeviceNames->{0x1b}\n";
 } else {
     print "Error attaching to 1Wire\n";
 }
 
 ## A2D
-if ($device = attach(0x48)) {
-   print "Found $DeviceNames->{$curAddy}\n";
+if (my $device = attach(0x48)) {
+   print "Found $DeviceNames->{0x48}\n";
 } else {
     print "Error attaching to 1Wire\n";
 }
 
 ## GPIOs
-foreach $curAddy (0x26, 0x27) {
+foreach my $curAddy (0x26, 0x27) {
    print "\nChecking $DeviceNames->{$curAddy}\n";
-   if ($device = attach($curAddy)) {
-      	my $byte1 = $device->get_byte(0x00);
-     	my $byte2 = $device->get_byte(0x09);
-		my $byte3 = $device->get_byte(0x0A); 
+   if (my $device = attach($curAddy)) {
+      	my $byte1 = $device->read_byte(0x00);
+     	my $byte2 = $device->read_byte(0x09);
+		my $byte3 = $device->read_byte(0x0A); 
     	my $line= sprintf( "GPIO: IODIR: %08b OLAT: %08b GPIO: %08b\n",$byte1,$byte3,$byte2);
   		print $line;
   } else {
