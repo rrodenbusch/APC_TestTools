@@ -9,9 +9,10 @@ rm ./MPU/*
 rm ./temp/*
 rm ./voltage/*
 /home/pi/APC_TestTools/startPi
-sleep 5
+/home/pi/APC_TestTools/queryI2C.pl
+sleep 4
 ########################
-
+/home/pi/APC_TestTools/i2c_1WireAddy.pl
 echo check Doors  Enter to Continue
 read testVar
 /home/pi/APC_TestTools/rtailCSV 221 door

@@ -26,19 +26,23 @@ sub attach {
 if (my $device = attach(0x57)) {
 	# get FBD UID
     my $byte1 = $device->read_byte(0xFC);
-    my $byte1 = $device->read_byte(0xFD);
-    my $byte1 = $device->read_byte(0xFE);
-    my $byte1 = $device->read_byte(0xFF);
+    my $byte2 = $device->read_byte(0xFD);
+    my $byte3 = $device->read_byte(0xFE);
+    my $byte4 = $device->read_byte(0xFF);
 	my $line= sprintf( "FBD UID: %02X %02X %02X %02X\n",$byte1,$byte2,$byte3,$byte4);
 	print $line;
+
 } else {
 	print "Unable to read FBD UID\n";
 }
          
          
 if (my $device = attach(0x0f)) {
+    	my $byte1 = $device->read_byte(0x00);
+	my $line= sprintf( "FBD ARD Version: %02X\n",$byte1);
+ 	print $line;
 	my $numDevs = $device->read_byte(0x04);
-	my $line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
+	$line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
 	print $line;
 	my $devNum = 0;
 	while ($numDevs > 0) {
