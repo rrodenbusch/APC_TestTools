@@ -8,3 +8,5 @@ sudo systemctl stop fbd-mpu
 sudo systemctl disable fbd-doortemp
 sudo systemctl disable fbd-mpu
 sudo systemctl disable fbd-sound
+sudo rm /etc/systemd/system/fbd-*
+
