@@ -24,7 +24,7 @@ sub attach {
 }
 
 if (my $device = attach(0x0f)) {
-	my $numDevs = $device->read_byte(0x0F,0x04);
+	my $numDevs = $device->read_byte(0x04);
 	my $line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
 	print $line;
 	my $devNum = 0;
@@ -33,9 +33,10 @@ if (my $device = attach(0x0f)) {
 		sleep(2);
 		my @Address;
 		for (my $i = 0; $i < 8; $i++ ) {
-			$Address[$i] = $device->read_byte(0x0F,0xA1+$devNum);
+                   my $reg = 0xA1 + $i;
+		   $Address[$i] = $device->read_byte($reg);
 		}
-		$line = sprintf( "Device $02d : %02X %02X %02X %02X %02X %02X %02X %02X",
+		$line = sprintf( "Device %02d : %02X %02X %02X %02X %02X %02X %02X %02X\n",
 			$devNum,@Address);
 		print $line;
 		$devNum++;
