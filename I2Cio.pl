@@ -115,7 +115,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
 		sleep(1);
 		my $word1;
-		while ( ($word1 = $device->read_word($register) == -1) {
+		while ( ($word1 = $device->read_word($register)) == -1) {
 			"Read Error\n";
 			sleep(1);	
 		}
