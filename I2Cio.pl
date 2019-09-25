@@ -162,6 +162,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
 	$data = $data + 0;
 	if ($device = attach($addy)) {
+		sleep(1);
 		#my $byte1 = $device->read_byte($register);
 		my $ret = -1;
 		while ($ret == -1) {
@@ -204,7 +205,9 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 } elsif (defined($cmd) && ($cmd eq 'writeword0') ) {
+	
 	if ($device = attach($addy)) {
+		sleep(1);
 #		my $byte1 = $device->read_word($register);
         while ($device->write_word($data & 0xFFFF, $register) == -1) {
     		print "Send Error\n";    	
