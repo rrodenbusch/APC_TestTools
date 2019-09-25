@@ -202,11 +202,10 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 } elsif (defined($cmd) && ($cmd eq 'writeword0') ) {
-	print "Data = hex($data)\n";
 	if ($device = attach($addy)) {
 		sleep(1);
 #		my $byte1 = $device->read_word($register);
-        while ($device->write_word(hex($data), $register) == -1) {
+        while ($device->write_word($data, $register) == -1) {
     		print "Write Error\n";    	
             sleep(1);
         }
