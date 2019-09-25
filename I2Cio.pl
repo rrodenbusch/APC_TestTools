@@ -176,6 +176,16 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
+} elsif (defined($cmd) && ($cmd eq 'write0') ) {
+	if ($device = attach($addy)) {
+		sleep(1);
+		while ($device->write_byte($data, $register) == -1) {
+    		print "Write Error\n";    	
+            sleep(1);
+        }
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}
 } elsif (defined($cmd) && ($cmd eq 'writeword') ) {
 	if ($device = attach($addy)) {
 		sleep(1);
