@@ -5,7 +5,7 @@ use warnings;
 use lib "$ENV{HOME}/RPi";
 use Time::HiRes qw(time sleep usleep);
 
-use RPi::I2C;
+use RPi::I2C qw(attach check_device);
 
 sub readI2Cbyte {
 	my ($device,$timeout) = @_;
