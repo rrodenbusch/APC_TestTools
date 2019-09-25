@@ -160,28 +160,15 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
-	$data = $data + 0;
 	if ($device = attach($addy)) {
 		while (!$device->check_device($addy)) {
 			print "Wait\n";
 			usleep(2000);
 		}
-		sleep(1);
-		#my $byte1 = $device->read_byte($register);
-		my $ret = -1;
-		while ($ret == -1) {
-			print "Try ";
-			$ret = $device->write_byte($data, $register);
-			if ($ret == 0)
-			{
-				print "\n";	
-			} else {
-				sleep(1);	
-			}
+		while ($device->write_byte($data, $register) == -1) {
+			print "Write Error ";
+			usleep(2000);
 		}
-#		my $byte2 = $device->read_byte($register);
-#                my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
-#                print "$str";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}
