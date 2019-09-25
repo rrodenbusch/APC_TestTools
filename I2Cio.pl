@@ -100,8 +100,12 @@ $data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-		my $byte1 = $device->read_byte($register);
-		$str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
+		$byte1 = -1;
+		while ($byte1 == -1) {
+			$byte1 = $device->read_byte($register);
+			sleep(1) if ($byte1 == -1);
+		}
+		my $str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
 		print "0x$str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
