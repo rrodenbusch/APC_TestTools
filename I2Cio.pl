@@ -100,7 +100,7 @@ $data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-		$byte1 = -1;
+		my $byte1 = -1;
 		while ($byte1 == -1) {
 			$byte1 = $device->read_byte($register);
 			sleep(1) if ($byte1 == -1);
