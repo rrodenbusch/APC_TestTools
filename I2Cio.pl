@@ -171,6 +171,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}
 } elsif (defined($cmd) && ($cmd eq 'write') ) {
+	$data += 0;
 	if ($device = attach($addy)) {
 		my $byte1 = $device->read_byte($register);
 		$device->write_byte($data & 0xFF, $register);
