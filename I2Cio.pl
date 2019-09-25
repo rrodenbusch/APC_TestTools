@@ -116,7 +116,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		sleep(1);
 		my $word1;
 		while ( ($word1 = $device->read_word($register)) == -1) {
-			"Read Error\n";
+			print "Read Error\n";
 			sleep(1);	
 		}
 		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
