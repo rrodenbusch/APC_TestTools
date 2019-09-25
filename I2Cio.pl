@@ -166,7 +166,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 			usleep(2000);
 		}
 		while ($device->write_byte($data, $register) == -1) {
-			print "Write Error ";
+			print "Write Error\n";
 			usleep(2000);
 		}
 	} else {
