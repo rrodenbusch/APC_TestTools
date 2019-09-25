@@ -205,12 +205,15 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'writeword0') ) {
 	if ($device = attach($addy)) {
-		my $byte1 = $device->read_word($register);
-		$device->write_word($data & 0xFFFF, $register);
-                sleep(1);
-		my $byte2 = $device->read_word($register);
-                my $str = sprintf("Register %04X was %04X is %04X\n",$register,$byte1,$byte2);
-                print "$str";
+#		my $byte1 = $device->read_word($register);
+        while ($device->write_word($data & 0xFFFF, $register) == -1) {
+    		print "Send Error\n";    	
+            sleep(1);
+        }
+#	
+#		my $byte2 = $device->read_word($register);
+#                my $str = sprintf("Register %04X was %04X is %04X\n",$register,$byte1,$byte2);
+#                print "$str";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
