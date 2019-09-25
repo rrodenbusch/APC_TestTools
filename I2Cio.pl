@@ -161,6 +161,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
 	if ($device = attach($addy)) {
+		sleep(1);
 #		while (!$device->check_device($addy)) {
 #			print "Wait\n";
 #			usleep(2000);
