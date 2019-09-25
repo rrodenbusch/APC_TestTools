@@ -165,9 +165,9 @@ if (defined($cmd) && ($cmd eq 'read')) {
 			print "Wait\n";
 			usleep(2000);
 		}
-		while ($device->write_byte($data, $register) == -1) {
+		while ( $device->write_byte($data, $register) == -1 ) {
 			print "Write Error\n";
-			usleep(2000);
+			usleep(200000);
 		}
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
