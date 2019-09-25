@@ -49,7 +49,7 @@ if (my $device = attach(0x1b)) {
 if (my $device = attach(0x48)) {
    print "Found $DeviceNames->{0x48}\n";
 } else {
-    print "Error attaching to 1Wire\n";
+    print "Error attaching to A2D\n";
 }
 
 ## GPIOs
