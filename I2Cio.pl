@@ -160,6 +160,8 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
+	$data += 0;
+	print "$data\n";
 	my $str = sprintf(" %04X\n",$data);
 	print $str;
 	if ($device = attach($addy)) {
