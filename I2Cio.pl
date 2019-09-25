@@ -100,18 +100,18 @@ $register = hex $register if (defined($register));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-		my $byte1 = -1;
-		while ($byte1 == -1) {
-			print "Try\n";
-			$byte1 = $device->read_byte($register);
-			sleep(3) if ($byte1 == -1);
+		sleep(1);
+		my $byte1;
+		while ( ($byte1 = $device->read_byte($register)) == -1) {
+			print "Read Error\n";
+			sleep(1);
 		}
 		my $str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
 		print "0x$str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-} elsif (defined($cmd) && ($cmd eq 'readword0')) {
+} elsif (defined($cmd) && ($cmd eq 'readword')) {
 	if ($device = attach($addy)) {
 		my $word1 = $device->read_word($register);
 		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
@@ -159,33 +159,24 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-} elsif (defined($cmd) && ($cmd eq 'write0') ) {
-	$data += 0;
-	print "$data\n";
-	my $str = sprintf(" %04X\n",$data);
-	print $str;
+}  elsif (defined($cmd) && ($cmd eq 'write') ) {
 	if ($device = attach($addy)) {
 		sleep(1);
-#		while (!$device->check_device($addy)) {
-#			print "Wait\n";
-#			usleep(2000);
-#		}
-		while ( $device->write_byte($data, $register) == -1 ) {
-			print "Write Error\n";
+		my ($byte1,$byte2);
+		while ( ($byte1 = $device->read_byte($register)) == -1) {
+			print "Read Error\n ";
+			sleep(1);
+		};
+		while ($device->write_byte($data, $register) == -1) {
+    		print "Write Error\n";    	
+            sleep(1);
+        }
+		while ( ($byte2 = $device->read_byte($register)) == -1) {
+			print "Read Error2\n ";
 			sleep(1);
 		}
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}
-} elsif (defined($cmd) && ($cmd eq 'write') ) {
-	$data += 0;
-	if ($device = attach($addy)) {
-		my $byte1 = $device->read_byte($register);
-		$device->write_byte($data & 0xFF, $register);
-                sleep(1);
-		my $byte2 = $device->read_byte($register);
-                my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
-                print "$str";
+        my $str = sprintf("Register %02X was %02X is %02x\n",$register,$byte1,$byte2);
+        print "$str";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
@@ -198,21 +189,6 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		my $byte2 = $device->read_word($register);
                 my $str = sprintf("Register %04X was %04X is %04X\n",$register,$byte1,$byte2);
                 print "$str";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} elsif (defined($cmd) && ($cmd eq 'writeword0') ) {
-	if ($device = attach($addy)) {
-		sleep(1);
-#		my $byte1 = $device->read_word($register);
-        while ($device->write_word($data, $register) == -1) {
-    		print "Write Error\n";    	
-            sleep(1);
-        }
-#	
-#		my $byte2 = $device->read_word($register);
-#                my $str = sprintf("Register %04X was %04X is %04X\n",$register,$byte1,$byte2);
-#                print "$str";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
