@@ -110,6 +110,15 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
+} elsif (defined($cmd) && ($cmd eq 'readword0')) {
+	if ($device = attach($addy)) {
+		my ($word1,$retries) = $device->read_word($register);
+		my $str = sprintf("%04X %06d %16b @%02d" ,$word1 & 0xFFFF,
+				$word1 & 0xFFFF, $word1 & 0xFFFF, $retries );
+		print "Word $word1 :: $str\n";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}
 } elsif (defined($cmd) && ($cmd eq 'readword')) {
 	if ($device = attach($addy)) {
 		my ($word1,$retries) = getI2CdataWord($device,$register);
