@@ -161,10 +161,10 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
 	if ($device = attach($addy)) {
-		while (!$device->check_device($addy)) {
-			print "Wait\n";
-			usleep(2000);
-		}
+#		while (!$device->check_device($addy)) {
+#			print "Wait\n";
+#			usleep(2000);
+#		}
 		while ( $device->write_byte($data, $register) == -1 ) {
 			print "Write Error\n";
 			usleep(2000000);
