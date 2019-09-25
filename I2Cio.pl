@@ -161,6 +161,10 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
 	$data = $data + 0;
+	while (!check_device($addy)) {
+		print "Wait\n";
+		usleep(2000);
+	}
 	if ($device = attach($addy)) {
 		sleep(1);
 		#my $byte1 = $device->read_byte($register);
