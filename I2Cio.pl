@@ -165,7 +165,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		#my $byte1 = $device->read_byte($register);
 		my $ret = -1;
 		while ($ret == -1) {
-			print "Try";
+			print "Try ";
 			$ret = $device->write_byte($data, $register);
 			if ($ret == 0)
 			{
