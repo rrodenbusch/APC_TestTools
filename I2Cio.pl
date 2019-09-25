@@ -104,7 +104,7 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		while ($byte1 == -1) {
 			print "Try\n";
 			$byte1 = $device->read_byte($register);
-			sleep(1) if ($byte1 == -1);
+			sleep(3) if ($byte1 == -1);
 		}
 		my $str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
 		print "0x$str\n";
