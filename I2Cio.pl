@@ -5,7 +5,7 @@ use warnings;
 use lib "$ENV{HOME}/RPi";
 use Time::HiRes qw(time sleep usleep);
 
-use RPi::I2C qw(attach check_device);
+use RPi::I2C;
 
 sub readI2Cbyte {
 	my ($device,$timeout) = @_;
@@ -161,11 +161,11 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
 	$data = $data + 0;
-	while (!check_device($addy)) {
-		print "Wait\n";
-		usleep(2000);
-	}
 	if ($device = attach($addy)) {
+		while ($device->check_device($addy)) {
+			print "Wait\n";
+			usleep(2000);
+		}
 		sleep(1);
 		#my $byte1 = $device->read_byte($register);
 		my $ret = -1;
