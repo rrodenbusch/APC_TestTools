@@ -96,7 +96,7 @@ my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 my ($cmd,$addy,$register,$data) = @ARGV;
 $addy = hex $addy if (defined($addy));
 $register = hex $register if (defined($register));
-$data = hex $data if (defined($data));
+#$data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
