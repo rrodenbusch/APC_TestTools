@@ -100,18 +100,8 @@ $data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) {
-#		my ($byte1,$cnt) = getI2CdataByte($device,$register);
 		my $byte1 = $device->read_byte($register);
-		my $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                $data--;
-                while ($data > 0) {
-                   $register++;
-		   $byte1 = $device->read_byte($register);
-		   $str = sprintf("%02X %03d %08b" ,$byte1 & 0xFF,
-				$byte1 & 0xFF, $byte1 & 0xFF );
-                   $data --;
-                }
+		$str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
 		print "0x$str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
