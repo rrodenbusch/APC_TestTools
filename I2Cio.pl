@@ -155,14 +155,24 @@ if (defined($cmd) && ($cmd eq 'read')) {
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
-}
-elsif (defined($cmd) && ($cmd eq 'write') ) {
+} elsif (defined($cmd) && ($cmd eq 'write') ) {
 	if ($device = attach($addy)) {
 		my $byte1 = $device->read_byte($register);
 		$device->write_byte($data & 0xFF, $register);
                 sleep(1);
 		my $byte2 = $device->read_byte($register);
                 my $str = sprintf("Register %02X was %02X is %x\n",$register,$byte1,$byte2);
+                print "$str";
+	} else {
+		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+	}	
+} elsif (defined($cmd) && ($cmd eq 'writeword') ) {
+	if ($device = attach($addy)) {
+		my $byte1 = $device->read_word($register);
+		$device->write_word($data & 0xFFFF, $register);
+                sleep(1);
+		my $byte2 = $device->read_word($register);
+                my $str = sprintf("Register %04X was %04X is %x\n",$register,$byte1,$byte2);
                 print "$str";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
