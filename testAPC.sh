@@ -37,7 +37,20 @@ gpio -g write 12 1
 sleep 3
 gpio -g write 12 0
 gpio -g mode 12 in
+gpio -g mode 19 out
+gpio -g write 19 0
+gpio -g mode 23 out
+gpio -g write 23 1
+echo "NVN & Cams off, swap out LED for real NVN"
+read var
+gpio -g mode 19 in
+gpio -g write 18 0
+gpio -g mode 18 in
+gpio -g write 23 0
+gpio -g mode 23 in
+echo "NVN  & Cams on, let NVN boot"
 echo "Enter to continue to testFBD"
+read var
 /home/pi/APC_TestTools/testFBD.sh
 
 
