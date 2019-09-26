@@ -99,14 +99,14 @@ $register = hex $register if (defined($register));
 $data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
-	if ($device = attach($addy)) {
+	if ($device = attach($addy)) {              
 		sleep(1);
 		my $byte1;
 		while ( ($byte1 = $device->read_byte($register)) == -1) {
 			print "Read Error\n";
 			sleep(1);
 		}
-		my $str = sprintf("%02X %02X %02X %08b" ,$addy,$register,$byte1,$byte1);
+		my $str = sprintf("%02X %02X %03d %02X %08b" ,$addy,$register,$byte1,$byte1,$byte1);
 		print "0x$str\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
