@@ -32,6 +32,8 @@ gpio -g mode 26 out
 gpio -g write 26 0
 echo "NUC  off: Enter to continue (TNET will bounce)"
 read var
+gpio -g mode 16 in
+gpio -g mode 26 in
 gpio -g mode 12 out
 gpio -g write 12 1
 sleep 3
