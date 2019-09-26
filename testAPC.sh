@@ -14,6 +14,7 @@ gpio -g mode 23 out
 gpio -g write 18 1
 gpio -g write 23 1
 echo "Cams & Sensors off: Enter to continue"
+read var
 gpio -g write 23 0
 gpio -g write  18 0
 gpio -g mode 23 in 
