@@ -19,8 +19,6 @@ gpio -g write 23 0
 gpio -g write  18 0
 gpio -g mode 23 in 
 gpio -g mode 18 in
-echo "Enter to continue"
-read var
 gpio -g mode 19 out
 gpio -g write 19 0
 echo "NVN off: Enter to continue"
