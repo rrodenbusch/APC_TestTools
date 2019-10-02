@@ -1,5 +1,6 @@
 #!/bin/bash
 /home/pi/APC_TestTools/stopRPi.pl kill
+sleep 2
 cd /home/pi/I2C/i2cdata
 rm ./door/*
 rm ./dB/*
@@ -8,14 +9,17 @@ rm ./i2c/*
 rm ./MPU/*
 rm ./temp/*
 rm ./voltage/*
-/home/pi/APC_TestTools/startPi
+/home/pi/RPi/i2c_apc_v6.pl >/home/pi/testFBD.log 2>&1 &
+sleep 4
+gpio -g mode 19 in
+gpio -g write 19 1
+gpio -g mode 19 out
 gpio -g mode 18 out
 gpio -g write 18 0
 gpio -g mode 18 in
 gpio -g mode 23 out
 gpio -g write 23 0
 gpio -g mode 23 in
-gpio -g mode 19 in
 sleep 4
 echo Connect NVN to APC
 echo Enter to Continue 
