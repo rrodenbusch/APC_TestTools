@@ -16,10 +16,11 @@ gpio -g mode 23 out
 gpio -g write 23 0
 gpio -g mode 23 in
 sleep 4
+echo Connect NVN to APC
 echo Enter to Continue 
 read testVar
-/home/pi/APC_TestTools/i2c_testMPU.pl
-echo Enter to Continu
+#/home/pi/APC_TestTools/i2c_testMPU.pl
+#echo Enter to Continue
 read testVar
 /home/pi/APC_TestTools/queryI2C.pl
 ########################
