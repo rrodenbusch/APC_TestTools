@@ -15,6 +15,7 @@ gpio -g mode 18 in
 gpio -g mode 23 out
 gpio -g write 23 0
 gpio -g mode 23 in
+gpio -g mode 19 in
 sleep 4
 echo Connect NVN to APC
 echo Enter to Continue 
