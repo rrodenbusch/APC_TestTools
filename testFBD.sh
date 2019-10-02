@@ -20,9 +20,6 @@ sleep 4
 echo Connect NVN to APC
 echo Enter to Continue 
 read testVar
-#/home/pi/APC_TestTools/i2c_testMPU.pl
-#echo Enter to Continue
-read testVar
 /home/pi/APC_TestTools/queryI2C.pl
 ########################
 /home/pi/APC_TestTools/i2c_1WireAddy.pl
