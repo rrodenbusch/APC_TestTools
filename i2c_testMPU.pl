@@ -9,61 +9,54 @@
 #				Added ability to get mac address for reporting
 #
 #################################################
-use lib "$ENV{HOME}/APC_TestTools";
+use lib "$ENV{HOME}/RPi";
 use warnings;
 use strict;
 use Time::HiRes;
+use RPiConfig;
 use MPU6050;
+
+sub processSignals{
+	my $config = shift;
+	if ( $config->getSig('HUP')) {
+ 		$config->resetSig('HUP');
+ 		print("testMPU, HUP received");
+ 	}	
+ 	if ( $config->getSig('USR1')) {
+ 		$config->resetSig('USR1');
+ 		print("testMPU, USR1 received");
+ 	}
+ 	if ( $config->getSig('USR2')) {
+ 		$config->resetSig('USR2');
+ 		print("testMPU, USR2 received");
+ 	}
+}	#	processSignals
+
 
 my $deviceAddress = 0x68;
 my $device = MPU6050->new($deviceAddress);
-my (@bytes_read, $value, $bufstr);
-
-sub getMACaddress {
-	my $resp = `/sbin/ifconfig eth0 | head -1`;
-	$resp =~ s/\R//g;
-	my @fields = split(' ',$resp);
-	my $mac = $fields[4];
-	return($mac);
-}
-
-sub getRouterMACaddress {
-	my $resp = `sudo nmap -p 80 192.168.0.1 |grep MAC`;
-	$resp =~ s/\R//g;
-	my @fields = split(' ',$resp);
-	my $mac = $fields[2];
-	return($mac);
-}
-
-
-#my $myMAC = getMACaddress();
-#my $routerMAC = getRouterMACaddress();
-#my $UID = "$routerMAC::$myMAC";
-#$UID =~ s/://g;
-#print "Found MAC: $myMAC\nRouter: $routerMAC\n";
-my $maxG = 2;
-$maxG = $ARGV[0] if (defined($ARGV[0]));
-my $cal = 1.0;
-$cal = $ARGV[1] if (defined($ARGV[1]));
-$maxG=`grep maxG /home/pi/RPi/config.ini`;
-my @fields=split('=',$maxG) if (defined($maxG));
-$maxG=$fields[1] if ($fields[0] eq 'maxG');
-$device->wakeMPU($maxG);
-print "Waking MPU at maxG = $maxG\n";
-sleep(3);
-
-while (1) {
+my $config = RPiConfig->new();
+my ($xCal,$yCal,$zCal) = (1.0,1.0,1.0);
+$xCal = $config->{xCal} if defined($config->{xCal});
+$yCal = $config->{yCal} if defined($config->{yCal});
+$zCal = $config->{zCal} if defined($config->{zCal});
+$config->{maxG} = 4 unless (defined($config->{maxG}));
+$config->{I2C_sleep} = 1 unless defined($config->{I2C_sleep});
+$device->wakeMPU($config->{maxG});
+print "Waking MPU at maxG = $config->{maxG}\n";
+sleep(2);
+while( $config->getSig('ABRT') == 0) {
+	processSignals($config);
 	my ($epoch,$msec) = Time::HiRes::gettimeofday();
 	my ($AcX,$AcY,$AcZ) = $device->readAccelG();
 	my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-        $AcX *= $cal;
-        $AcY *= $cal;
-        $AcZ *= $cal;
-        my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-	my $line= join(',',($epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF));
-	print "$line\n";
-	sleep(0); 
-	#Time::HiRes::sleep(0.333);
+    $AcX *= $xCal;
+    $AcY *= $yCal;
+    $AcZ *= $zCal;
+    my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
+	my $line= sprintf("%04.3f,%8d,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f\n",$epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF);
+	print $line;
+	Time::HiRes::sleep($config->{I2C_sleep});
 }
 
 1;
