@@ -55,8 +55,9 @@ while( $config->getSig('ABRT') == 0) {
     $AcY *= $yCal;
     $AcZ *= $zCal;
     my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-	my $line= sprintf("%d,%6d,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f\n",$epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF);
-	print $line;
+	my $line= sprintf("%d,%6d,%04.3f,%04.3f,%04.3f,%04.3f,%d,%04.2f,%04.2f",$epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF);
+#	my $line= join(',',($epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF));
+	print "$line\n";
 	Time::HiRes::usleep($loopDelay);
 }
 
