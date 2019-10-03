@@ -45,6 +45,7 @@ $config->{I2C_sleep} = 1 unless defined($config->{I2C_sleep});
 $device->wakeMPU($config->{maxG});
 print "Waking MPU at maxG = $config->{maxG}\n";
 sleep(2);
+my $loopDelay = $config->{I2C_sleep} * 1000 * 1000;
 while( $config->getSig('ABRT') == 0) {
 	processSignals($config);
 	my ($epoch,$msec) = Time::HiRes::gettimeofday();
@@ -54,9 +55,9 @@ while( $config->getSig('ABRT') == 0) {
     $AcY *= $yCal;
     $AcZ *= $zCal;
     my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-	my $line= sprintf("%04.3f,%8d,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f\n",$epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF);
+	my $line= sprintf("%d,%6d,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f,%04.3f\n",$epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF);
 	print $line;
-	Time::HiRes::sleep($config->{I2C_sleep});
+	Time::HiRes::usleep($loopDelay);
 }
 
 1;
