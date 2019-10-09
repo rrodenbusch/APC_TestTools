@@ -1,5 +1,10 @@
-/home/pi/APC_TestTools/BridgeOn.pl
 #!/bin/bash
+if [ -z $1 ]; then
+   IP="221"
+else 
+   IP="211"
+fi
+/home/pi/APC_TestTools/BridgeOn.pl
 /home/pi/APC_TestTools/queryI2C.pl
 echo "run i2c_testMPU.pl and return"
 echo "Enter to continue"
@@ -51,7 +56,7 @@ gpio -g mode 23 in
 echo "NVN  & Cams on, let NVN boot"
 echo "Enter to continue to testFBD"
 read var
-/home/pi/APC_TestTools/testFBD.sh
+/home/pi/APC_TestTools/testFBD.sh  $IP
 
 
 

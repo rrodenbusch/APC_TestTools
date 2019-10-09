@@ -1,6 +1,11 @@
 #!/bin/bash
 /home/pi/APC_TestTools/stopRPi.pl kill
 sleep 2
+if [ -z $1 ]; then
+   IP="211"
+else 
+   IP=$1
+fi
 cd /home/pi/I2C/i2cdata
 rm ./door/*
 rm ./dB/*
@@ -29,11 +34,11 @@ read testVar
 /home/pi/APC_TestTools/i2c_1WireAddy.pl
 echo check Doors  Enter to Continue
 read testVar
-/home/pi/APC_TestTools/rtailCSV 221 door
+/home/pi/APC_TestTools/rtailCSV $IP door
 echo check dB  Enter to Continue
-/home/pi/APC_TestTools/rtailCSV 221 dB
+/home/pi/APC_TestTools/rtailCSV $IP dB
 echo check Temp Enter to Continue
-/home/pi/APC_TestTools/rtailCSV 221 temp
+/home/pi/APC_TestTools/rtailCSV $IP temp
 echo check cams  Enter to Continue
 /home/pi/APC_TestTools/rtailCSV 231 png
 gpio -g mode 23 out
