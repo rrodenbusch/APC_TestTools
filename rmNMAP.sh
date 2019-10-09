@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 cd /home/pi/RPi
 echo "remove xml"
 find . -name  '*.xml' | xargs sudo rm -f
