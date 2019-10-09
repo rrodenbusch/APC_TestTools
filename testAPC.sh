@@ -2,7 +2,7 @@
 if [ -z $1 ]; then
    IP="221"
 else 
-   IP="211"
+   IP=$1
 fi
 /home/pi/APC_TestTools/BridgeOn.pl
 /home/pi/APC_TestTools/queryI2C.pl

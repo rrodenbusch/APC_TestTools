@@ -2,7 +2,7 @@
 /home/pi/APC_TestTools/stopRPi.pl kill
 sleep 2
 if [ -z $1 ]; then
-   IP="211"
+   IP="221"
 else 
    IP=$1
 fi
