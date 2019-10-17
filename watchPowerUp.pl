@@ -1001,14 +1001,15 @@ while( $config->getSig('ABRT') == 0) {
 	}
 	@voltArray = ($loadVolt,$CapVolt);
 
-	my ($IO,$GPIO,$OLAT) = readGPIO($config,$0x21);
-	my ($NVNon, $NUCon) = ( (($GPIO & 0x08) > 0), (($GPIO & 0x40) > 0) );
+	my ($IO,$GPIO,$OLAT) = readGPIO($config,0x21);
+	my ($NVNon, $NUCon) = ( ($GPIO & 0x40), ($GPIO & 0x08) );
 	$NVNepoch = $epoch if ($NVNvolt == 0);
 	$NVNepoch = $epoch if ($NUCvolt == 0);
 	$NVNvolt = $CapVolt if ( ($NVNvolt == 0) && ($NVNon) );
 	$NUCvolt = $CapVolt if ( ($NUCvolt == 0) && ($NUCon) );
 
-	print ("$epoch,$CapVolt,$NVNon,$NUCon\n");	
+        my $bits = sprintf("%08b", $GPIO);
+	print ("$epoch,$CapVolt,$NVNon,$NUCon,$bits,$GPIO\n");	
 	sleep (1);
 	
 }
