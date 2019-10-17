@@ -981,7 +981,7 @@ $config->{remoteLog} = RemoteLog->new($config);
 $config->{remoteLog}->{logIP} = "$config->{subnet}.231";
 setupConfig($config);
 openFiles($config);
-my ($NUCtime,$NVNtime,$NUCvolt,$NVNvolt) = (0,0,0,0);
+my ($NUCepoch,$NVNepoch,$NUCvolt,$NVNvolt) = (0,0,0,0);
 
 while( $config->getSig('ABRT') == 0) {
 	processSignals($config);
@@ -1003,11 +1003,13 @@ while( $config->getSig('ABRT') == 0) {
 
 	my ($IO,$GPIO,$OLAT) = readGPIO($config,$0x21);
 	my ($NVNon, $NUCon) = ( (($GPIO & 0x08) > 0), (($GPIO & 0x40) > 0) );
+	$NVNepoch = $epoch if ($NVNvolt == 0);
+	$NVNepoch = $epoch if ($NUCvolt == 0);
 	$NVNvolt = $CapVolt if ( ($NVNvolt == 0) && ($NVNon) );
 	$NUCvolt = $CapVolt if ( ($NUCvolt == 0) && ($NUCon) );
 
 	print ("$epoch,$CapVolt,$NVNon,$NUCon\n");	
-	sleep (0.33);
+	sleep (1);
 	
 }
    warn "NVN on @ $NVNvolt\nNUC on @ $NUCvolt\n";
