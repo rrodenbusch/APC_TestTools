@@ -27,7 +27,8 @@ git pull origin master
 
 cp /home/mthinx/NUC/authorized_keys ~/.ssh
 
-if [ ! grep "APC_TestTools" ~/.bashrc ]; then
-   echo "\nexport $PATH=$PATH:/home/mthinx/APC_TestTools\n" >>~/.bashrc
+if  ! grep "APC_TestTools" ~/.bashrc 
+then
+   echo '\nexport path=$PATH:/home/mthinx/APC_TestTools\n' >>~/.bashrc
 fi
 
