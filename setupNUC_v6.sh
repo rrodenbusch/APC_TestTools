@@ -30,7 +30,7 @@ cp /home/mthinx/NUC/authorized_keys ~/.ssh
 if  ! grep "APC_TestTools" ~/.bashrc 
 then
    echo ' ' >>~/.bashrc
-   echo 'export path=$PATH:/home/mthinx/APC_TestTools' >>~/.bashrc
+   echo 'export PATH=$PATH:/home/mthinx/APC_TestTools' >>~/.bashrc
    echo ' ' >>~/.bashrc
 fi
 
