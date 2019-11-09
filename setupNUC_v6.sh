@@ -4,7 +4,7 @@ sudo visudo
 if [ -e /var/lib/dpkg/lock-frontend ];
 then
    sudo rm /var/lib/dpkg/lock-frontend
-if
+fi
 if [ -e /var/lib/dpkg/lock ];
 then
    sudo rm /var/lib/dpkg/lock
