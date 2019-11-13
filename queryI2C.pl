@@ -119,6 +119,7 @@ my @UIDs = (0x51,0x52,0x53,0x54,0x55,0x56,0x57);
 my @GPIOs = (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27);
 my @MPUs = (0x68,0x069);
 my @OneWires = (0x1b);
+my @A2Ds = (0x48);
 my $DeviceNames = { 0x0a => "RelayArd", 0x0f => "FBD_Ard", 0x1b => "FBD_1Wire",
             0x20 => "BrkrGPIO", 0x21 =>"RelaySns", 0x22=>"RelayCtrl", 0x23=>"GPIOx23",
             0x24 => "GPIOx24", 0x25 => "GPIOx25", 0x26=> "FBD_Sns", 0x27 => "FBD_DIO", 
@@ -211,5 +212,12 @@ foreach $curAddy (@OneWires) {
    }
 }
 
+foreach $curAddy (@A2Ds) {
+   if ($ValidI2C[$curAddy] ) {
+      if ($device = attach($curAddy)) {
+          print "Found A2D \n";
+       }
+   }
+}
 
 1;
