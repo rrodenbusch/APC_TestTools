@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo service fire stop
-sudo rm /var/fire/config/openvpn/*
+sudo rm -r /var/fire/config/openvpn/*
+sudo rmdir /var/fire/config/openvpn
 sudo rm /var/fire/config/*
 sudo systemctl stop fbd-doortemp
 sudo systemctl stop fbd-sound
