@@ -1,0 +1,3 @@
+#!/bin/bash
+nano /home/pi/RPi/config.ini
+
