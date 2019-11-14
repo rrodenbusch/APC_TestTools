@@ -11,3 +11,6 @@ sudo systemctl disable fbd-mpu
 sudo systemctl disable fbd-sound
 sudo rm /etc/systemd/system/fbd-*
 
+sudo ls -ltr /var/fire/config/openvpn
+sudo ls -ltr /var/fire/config
+
