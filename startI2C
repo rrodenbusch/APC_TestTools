@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/home/pi/RPi/I2c_apc_v6.pl >>/home/pi/Watch.log 2>&1 &
+
