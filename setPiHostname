@@ -6,13 +6,11 @@ use RPi::I2C;
 
 my $UID_addy = 0x51;
 my $UID;
+my ($byte3, $byte4) = (-1,-1);
 
 if (my $device = RPi::I2C->new($UID_addy)) {
-
-   my $byte1 = $device->read_byte(0xFC);
-   my $byte2 = $device->read_byte(0xFD);
-   my $byte3 = $device->read_byte(0xFE);
-   my $byte4 = $device->read_byte(0xFF);
+   while ( ($byte3 = $device->read_byte(0xFE)) == -1 ) {sleep 0.33;}
+   while ( ($byte4 = $device->read_byte(0xFF)) == -1 ) {sleep 0.33;}
    $UID=sprintf("%02X%02X",$byte3,$byte4);
 } else {
    die $!;
