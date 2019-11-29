@@ -15,7 +15,7 @@ if [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo " ## Clean up fire "
    sudo $HOME/APC_TestTools/cleanFire.sh
    echo " ### Updating cron "
-   if [ $end =eq 1 ]; then 
+   if [ $end -eq 1 ]; then 
       crontab $HOME/updates/PiInstall/cron1.tab
    else
       crontab $HOME/updates/PiInstall/cron2.tab
