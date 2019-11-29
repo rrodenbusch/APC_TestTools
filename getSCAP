@@ -1,9 +1,60 @@
-#!/bin/bash
-while [ 1 ];  do
-   /home/pi/APC_TestTools/I2Cio.pl read 0x0a 0x0b
-   gpio -g read 21
-   /home/pi/APC_TestTools/I2Cio.pl read 0x21 0x09
-   gpio -g read 19
-   gpio -g read 16
-   sleep 1
-done
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $minLoops = 0;
+
+$minLoops = $ARGV[0] if ( exists($ARGV[0]) && ($ARGV[0] > 0) );
+
+my $PwrBit  = 0x01;
+my $CapBit  = 0x02;
+my $PiBit   = 0x04;
+my $NUCBit  = 0x08;
+my $TNetBit = 0x10;
+my $BrdgBit = 0x20;
+my $NVNBit  = 0x40;
+my $SnsrBit = 0x80;
+
+my ($Pwr1,$Cap1,$Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr);
+($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
+
+
+while ($minLoops > 0 || !$Pwr || !$NUC || !$NVN || !$Pwr1 || !$Cap1) {
+    $minLoops-- if ($minLoops > 0);
+
+   ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
+
+   $Pwr1 = `gpio -g read 0x21`;
+   $Cap1 = `gpio -g read 0x20`;
+   my $resp = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0A 0x0B`;
+   $resp =~ s/\R//g;
+   my @fields = split(' ',$resp);
+   my $CapVolt = $fields[2] / 10;
+
+   $resp = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x21 0x09`;
+   $resp =~ s/\R//g;
+   @fields = split(' ',$resp);
+   my $Bits = $fields[2];
+
+   $Pwr  = 1 if ($Bits & $PwrBit);
+   $Cap  = 1 if ($Bits & $CapBit);
+   $Pi   = 1 if ($Bits & $PiBit);
+   $NUC  = 1 if ($Bits & $NUCBit);
+   $TNet = 1 if ($Bits & $TNetBit);
+   $Brdg = 1 if ($Bits & $BrdgBit);
+   $NVN  = 1 if ($Bits & $NVNBit);
+   $Snsr = 1 if ($Bits & $SnsrBit);
+
+
+   my $outline = "Cap %3.1f Volt Cap  %01d %01d\n" .
+                  "              Pwr  %01d %01d\n" .
+                  "              NUC  %01d NVN  %01d\n" .
+                  "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
+   my $line = sprintf($outline,$CapVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
+   print $line;
+
+}
+
+
+
+1;
