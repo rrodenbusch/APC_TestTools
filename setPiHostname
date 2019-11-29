@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use RPi::I2C;
+
+
+my $UID_addy = 0x51;
+my $UID;
+
+if (my $device = RPi::I2C->new($UID_addy)) {
+
+   my $byte1 = $device->read_byte(0xFC);
+   my $byte2 = $device->read_byte(0xFD);
+   my $byte3 = $device->read_byte(0xFE);
+   my $byte4 = $device->read_byte(0xFF);
+   $UID=uc($byte3) . uc($byte4);
+   print $UID;
+} else {
+   die $!;
+}
+
+my $Inirole = `grep myRole $ENV{HOME}/RPi/config.ini`;
+$Inirole =~ s/\R//g;
+my ($name,$role) = split('=',$Inirole);
+$role =~ s/\-//g;
+print "$Inirole   $role\n";
+
+my $mac = `cat /sys/class/net/eth0/address`;
+print "mac $mac\n";
+$mac =~ s/\R//g;
+my @parts = split('=',$mac);
+my $MID=uc($parts[4]) . uc($parts[5]);
+print "MID $MID\n";
+
+my $hostName = $role . '-' . $UID . '-' . $MID;
+
+`sudo hostnamectl set-hostname $hostName`;
+
+print "Hostname set to $hostName\n";
+
+1;
