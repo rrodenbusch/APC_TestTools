@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use RPi::I2C;
+
+
+my $UID_addy = 0x51;
+my $UID;
+my ($byte1,$byte2,$byte3, $byte4);
+
+if (my $device = RPi::I2C->new($UID_addy)) {
+   while ( ($byte1 = $device->read_byte(0xFC)) == -1 ) {sleep 0.33;}
+   while ( ($byte2 = $device->read_byte(0xFD)) == -1 ) {sleep 0.33;}
+   while ( ($byte3 = $device->read_byte(0xFE)) == -1 ) {sleep 0.33;}
+   while ( ($byte4 = $device->read_byte(0xFF)) == -1 ) {sleep 0.33;}
+   $UID=sprintf("%02X %02X %02X %02X",$byte1, $byte2, $byte3,$byte4);
+   print "$UID\n";
+} else {
+   die $!;
+}
+
+my $mac = `cat /sys/class/net/eth0/address`;
+$mac =~ s/\R//g;
+$mac = uc($mac);
+print "$mac\n";
+
+1;
