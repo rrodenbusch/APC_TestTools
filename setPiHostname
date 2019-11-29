@@ -22,19 +22,14 @@ my $Inirole = `grep myRole= $ENV{HOME}/RPi/config.ini`;
 $Inirole =~ s/\R//g;
 my ($name,$role) = split('=',$Inirole);
 $role =~ s/\-//g;
-print "$Inirole   $role\n";
 
 my $mac = `cat /sys/class/net/eth0/address`;
-print "mac $mac\n";
 $mac =~ s/\R//g;
 my @parts = split(':',$mac);
 my $MID=uc($parts[4]) . uc($parts[5]);
-print "MID $MID\n";
-
 my $hostName = $role . '-' . $UID . '-' . $MID;
 
 `sudo hostnamectl set-hostname $hostName`;
-
 print "Hostname set to $hostName\n";
 
 1;
