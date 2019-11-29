@@ -1,0 +1,37 @@
+#!/bin/bash
+if [ $# -eq 0 ]; then
+   echo "Enter end to finish [1/2]  "
+   read end
+else 
+   end=$1
+fi
+
+if [ $end -eq 1 ]  || [ $end -eq 2 ]; then
+   echo "Configured end $end"
+   sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
+   echo " # Refresh git "
+   $HOME/APC_TestTools/gitAll
+   $HOME/APC_TestTools/pushRPi.sh
+   echo " ## Clean up fire "
+   sudo $HOME/APC_TestTools/cleanFire.sh
+   echo " ### Updating cron "
+   if [ $end =eq 1 ]; then 
+      crontab $HOME/updates/PiInstall/cron1.tab
+   else
+      crontab $HOME/updates/PiInstall/cron2.tab
+   fi
+   echo ""
+   echo ""
+   echo " #### Updating cron"
+   echo ""
+   crontab -l | tail -10
+   echo ""
+   echo ""
+   echo " ##### Getting UIDs "
+   echo ""
+   $HOME/APC_TestTools/getUID
+   $HOME/APC_TestTools/setPiHostname
+   
+else
+   echo "Must enter end 1 or 2"
+fi
