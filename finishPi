@@ -13,7 +13,7 @@ if  [ $end -eq 3 ];then
    $HOME/APC_TestTools/gitAll
    $HOME/APC_TestTools/pushRPi.sh
    echo " ## Clean up fire"
-   $HOME/APC_TestTools/cleanFire.sh
+   sudo $HOME/APC_TestTools/cleanFire.sh
    echo " ### Updating cron"
    crontab $HOME/updates/PiInstall/cron2.tab
    echo " #### Setup SSD"
