@@ -8,12 +8,17 @@ fi
 
 if  [ $end -eq 3 ];then
    echo  "Configure rLog"
+   echo  " # Refresh git"
    $HOME/APC_TestTools/gitAll
    $HOME/APC_TestTools/pushRPi.sh
+   echo " ## Clean up fire"
    $HOME/APC_TestTools/cleanFire.sh
-   $HOME/APC_TestTools/queryI2C.pl
+   echo " ### Updating cron"
    crontab $HOME/updates/PiInstall/cron2.tab
+   echo " #### Setup SSD"
    $HOME/updates/PiInstall/setupSSD.sh
+   echo " ##### Gtting UIDs"
+   $HOME/APC_TestTools/queryI2C.pl
    $HOME/APC_TestTools/setPiHostname 0x55
 elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo "Configured end $end"
