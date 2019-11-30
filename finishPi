@@ -7,6 +7,7 @@ else
 fi
 
 if  [ $end -eq 3 ];then
+   $HOME/APC_TestTools/stopRPi.pl kill
    echo  "Configure rLog"
    echo  " # Refresh git"
    $HOME/APC_TestTools/gitAll
@@ -22,6 +23,7 @@ if  [ $end -eq 3 ];then
    $HOME/APC_TestTools/setPiHostname 0x55
 elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo "Configured end $end"
+   $HOME/APC_TestTools/stopRPi.pl kill
    sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
    echo " # Refresh git "
    $HOME/APC_TestTools/gitAll
