@@ -1,12 +1,18 @@
 #!/bin/bash
 if [ $# -eq 0 ]; then
-   echo "Enter end to finish [1/2]  "
+   echo "Enter end to finish [1/2/3]  "
    read end
 else 
    end=$1
 fi
 
-if [ $end -eq 1 ]  || [ $end -eq 2 ]; then
+if  [ $end -eq 3 ];then
+   echo  "Configure rLog"
+   $HOME/APC_TestTools/queryI2C.pl
+   crontab $HOME/updates/PiInstall/cron2.tab
+   $HOME/updates/PiInstall/setupSSD.sh
+   $HOME/APC_TestTools/setPiHostname 0x55
+elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo "Configured end $end"
    sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
    echo " # Refresh git "
@@ -30,8 +36,7 @@ if [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo " ##### Getting UIDs "
    echo ""
    $HOME/APC_TestTools/getUID
-   $HOME/APC_TestTools/setPiHostname
-   
+   $HOME/APC_TestTools/setPiHostname 0x51
 else
-   echo "Must enter end 1 or 2"
+   echo "Must enter end 1  2 or 3"
 fi
