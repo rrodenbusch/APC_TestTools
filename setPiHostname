@@ -4,7 +4,8 @@ use warnings;
 use RPi::I2C;
 
 
-my $UID_addy = 0x51;
+my $UID_addy = hex($ARGV[0]);
+print "ARGV $UID_addy \n";
 my $UID;
 my ($byte3, $byte4) = (-1,-1);
 
