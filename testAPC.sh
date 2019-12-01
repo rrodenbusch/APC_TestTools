@@ -9,10 +9,12 @@ fi
 echo "run i2c_testMPU.pl and return"
 echo "Enter to continue"
 read var
-/home/pi/APC_TestTools/BridgeOff.sh
+gpio -g mode 24 out
+gpio -g write 24 1
 echo "Bridge Off: Enter to continue"
 read var
-/home/pi/APC_TestTools/BridgeOn.sh
+gpio -g write 24 0
+gpio -g mode 24 in
 echo "Bridge On: Enter to continue"
 gpio -g mode 18 out
 gpio -g mode 23 out
@@ -33,13 +35,14 @@ gpio -g mode 16 out
 gpio -g write 16 0
 gpio -g mode 26 out
 gpio -g write 26 0
-echo "NUC  off: Enter to continue (TNET will bounce)"
+echo "NUC  off: Enter to continue"
 read var
 gpio -g mode 16 in
 gpio -g mode 26 in
 gpio -g mode 12 out
 gpio -g write 12 1
-sleep 3
+echo "TNet off: Enter to continue"
+read var
 gpio -g write 12 0
 gpio -g mode 12 in
 gpio -g mode 19 out
