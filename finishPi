@@ -14,6 +14,7 @@ if  [ $end -eq 3 ];then
    $HOME/APC_TestTools/pushRPi.sh
    echo " ## Clean up fire"
    sudo $HOME/APC_TestTools/cleanFire.sh
+   $HOME/APC_TestTools/EnableFire.sh
    echo " ### Updating cron"
    crontab $HOME/updates/PiInstall/cron2.tab
    echo " #### Setup SSD"
@@ -30,6 +31,7 @@ elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    $HOME/APC_TestTools/pushRPi.sh
    echo " ## Clean up fire "
    sudo $HOME/APC_TestTools/cleanFire.sh
+   $HOME/APC_TestTools/EnableFire.sh
    echo " ### Updating cron "
    if [ $end -eq 1 ]; then 
       crontab $HOME/updates/PiInstall/cron1.tab
