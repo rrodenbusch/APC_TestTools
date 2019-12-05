@@ -18,6 +18,9 @@ my $SnsrBit = 0x80;
 my ($Pwr1,$Cap1,$Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr);
 ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
+my ($prevScap,$prevNUC,$prevNVN) = (0,0,0);
+my ($ScapVolts,$NVNVolts,$NUCVolts) = (0,0,0);
+
 
 while ($minLoops > 0 || !$Pwr || !$NUC || !$NVN || !$Pwr1 || !$Cap1) {
     $minLoops-- if ($minLoops > 0);
@@ -45,6 +48,9 @@ while ($minLoops > 0 || !$Pwr || !$NUC || !$NVN || !$Pwr1 || !$Cap1) {
    $NVN  = 1 if ($Bits & $NVNBit);
    $Snsr = 1 if ($Bits & $SnsrBit);
 
+   $ScapVolts = $CapVolt if (($Cap == 1) && ($prevScap == 0));
+   $NVNVolts = $CapVolt if (($NVN == 1) && ($prevNVN == 0));
+   $NUCVolts = $CapVolt if (($NUC == 1) && ($prevNUC == 0));
 
    my $outline = "Cap %3.1f Volt Cap  %01d %01d\n" .
                   "              Pwr  %01d %01d\n" .
@@ -55,6 +61,8 @@ while ($minLoops > 0 || !$Pwr || !$NUC || !$NVN || !$Pwr1 || !$Cap1) {
 
 }
 
+my $line2 = sprintf("SCap @ %3.1f\nNVN  @ %3.1f\nNUC  %3.1f\n",$ScapVolts,$NVNVolts,$NUCVolts);
+print $line2;
 
 
 1;
