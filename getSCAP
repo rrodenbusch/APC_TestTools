@@ -51,6 +51,8 @@ while ($minLoops > 0 || !$Pwr || !$NUC || !$NVN || !$Pwr1 || !$Cap1) {
    $ScapVolts = $CapVolt if (($Cap == 1) && ($prevScap == 0));
    $NVNVolts = $CapVolt if (($NVN == 1) && ($prevNVN == 0));
    $NUCVolts = $CapVolt if (($NUC == 1) && ($prevNUC == 0));
+   ($prevScap,$prevNVN,$prevNUC) = ($Cap,$NVN,$NUC);
+
 
    my $outline = "Cap %3.1f Volt Cap  %01d %01d\n" .
                   "              Pwr  %01d %01d\n" .
