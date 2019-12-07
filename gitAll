@@ -29,3 +29,9 @@ then
    cd /updates/NUC
    git pull origin master
 fi
+if [ -d ~/NUC ]
+then 
+   echo "Update NUC"
+   cd /~/NUC
+   git pull origin master
+fi
