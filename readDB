@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use RPi::I2C;
-
+use Time::HiRes qw(time sleep usleep);
 
 sub attach {
 	my ($addy) = @_;
@@ -80,6 +80,7 @@ while(1) {
 	my @sounds = getdBs();
 	my $line = join(',',@sounds);
 	print "$line\n";
+        sleep(0.01);
 }
 
 1;
