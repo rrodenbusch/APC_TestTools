@@ -1,5 +1,9 @@
 #!/usr/bin/perl
-my $epoch = time();
-print "$epoch\n";
+use Date::Format;
+
+my $epoch = $ARGV[0];
+$epoch = time() unless defined($epoch);
+my $timestr = time2str("%c", $epoch);
+print "$epoch $timestr\n";
 
 1;
