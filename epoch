@@ -1,0 +1,5 @@
+#!/usr/bin/perl
+my $epoch = time();
+print "$epoch\n";
+
+1;
