@@ -4,6 +4,7 @@ use warnings;
 
 use RPi::I2C;
 
+
 sub attach {
 	my ($addy) = @_;
 	my ($device,$retval);
@@ -19,22 +20,18 @@ sub attach {
 	return ($retval);
 }
 
-sub trydBs {
-	my $device = shift;
-	my $register = shift;
-	my $retries = shift;
-	
-	#	dbPause=500
-    my ($tmp,$reading);
-    $tmp = $device->read_word($register);
-    $reading = checkNibbleChkSum($tmp);
-    while ( (($reading == 65535) || ($reading == 4095)) && ($retries > 0)) {
-       usleep(100);
-       $tmp = $device->read_word($register);
-       $reading = checkNibbleChkSum($tmp);
-       $retries--;
-    }
-	return($reading,$retries);
+sub checkNibbleChkSum {
+	my $value = shift;
+	my $retVal = 0xFFFF;
+	my $chk  = $value & 0x0f;
+	my $nib = ($value & 0xf0) >> 4;
+	$chk = $chk & ~$nib;
+	$nib = ($value & 0xf00) >> 8;
+	$chk = $chk & ~$nib;
+	$nib = ($value & 0xf000) >> 12;
+	$chk = $chk & ~$nib;
+	$retVal = ($value & 0x0FFF) if ($chk == 0);
+	return($retVal);
 }
 
 sub getdBs {
@@ -60,6 +57,24 @@ sub getdBs {
 	return($peak1,$peak2,$avg1,$avg2,$max1,$max2);
     }  
 }	#	getdBs
+
+sub trydBs {
+	my $device = shift;
+	my $register = shift;
+	my $retries = shift;
+	
+	#	dbPause=500
+    my ($tmp,$reading);
+    $tmp = $device->read_word($register);
+    $reading = checkNibbleChkSum($tmp);
+    while ( (($reading == 65535) || ($reading == 4095)) && ($retries > 0)) {
+       usleep(100);
+       $tmp = $device->read_word($register);
+       $reading = checkNibbleChkSum($tmp);
+       $retries--;
+    }
+	return($reading,$retries);
+}
 
 while(1) {
 	my @sounds = getdBs();
