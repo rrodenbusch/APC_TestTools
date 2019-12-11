@@ -19,6 +19,24 @@ sub attach {
 	return ($retval);
 }
 
+sub trydBs {
+	my $device = shift;
+	my $register = shift;
+	my $retries = shift;
+	
+	#	dbPause=500
+    my ($tmp,$reading);
+    $tmp = $device->read_word($register);
+    $reading = checkNibbleChkSum($tmp);
+    while ( (($reading == 65535) || ($reading == 4095)) && ($retries > 0)) {
+       usleep(100);
+       $tmp = $device->read_word($register);
+       $reading = checkNibbleChkSum($tmp);
+       $retries--;
+    }
+	return($reading,$retries);
+}
+
 sub getdBs {
 	my ($peak1,$peak2,$avg1,$avg2,$max1,$max2) = (4095,4095,4095,4095,4095,4095);
     if (my $device = attach(0x0F) ) {
