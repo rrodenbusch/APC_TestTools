@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use RPi::I2C;
+
+sub attach {
+	my ($config,$addy) = @_;
+	my ($device,$retval);
+
+	$device = RPi::I2C->new($addy);
+	$device = RPi::I2C->new($addy) unless ($device); 	# one retry on attach
+	if ($device) {
+		$retval = $device if ( $device->check_device($addy) );		
+	} else {
+		my $err = $device->file_error();
+		$config->{remoteLog}->sendMessage("$logPrefix ERROR,Unable to attach to $addy,$err");
+	}
+	return ($retval);
+}
+
+sub getdBs {
+	my ($peak1,$peak2,$avg1,$avg2,$max1,$max2) = (4095,4095,4095,4095,4095,4095);
+    if (my $device = attach($config,0x0F) ) {
+      	# Get the sound data
+      	my $dbRetries = $config->{dbRetries};
+      	($peak1,$dbRetries) = trydBs($device,0x18,$config,$dbRetries) if ($config->{dbGet1} && $config->{dbGetPeak});
+      	($peak2,$dbRetries) = trydBs($device,0x19,$config,$dbRetries) if ($config->{dbGet2} && $config->{dbGetPeak});
+      	($avg1,$dbRetries) 	= trydBs($device,0x1A,$config,$dbRetries) if ($config->{dbGet1} && $config->{dbGetAvg});
+      	($avg2,$dbRetries) 	= trydBs($device,0x1B,$config,$dbRetries) if ($config->{dbGet2} && $config->{dbGetAvg});
+      	($max1,$dbRetries) 	= trydBs($device,0x1C,$config,$dbRetries) if ($config->{dbGet1} && $config->{dbGetMax});
+      	($max2,$dbRetries)	= trydBs($device,0x1D,$config,$dbRetries) if ($config->{dbGet2} && $config->{dbGetMax});
+ 
+      	# Output if data collected  	
+		my ($epoch,$msec) = Time::HiRes::gettimeofday();
+		$peak1 = '' if ($peak1 == 4095);
+		$peak2 = '' if ($peak2 == 4095);
+		$avg1 = '' if ($avg1 == 4095);
+		$avg2 = '' if ($avg2 == 4095);
+		$max1 = '' if ($max1 == 4095);
+		$max2 = '' if ($max2 == 4095);
+		return($peak1,$peak2,$avg1,$avg2,$max1,$max2);
+    }  
+}	#	getdBs
+
+while(1) {
+	my @sounds = getdBs();
+	my $line = join(',',@sounds);
+	print "$line\n";
+}
+
+1;
