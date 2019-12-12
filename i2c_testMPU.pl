@@ -78,8 +78,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
 	Time::HiRes::usleep($loopDelay);
 }
 
-print "Exit on Interrupt\n" if ($sig{INT} != 0);
-print "Exit on Stop\n" if ($sig{STOP} != 0);
-print "Exit on Quit\n" if ($sig{QUIT} != 0);
+print "\nExit on Interrupt\n" if ($sig{INT} != 0);
+print "\nExit on Stop\n" if ($sig{STOP} != 0);
+print "\nExit on Quit\n" if ($sig{QUIT} != 0);
 
 1;
