@@ -16,7 +16,7 @@ use Time::HiRes;
 #use RPiConfig;
 use MPU6050;
 
- Setup Signals
+## Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0, SUSP => 0 );
 $SIG{HUP}  = sub {$sig{HUP} = 1};
 $SIG{ABRT} = sub {$sig{ABRT} = 1};
