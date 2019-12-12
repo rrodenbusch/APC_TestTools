@@ -7,7 +7,7 @@ use Time::HiRes qw(time sleep usleep);
 
 
 # Setup Signals
-my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0 );
+my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0 );
 $SIG{HUP}  = sub {$sig{HUP} = 1};
 $SIG{ABRT} = sub {$sig{ABRT} = 1};
 $SIG{USR1} = sub {$sig{USR1} = 1};
