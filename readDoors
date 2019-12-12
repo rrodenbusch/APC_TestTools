@@ -34,5 +34,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
 		print $line;
 	}
 }
+print "Exit on Intterupt\n" if ($sig{INT} !=0);
+print "Exit on Quit\n" if ($sig{QUIT} !=0);
+print "Exit on Stop\n" if ($sig{STOP} !=0);
 
 1;

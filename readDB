@@ -91,10 +91,13 @@ sub trydBs {
 
 
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
-       ($sig{STOP} == 0) && ($sig{SUSP} == 0) ) {
+       ($sig{STOP} == 0) ) {
 	my @sounds = getdBs();
 	my $line = join(',',@sounds);
 	print "$line\n";
     sleep(0.01);
 }
+print "Exit on Interrupt\n" if ($sig{INT} != 0);
+print "Exit on Stop\n" if ($sig{STOP} != 0);
+print "Exit on Quit\n" if ($sig{QUIT} != 0);
 1;
