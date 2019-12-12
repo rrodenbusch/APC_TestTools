@@ -97,9 +97,4 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
 	print "$line\n";
     sleep(0.01);
 }
-print "Interrupt\n" if $sig{INT} > 0;
-print "Quit\n" if $sig{QUIT} > 0;
-print "Stop\n" if $sig{STOP} > 0;
-print "Suspend\n" if $sig{SUSP} > 0;
-
 1;
