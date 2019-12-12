@@ -17,7 +17,7 @@ use Time::HiRes;
 use MPU6050;
 
 ## Setup Signals
-my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0, SUSP => 0 );
+my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0 );
 $SIG{HUP}  = sub {$sig{HUP} = 1};
 $SIG{ABRT} = sub {$sig{ABRT} = 1};
 $SIG{USR1} = sub {$sig{USR1} = 1};
@@ -26,7 +26,7 @@ $SIG{CONT} = sub {$sig{CONT} = 1};
 $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
-$SIG{SUSP} = sub {$sig{SUSP} = 1};
+#$SIG{SUSP} = sub {$sig{SUSP} = 1};
 
 #sub processSignals{
 #	my $config = shift;
