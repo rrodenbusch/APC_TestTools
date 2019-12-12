@@ -1,0 +1,6 @@
+#!/bin/bash
+while [ 1 ]; do 
+   ifconfig |grep -e "b8:27:eb" -e "10.50."
+   sleep 2
+done
+
