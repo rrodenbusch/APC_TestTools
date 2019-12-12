@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RPi:I2C;
+use RPi::I2C;
 
 my $minLoops = 0;
 
@@ -55,11 +55,11 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    $Cap1 = `gpio -g read 0x20`;
    
    my $resp = $devA->read_word(0x0B);
-   $resp &= 0x0FFF;
+   $resp = $resp & 0xFF;
    my $CapVolt = $resp / 10;
 
    $resp = $devA->read_word(0x0A);
-   $resp &= 0x0FFF;
+   $resp = $resp & 0xFF;
    my $LineVolt = $resp / 10;
 
    my $Bits = $devG->read_byte(0x09);
@@ -78,13 +78,13 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    ($prevScap,$prevNVN,$prevNUC) = ($Cap,$NVN,$NUC);
 
 
-   my $outline = "Cap %3.1f Volt Line %3.1f Volt\n".
-                  "              Cap  %01d %01d\n" .
-                  "              Pwr  %01d %01d\n" .
-                  "              NUC  %01d NVN  %01d\n" .
-                  "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
+   my $outline = "\nCap %3.1f Volt Line %3.1f Volt\n".
+                   "              Cap  %01d %01d\n" .
+                   "              Pwr  %01d %01d\n" .
+                   "              NUC  %01d NVN  %01d\n" .
+                   "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
    my $line = sprintf($outline,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
-   if ($line eq $prevLine) {
+   if ($line ne $prevLine) {
       print $line;
       $prevLine = $line;
    } else {
@@ -93,6 +93,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
       print "\n"  if ($dotCnt > 40);
       $dotCnt = 0 if ($dotCnt > 40);
    }
+   sleep 1;
 }
 
 print "\nExit on Intterupt\n" if ($sig{INT} !=0);
