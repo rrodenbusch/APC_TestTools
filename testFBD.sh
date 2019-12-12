@@ -32,8 +32,8 @@ read testVar
 /home/pi/APC_TestTools/i2c_1WireAddy.pl
 echo check Doors  Enter to Continue
 read testVar
-/home/pi/APC_TestTools/readDoors
 /home/pi/APC_TestTools/readDB
+/home/pi/APC_TestTools/readDoors
 #echo check Temp Enter to Continue
 /home/pi/APC_TestTools/readTemp
 #echo check cams  Enter to Continue

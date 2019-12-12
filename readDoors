@@ -14,13 +14,12 @@ $SIG{CONT} = sub {$sig{CONT} = 1};
 $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
-$SIG{SUSP} = sub {$sig{SUSP} = 1};
 
 my ($door1, $door2);
 my ($prevDoor1, $prevDoor2) = (-1,-1);
 
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
-       ($sig{STOP} == 0) && ($sig{SUSP} == 0) ) {
+       ($sig{STOP} == 0) ) {
 	($door1, $door2) = (0,0);
 	my $resp = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0F 0x03`;
 	$resp =~ s/\R//g;
