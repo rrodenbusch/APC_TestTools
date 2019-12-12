@@ -13,7 +13,7 @@ $SIG{ABRT} = sub {$sig{ABRT} = 1};
 $SIG{USR1} = sub {$sig{USR1} = 1};
 $SIG{USR2} = sub {$sig{USR2} = 1};
 $SIG{CONT} = sub {$sig{CONT} = 1};
-$SIG{QUIT} = sub ($sig{QUIT} = 1};
+$SIG{QUIT} = sub {$sig{QUIT} = 1};
 
 sub attach {
 	my ($addy) = @_;
