@@ -8,10 +8,10 @@ $HOME/APC_TestTools/queryI2C.pl
 echo check Enter to Continue
 read testVar
 echo "######### Temps ###########"
-$HOME/pi/APC_TestTools/readTemp
+$HOME/APC_TestTools/readTemp
 echo "########## Doors ##########"
-$HOME/pi/APC_TestTools/readDoors
+$HOME/APC_TestTools/readDoors
 echo "############ dB ###########"
-$HOME/pi/APC_TestTools/readDB
+$HOME/APC_TestTools/readDB
 echo "########### Images ########"
-$HOME/pi/APC_TestTools/rtailCSV 231 png
+$HOME/APC_TestTools/rtailCSV 231 png
