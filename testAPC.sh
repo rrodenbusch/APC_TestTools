@@ -54,7 +54,7 @@ gpio -g mode 23 in
 echo "NVN  & Cams on, let NVN boot"
 echo "Enter to continue to testFBD"
 read var
-/home/pi/APC_TestTools/testFBD.sh
+/home/pi/APC_TestTools/testFBD
 
 
 
