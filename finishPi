@@ -22,6 +22,8 @@ if  [ $end -eq 3 ];then
    $HOME/updates/PiInstall/setupSSD.sh
    echo " ##### Gtting UIDs"
    $HOME/APC_TestTools/queryI2C.pl
+   Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
+   echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x55
 elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    sudo $HOME/APC_TestTools/rmNMAP.sh
@@ -50,6 +52,8 @@ elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    echo " ##### Getting UIDs "
    echo ""
    $HOME/APC_TestTools/getUID
+   Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
+   echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x51
 else
    echo "Must enter end 1  2 or 3"
