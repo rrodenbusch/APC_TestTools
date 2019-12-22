@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ -z "$1" ] 
+then
+   FPATH="*.log"
+else
+   FPATH="$1/*.log"
+fi
+FNAME=`ls -Art $FPATH | tail -n 1`
+echo $FNAME
+less -f $FNAME
