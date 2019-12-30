@@ -71,7 +71,7 @@ print "\nExit on Interrupt\n" if ($sig{INT} != 0);
 print "\nExit on Stop\n" if ($sig{STOP} != 0);
 print "\nExit on Quit\n" if ($sig{QUIT} != 0);
 my $line = sprintf("Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$SampleTime); 
-print "Errs(Tot Err Acc) $errCnt $tmpErr $accErr\n";
+print "Errs(Tot TmpErr AccErr) $errCnt $tmpErr $accErr\n";
 print $line;
 
 1;
