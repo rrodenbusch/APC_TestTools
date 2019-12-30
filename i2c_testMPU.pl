@@ -70,7 +70,7 @@ my $SampleRate = $samples/$SampleTime;
 print "\nExit on Interrupt\n" if ($sig{INT} != 0);
 print "\nExit on Stop\n" if ($sig{STOP} != 0);
 print "\nExit on Quit\n" if ($sig{QUIT} != 0);
-my $line = sprintf "Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$SampleTime); 
+my $line = sprintf("Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$SampleTime); 
 print $line;
 
 1;
