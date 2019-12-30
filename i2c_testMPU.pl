@@ -38,6 +38,7 @@ print "Waking MPU at maxG = 4\n";
 sleep(2);
 my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
+my ($StartEpoch,$StartMsec) = Time::HiRes::gettimeofday();
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
        ($sig{STOP} == 0) ) {
    $curErr = 0;
@@ -63,9 +64,13 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
-print "\nSamples $samples Err(TMP Acc Tot) $tmpErr $accErr $errCnt\n";
+my ($EndEpoch,$EndMsec) = Time::HiRes::gettimeofday();
+my $SampleTime = ($EndEpoch - $StartEpoch) + ($EndMsec - $StartMsec) / 1000000;
+my $SampleRate = $samples/$SampleTime;
 print "\nExit on Interrupt\n" if ($sig{INT} != 0);
 print "\nExit on Stop\n" if ($sig{STOP} != 0);
 print "\nExit on Quit\n" if ($sig{QUIT} != 0);
+my $line = sprintf "Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$SampleTime); 
+print $line;
 
 1;
