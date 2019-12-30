@@ -62,7 +62,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
-print "Error Count $errCnt\n";
+print "\nErrors (TMP Acc Tot) $tmpErr $accErr $errCnt\n";
 print "\nExit on Interrupt\n" if ($sig{INT} != 0);
 print "\nExit on Stop\n" if ($sig{STOP} != 0);
 print "\nExit on Quit\n" if ($sig{QUIT} != 0);
