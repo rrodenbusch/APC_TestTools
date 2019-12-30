@@ -37,10 +37,11 @@ $device->wakeMPU(4);
 print "Waking MPU at maxG = 4\n";
 sleep(2);
 my $loopDelay = $delaySec * 1000 * 1000;
-my ($errCnt,$curErr,$tmpErr,$accErr) = (0,0,0,0);
+my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
        ($sig{STOP} == 0) ) {
    $curErr = 0;
+   $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
    my ($tmp,$tmpC,$tmpF) = $device->readTemp();
@@ -62,7 +63,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
-print "\nErrors (TMP Acc Tot) $tmpErr $accErr $errCnt\n";
+print "\nSamples $samples Err(TMP Acc Tot) $tmpErr $accErr $errCnt\n";
 print "\nExit on Interrupt\n" if ($sig{INT} != 0);
 print "\nExit on Stop\n" if ($sig{STOP} != 0);
 print "\nExit on Quit\n" if ($sig{QUIT} != 0);
