@@ -40,6 +40,7 @@ my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr) = (0,0,0,0);
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
        ($sig{STOP} == 0) ) {
+   $curErr = 0;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
    my ($tmp,$tmpC,$tmpF) = $device->readTemp();
@@ -56,8 +57,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $AcY *= $yCal;
    $AcZ *= $zCal;
    my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-   my $line= sprintf("%d,%06d,%04.3f,%04.3f,%04.3f,%04.3f,%d,%04.2f,%04.2f,%d,%d,%d",
-                     $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF,$tmpErr,$accErr,$curErr);
+   my $line= sprintf("%d,%06d,%04.3f,%04.3f,%04.3f,%04.3f,%d,%04.2f,%04.2f,%d",
+                     $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF,$curErr);
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
