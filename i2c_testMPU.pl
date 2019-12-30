@@ -36,14 +36,13 @@ my ($xCal,$yCal,$zCal) = (1.0,1.0,1.0);
 $device->wakeMPU(4);
 print "Waking MPU at maxG = 4\n";
 sleep(2);
-my $errCnt = 0;
 my $loopDelay = $delaySec * 1000 * 1000;
+my ($errCnt,$curErr,$tmpErr,$accErr) = (0,0,0,0);
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
        ($sig{STOP} == 0) ) {
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
    my ($tmp,$tmpC,$tmpF) = $device->readTemp();
-   my ($curErr,$tmpErr,$accErr) = (0,0,0);
    if ( ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
       $curErr = -1;
       $tmpErr++ if ($tmp == -1);
