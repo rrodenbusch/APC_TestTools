@@ -45,11 +45,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
-   if ($delaySec != 0) {
-      ($tmp,$tmpC,$tmpF) = $device->readTemp();
-   } else {
-      ($tmp,$tmpC,$tmpF) = (0,0,0);
-   }
+   my ($tmp,$tmpC,$tmpF) = (0,0,0);
+   ($tmp,$tmpC,$tmpF) = $device->readTemp() if ($delaySec != 0);
    if ( ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
       $curErr = -1;
       $tmpErr++ if ($tmp == -1);
