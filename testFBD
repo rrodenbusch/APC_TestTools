@@ -5,8 +5,8 @@
 ########################
 $HOME/APC_TestTools/i2c_testMPU.pl
 $HOME/APC_TestTools/queryI2C.pl
-echo check Enter to Continue
-read testVar
+#echo check Enter to Continue
+#read testVar
 echo "######### Temps ###########"
 $HOME/APC_TestTools/readTemp
 echo "########## Doors ##########"
