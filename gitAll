@@ -1,37 +1,37 @@
 #!/bin/bash
-if [ -d ~/updates/PiInstall ]
+if [ -d $HOME/updates/PiInstall ]
 then
    echo "Update PiInstall"
-   cd ~/updates/PiInstall
+   cd $HOME/updates/PiInstall
    git pull origin master
 fi
-if [ -d ~/updates/RPi ]
+if [ -d $HOME/updates/RPi ]
 then
    echo "Update RPi"
-   cd ~/updates/RPi
+   cd $HOME/updates/RPi
    git pull origin master
 fi
-if [ -d ~/APC_TestTools ]
+if [ -d $HOME/APC_TestTools ]
 then
    echo "Update APC_TestTools"
-   cd ~/APC_TestTools
+   cd $HOME/APC_TestTools
    git pull origin master
 fi
-if [ -d ~/Arduino/Arduino ]
+if [ -d $HOME/Arduino/Arduino ]
 then
    echo "Update Arduino"
-   cd ~/Arduino/Arduino
+   cd $HOME/Arduino/Arduino
    git pull origin master
 fi
-if [ -d ~/updates/NUC ]
+if [ -d $HOME/updates/NUC ]
 then
    echo "Update NUC"
-   cd ~/updates/NUC
+   cd $HOME/updates/NUC
    git pull origin master
 fi
-if [ -d ~/NUC ]
+if [ -d $HOME/NUC ]
 then 
    echo "Update NUC"
-   cd /~/NUC
+   cd $HOME/NUC
    git pull origin master
 fi
