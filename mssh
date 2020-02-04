@@ -1,3 +1,3 @@
 #!/bin/bash
-ssh mthinx@192.168.0.$1
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null mthinx@192.168.0.$1
 
