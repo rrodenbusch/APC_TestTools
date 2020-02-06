@@ -35,7 +35,9 @@ my $device = MPU6050->new($deviceAddress);
 my ($xCal,$yCal,$zCal) = (1.0,1.0,1.0);
 $device->wakeMPU(4);
 print "Waking MPU at maxG = 4\n";
-sleep(2);
+sleep(0.5);
+print "Begining sample...\n";
+
 my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
 my ($StartEpoch,$StartMsec) = Time::HiRes::gettimeofday();
