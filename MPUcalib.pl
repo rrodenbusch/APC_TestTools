@@ -15,6 +15,7 @@ use strict;
 use Time::HiRes;
 #use RPiConfig;
 use MPU6050;
+use POSIX;
 
 ## Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0 );
@@ -47,6 +48,10 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelRaw();
+   my $AX = ($AcX & 0x8000) ? -((~$AcX & 0xffff) + 1) : $AcX;
+   my $AY = ($AcY & 0x8000) ? -((~$AcY & 0xffff) + 1) : $AcY;
+   my $AZ = ($AcZ & 0x8000) ? -((~$AcZ & 0xffff) + 1) : $AcZ;
+
    my ($tmp,$tmpC,$tmpF) = (0,0,0);
    ($tmp,$tmpC,$tmpF) = $device->readTemp() if ($delaySec != 0);
    if ( ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
@@ -60,9 +65,9 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    }
    if ( ($AcX != -1) && ($AcY != -1) && ($AcZ != -1) ) {
       $goodCnt++;
-      $totX += $AcX;
-      $totY += $AcY;
-      $totA += $AcZ;
+      $totX += $AX;
+      $totY += $AY;
+      $totZ += $AZ;
    }
  #  $AcX *= $xCal;
  #  $AcY *= $yCal;
@@ -75,9 +80,9 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
 }
 my ($xMPU,$yMPU,$zMPU) = (0,0,0);
 if ($goodCnt > 0) {
-   $xMPU = -1 *$totX / $goodCnt;
-   $yMPU = -1 * $totY / $goodCnt;
-   $zMPU = -8192 + $totZ / $goodCnt;
+   $xMPU = floor($totX / $goodCnt);
+   $yMPU = floor($totY / $goodCnt);
+   $zMPU = floor(8192 - $totZ / $goodCnt);
 }
 
 my ($EndEpoch,$EndMsec) = Time::HiRes::gettimeofday();
@@ -91,5 +96,8 @@ print "Errs(Tot TmpErr AccErr) $errCnt $tmpErr $accErr\n";
 print $line;
 $line = sprintf("Offsets %6.2f %6.2f %6.2f\n", $xMPU, $yMPU, $zMPU);
 print $line;
-
+print "Update config file? [Y|n]? ";
+my $ans = <STDIN>;
+$ans =~ s/\R//g;
+print "\nupdating config file\n" if (($ans eq 'Y') || ($ans eq 'y'));
 1;
