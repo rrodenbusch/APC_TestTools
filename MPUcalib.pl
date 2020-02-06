@@ -17,6 +17,38 @@ use Time::HiRes;
 use MPU6050;
 use POSIX;
 
+sub updateIniFile {
+   my $AX=shift;
+   my $AY=shift;
+   my $AZ=shift;
+   
+   open(my $fh, "$ENV{HOME}/RPi/config.ini") or die "Unable to open config file\n$!\n";;
+   while( my $line = <$fh>) {
+      $line =~ s/\R//g;
+      my ($var,$value) = split('=',$line);
+      $OrigVal{$var} = $value if (defined($var) && defined($varNames{$var}));
+      push(@file, $line);
+   }
+   close($fh);
+   
+   open($fh, ">$ENV{HOME}/RPi/config.ini") or die "Unable to open overwrite config file\n$!\n";
+   my %OrigVal;
+   $OrigVal{xMPU}=$AX;
+   $OrigVal{yMPU}=$AY;
+   $OrigVal{zMPU}=$AZ;
+   
+   foreach my $line (@file) {
+        my ($var,$value) = split('=',$line);
+      if (defined($var) && defined($OrigVal{$var}) ) {
+         $line = "$var=$OrigVal{$var}";
+         print $fh "$line\n";
+      } else {
+         print $fh "$line\n";
+      }
+   }
+   close($fh);
+}
+
 ## Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0 );
 $SIG{HUP}  = sub {$sig{HUP} = 1};
@@ -36,6 +68,7 @@ my $device = MPU6050->new($deviceAddress);
 my ($xCal,$yCal,$zCal) = (1.0,1.0,1.0);
 $device->wakeMPU(4);
 print "Waking MPU at maxG = 4\n";
+open(FH,'>MPUcalib.txt');
 sleep(1);
 my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
@@ -76,6 +109,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    my $line= sprintf("%d,%06d,%04.3f,%04.3f,%04.3f,%04.3f,%d,%04.2f,%04.2f,%d",
                      $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF,$curErr);
    print "$line\n";
+   print FH "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
 my ($xMPU,$yMPU,$zMPU) = (0,0,0);
@@ -94,10 +128,13 @@ print "\nExit on Quit\n" if ($sig{QUIT} != 0);
 my $line = sprintf("Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$SampleTime); 
 print "Errs(Tot TmpErr AccErr) $errCnt $tmpErr $accErr\n";
 print $line;
+print FH "$line";
 $line = sprintf("Offsets %6.2f %6.2f %6.2f\n", $xMPU, $yMPU, $zMPU);
 print $line;
+print FH "$line";
+close FH;
 print "Update config file? [Y|n]? ";
 my $ans = <STDIN>;
 $ans =~ s/\R//g;
-print "\nupdating config file\n" if (($ans eq 'Y') || ($ans eq 'y'));
+updateIniFile($xMPU,$yMPU,$zMPU) if (($ans eq 'Y') || ($ans eq 'y'));
 1;
