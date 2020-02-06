@@ -80,8 +80,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
 }
 my ($xMPU,$yMPU,$zMPU) = (0,0,0);
 if ($goodCnt > 0) {
-   $xMPU = floor($totX / $goodCnt);
-   $yMPU = floor($totY / $goodCnt);
+   $xMPU = floor(0 - $totX / $goodCnt);
+   $yMPU = floor(0 - $totY / $goodCnt);
    $zMPU = floor(8192 - $totZ / $goodCnt);
 }
 
