@@ -21,12 +21,13 @@ sub updateIniFile {
    my $AX=shift;
    my $AY=shift;
    my $AZ=shift;
-   
+
+   my @file;   
    open(my $fh, "$ENV{HOME}/RPi/config.ini") or die "Unable to open config file\n$!\n";;
    while( my $line = <$fh>) {
       $line =~ s/\R//g;
       my ($var,$value) = split('=',$line);
-      $OrigVal{$var} = $value if (defined($var) && defined($varNames{$var}));
+      #$OrigVal{$var} = $value if (defined($var) && defined($varNames{$var}));
       push(@file, $line);
    }
    close($fh);
