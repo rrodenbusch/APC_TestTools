@@ -41,9 +41,12 @@ print "Begining sample...\n";
 my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
 my ($StartEpoch,$StartMsec) = Time::HiRes::gettimeofday();
+my $loopcnt = 1000;
+my $loopcnt = $ARGV[0] if defined($ARGV[0]);
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
-       ($sig{STOP} == 0) ) {
+       ($sig{STOP} == 0) && ($loopcnt > 0) ) {
    $curErr = 0;
+   $loopcnt--;
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
