@@ -78,7 +78,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    ($prevScap,$prevNVN,$prevNUC) = ($Cap,$NVN,$NUC);
 
 
-   my $outline = "\nCap %3.1f Volt Line %3.1f Volt\n".
+   my $outline = "\nCap %3.2f Volt Line %3.2f Volt\n".
                    "              Cap  %01d %01d\n" .
                    "              Pwr  %01d %01d\n" .
                    "              NUC  %01d NVN  %01d\n" .
@@ -100,7 +100,7 @@ print "\nExit on Intterupt\n" if ($sig{INT} !=0);
 print "\nExit on Quit\n" if ($sig{QUIT} !=0);
 print "\nExit on Stop\n" if ($sig{STOP} !=0);
 
-my $line2 = sprintf("SCap @ %3.1f\nNVN  @ %3.1f\nNUC  %3.1f\n",$ScapVolts,$NVNVolts,$NUCVolts);
+my $line2 = sprintf("SCap @ %3.2f\nNVN  @ %3.2f\nNUC  %3.2f\n",$ScapVolts,$NVNVolts,$NUCVolts);
 print $line2;
 
 
