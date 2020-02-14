@@ -54,6 +54,7 @@ if (defined($line)) {
    my ($var,$val) = split('=',$line);
    $LOADscale = $val if (defined($val));
 }
+my 
 $line2 = `grep CAPscale $ENV{HOME}/RPi/config.ini`;
 if (defined($line) ) {
    $line2 =~ s/\R//g;
