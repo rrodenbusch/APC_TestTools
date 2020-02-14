@@ -77,7 +77,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    $resp = $devA->read_word(0x0A);
    $resp = $resp & 0xFF;
-   my $LineVolt = $LOADscle * $resp / 10;
+   my $LineVolt = $LOADscale * $resp / 10;
 
    my $Bits = $devG->read_byte(0x09);
    $Pwr  = 1 if ($Bits & $PwrBit);
