@@ -49,13 +49,17 @@ my ($dotCnt, $prevLine, $line) = (0,'1','2');
 my $CAPscale = 1.0;
 my $LOADscale = 1.0;
 my $line = `grep LOADcalib $ENV{HOME}/RPi/config.ini`;
-$line =~ s/\R//g;
-my ($var,$val) = split('=',$line);
-$LOADscale = $val if (defined($val));
-my $line2 = `grep CAPcalib $ENV{HOME}/RPi/config.ini`;
-$line2 =~ s/\R//g;
-($var,$val) = split('=',$line2);
-my $CAPscale = $val if (defined($val));
+if (defined($line)) {
+   $line =~ s/\R//g;
+   my ($var,$val) = split('=',$line);
+   $LOADscale = $val if (defined($val));
+}
+my $line2 = `grep CAPscale $ENV{HOME}/RPi/config.ini`;
+if (defined($line) ) {
+   $line2 =~ s/\R//g;
+   my ($var,$val) = split('=',$line2);
+   $CAPscale = $val if (defined($val));
+}
 print "Using Load Scale $LOADscale  CAP scale $CAPscale\n";
 
 while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
