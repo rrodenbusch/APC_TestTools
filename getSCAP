@@ -48,13 +48,13 @@ my ($dotCnt, $prevLine, $line) = (0,'1','2');
 
 my $CAPscale = 1.0;
 my $LOADscale = 1.0;
-my $line = `grep LOADcalib $ENV{HOME}/RPi/config.ini`;
+$line = `grep LOADscale $ENV{HOME}/RPi/config.ini`;
 if (defined($line)) {
    $line =~ s/\R//g;
    my ($var,$val) = split('=',$line);
    $LOADscale = $val if (defined($val));
 }
-my $line2 = `grep CAPscale $ENV{HOME}/RPi/config.ini`;
+$line2 = `grep CAPscale $ENV{HOME}/RPi/config.ini`;
 if (defined($line) ) {
    $line2 =~ s/\R//g;
    my ($var,$val) = split('=',$line2);
@@ -99,7 +99,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
                    "              Pwr  %01d %01d\n" .
                    "              NUC  %01d NVN  %01d\n" .
                    "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
-   my $line = sprintf($outline,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
+   $line = sprintf($outline,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
    if ($line ne $prevLine) {
       print $line;
       $prevLine = $line;
@@ -116,7 +116,7 @@ print "\nExit on Intterupt\n" if ($sig{INT} !=0);
 print "\nExit on Quit\n" if ($sig{QUIT} !=0);
 print "\nExit on Stop\n" if ($sig{STOP} !=0);
 
-my $line2 = sprintf("SCap @ %3.2f\nNVN  @ %3.2f\nNUC  %3.2f\n",$ScapVolts,$NVNVolts,$NUCVolts);
+$line2 = sprintf("SCap @ %3.2f\nNVN  @ %3.2f\nNUC  %3.2f\n",$ScapVolts,$NVNVolts,$NUCVolts);
 print $line2;
 
 
