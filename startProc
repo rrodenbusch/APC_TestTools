@@ -1,3 +1,6 @@
 #!/bin/bash
-/home/pi/RPi/$1 >>/home/pi/Watch.log 2>&1 &
+[ "1" == "I2C" ]    && /home/pi/RPi/i2c_apc_v6.pl    >>/home/pi/Watch.log 2>&1 &
+[ "1" == "sysmon" ] && /home/pi/RPi/SystemMonitor.pl >>/home/pi/Watch.log 2>&1 &
+[ "1" == "Map" ]    && /home/pi/RPi/MapNetwork.pl    >>/home/pi/Watch.log 2>&1 &
+[ "1" == "Config" ] && /home/pi/RPi/ConfigServer.pl  >>/home/pi/Watch.log 2>&1 &
 
