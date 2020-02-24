@@ -49,6 +49,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelG();
+   my ($GyX,$GyY,$GyZ) = $device->readGyroDegSec();
    my ($tmp,$tmpC,$tmpF) = (0,0,0);
    ($tmp,$tmpC,$tmpF) = $device->readTemp() if ($delaySec != 0);
    if ( ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
@@ -64,8 +65,8 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $AcY *= $yCal;
    $AcZ *= $zCal;
    my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-   my $line= sprintf("%d,%06d,%04.3f,%04.3f,%04.3f,%04.3f,%d,%04.2f,%04.2f,%d",
-                     $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$tmp,$tmpC,$tmpF,$curErr);
+   my $line= sprintf("%d,%06d, ACCEL %04.3f,%04.3f,%04.3f,%04.3f, GYRO %04.3f,%04.3f,%04.3f, TEMP %d,%04.2f,%04.2f, ERRS %d",
+                     $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$GyX,$GyY,$GyZ,$tmp,$tmpC,$tmpF,$curErr);
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
