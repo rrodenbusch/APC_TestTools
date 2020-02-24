@@ -14,7 +14,7 @@ use warnings;
 use strict;
 use Time::HiRes;
 #use RPiConfig;
-use MPU6050;
+#use MPU6050;
 use POSIX;
 
 sub updateIniFile {
@@ -75,6 +75,7 @@ my $loopDelay = $delaySec * 1000 * 1000;
 my ($errCnt,$curErr,$tmpErr,$accErr,$samples) = (0,0,0,0,0);
 my ($StartEpoch,$StartMsec) = Time::HiRes::gettimeofday();
 my ($totX,$totY,$totZ) = (0,0,0);
+my ($totGx,$totGy,$totGz) = (0,0,0);
 my $goodCnt=0;
 while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
        ($sig{STOP} == 0) && ($samples < 1000) ) {
@@ -82,13 +83,15 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelRaw();
+   my ($GyX,$GyY,$GyZ) = $device->readGyroRaw();
    my $AX = ($AcX & 0x8000) ? -((~$AcX & 0xffff) + 1) : $AcX;
    my $AY = ($AcY & 0x8000) ? -((~$AcY & 0xffff) + 1) : $AcY;
    my $AZ = ($AcZ & 0x8000) ? -((~$AcZ & 0xffff) + 1) : $AcZ;
 
    my ($tmp,$tmpC,$tmpF) = (0,0,0);
    ($tmp,$tmpC,$tmpF) = $device->readTemp() if ($delaySec != 0);
-   if ( ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
+   if ( ($GyX == -1) || ($GyY == -1) || ($GyZ == -1) ||
+        ($AcX == -1) || ($AcY == -1) || ($AcZ == -1) || ($tmp == -1) ) {
       $curErr = -1;
       $tmpErr++ if ($tmp == -1);
       $accErr++ if ($tmp != -1);
@@ -97,11 +100,15 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
       $errCnt++ if ($AcZ == -1);
       $errCnt++ if ($tmp == -1);
    }
-   if ( ($AcX != -1) && ($AcY != -1) && ($AcZ != -1) ) {
+   if ( ($GyX != -1) && ($GyY != -1) && ($GyZ != -1) && 
+        ($AcX != -1) && ($AcY != -1) && ($AcZ != -1) ) {
       $goodCnt++;
       $totX += $AX;
       $totY += $AY;
       $totZ += $AZ;
+      $totGx += $GyX;
+      $totGy += $GyY;
+      $totGz += $GyZ;
    }
  #  $AcX *= $xCal;
  #  $AcY *= $yCal;
@@ -113,11 +120,14 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    print FH "$line\n";
    Time::HiRes::usleep($loopDelay);
 }
-my ($xMPU,$yMPU,$zMPU) = (0,0,0);
+my ($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) = (0,0,0,0,0,0);
 if ($goodCnt > 0) {
    $xMPU = floor(0 - $totX / $goodCnt);
    $yMPU = floor(0 - $totY / $goodCnt);
    $zMPU = floor(8192 - $totZ / $goodCnt);
+   $xGyro = floor(0 - $totGx / $goodCnt);
+   $yGyro = floor(0 - $totGy / $goodCnt);
+   $zGyro = floor(0 - $totGz / $goodCnt);
 }
 
 my ($EndEpoch,$EndMsec) = Time::HiRes::gettimeofday();
@@ -130,12 +140,12 @@ my $line = sprintf("Count %d Rate %6.2f Time %6.2f\n",$samples,$SampleRate,$Samp
 print "Errs(Tot TmpErr AccErr) $errCnt $tmpErr $accErr\n";
 print $line;
 print FH "$line";
-$line = sprintf("Offsets %6.2f %6.2f %6.2f\n", $xMPU, $yMPU, $zMPU);
+$line = sprintf("Offsets %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f\n", $xMPU, $yMPU, $zMPU,$xGyro,$yGyro,$zGyro);
 print $line;
 print FH "$line";
 close FH;
 print "Update config file? [Y|n]? ";
 my $ans = <STDIN>;
 $ans =~ s/\R//g;
-updateIniFile($xMPU,$yMPU,$zMPU) if (($ans eq 'Y') || ($ans eq 'y'));
+#updateIniFile($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) if (($ans eq 'Y') || ($ans eq 'y'));
 1;
