@@ -65,7 +65,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $AcY *= $yCal;
    $AcZ *= $zCal;
    my $totG = sqrt($AcX*$AcX+$AcY*$AcY+$AcZ*$AcZ);
-   my $line= sprintf("%d,%06d, ACCEL %04.3f,%04.3f,%04.3f,%04.3f, GYRO %04.3f,%04.3f,%04.3f, TEMP %d,%04.2f,%04.2f, ERRS %d",
+   my $line= sprintf("%d,%06d, ACCEL(g) tot... %04.3f,%04.3f,%04.3f,%04.3f, GYRO (deg/s) %04.3f,%04.3f,%04.3f, TEMP %d,%04.2f,%04.2f, ERRS %d",
                      $epoch,$msec,$totG,$AcX,$AcY,$AcZ,$GyX,$GyY,$GyZ,$tmp,$tmpC,$tmpF,$curErr);
    print "$line\n";
    Time::HiRes::usleep($loopDelay);
