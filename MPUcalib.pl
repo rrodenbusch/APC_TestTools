@@ -14,7 +14,7 @@ use warnings;
 use strict;
 use Time::HiRes;
 #use RPiConfig;
-#use MPU6050;
+use MPU6050;
 use POSIX;
 
 sub updateIniFile {
@@ -83,7 +83,7 @@ while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
    $samples++;
    my ($epoch,$msec) = Time::HiRes::gettimeofday();
    my ($AcX,$AcY,$AcZ) = $device->readAccelRaw();
-   my ($GyX,$GyY,$GyZ) = $device->readGyroRaw();
+   my ($GyX,$GyY,$GyZ) = $device->readRawGyro();
    my $AX = ($AcX & 0x8000) ? -((~$AcX & 0xffff) + 1) : $AcX;
    my $AY = ($AcY & 0x8000) ? -((~$AcY & 0xffff) + 1) : $AcY;
    my $AZ = ($AcZ & 0x8000) ? -((~$AcZ & 0xffff) + 1) : $AcZ;
