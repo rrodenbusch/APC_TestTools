@@ -1,0 +1,3 @@
+#!/bin/bash
+sudo nmap -p 80 192.168.0.1/24 |grep -B 5 -e 94: -e 54: -e 1C: |head -1
+
