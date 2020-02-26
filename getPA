@@ -1,0 +1,2 @@
+#!/bin/bash
+arecord -D plughw:1,0 -d $1 -r 8 test.wav
