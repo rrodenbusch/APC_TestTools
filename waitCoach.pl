@@ -79,7 +79,7 @@ while (!$coachOnline) {
    }
    
    if (!$coachOnline) {
-      print "Offline Wait\n";
+      print "Offline Wait $targCoach\n";
       sleep(60);
    } else {
       print "Coach $targCoach ONLINE\n";
