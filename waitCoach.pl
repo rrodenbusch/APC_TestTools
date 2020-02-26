@@ -3,9 +3,6 @@ use strict;
 use warnings;
 use Net::Ping;
 
-my $targCoach = $ARGV[0];
-die "Usage:  checkVPN.pl  coach#\n" unless defined($targCoach);
-
 my $FleetFile = "$ENV{HOME}/bin6/FleetDefinition.csv";
 my $ipFile = "$ENV{HOME}/APC_TestTools/ipp.txt";
 my %Devices = ('NUC1'=>1,'NUC2'=>1,
@@ -20,7 +17,7 @@ sub checkVPNonline {
 }
 
 sub getCoach {
-   my ($FleetFile) = @_;
+   my ($FleetFile,$targCoach) = @_;
    my ($line,@names,@fields);
    my %devMap;
       
@@ -37,13 +34,13 @@ sub getCoach {
       if ($coach eq $targCoach) {
          my $cnt = scalar(@fields);
          $cnt = scalar(@names) if (scalar(@names) > $cnt);
-         print "\t$names[0]:\t$fields[0]\n";
+         print "Coach $targCoach\t$names[0]:\t$fields[0]\n";
          for (my $i =0; $i < $cnt; $i++ ) {
             my @parts = split(' ',$names[$i]);
             my $last = pop(@parts);
             my $devName=join(' ',@parts);
             if ( $Devices{$devName} && ($last eq 'VPN') && defined($fields[$i]) ) {
-               print "\t$names[$i]:\t$fields[$i]";
+               print "\t$names[$i]:\t$fields[$i]\n";
                my $ip = $fields[$i];
                $ip =~ s/ //g;
                $devMap{$devName} = $ip;
@@ -55,23 +52,37 @@ sub getCoach {
    return(\%devMap);
 }  # getCoach
 
+
+
+      # Set for auto flush
+my $old_fh = select(STDIN);
+$| = 1;
+select($old_fh);
+      
+my $targCoach = $ARGV[0];
+die "Usage:  checkVPN.pl  coach#\n" unless defined($targCoach);
 my $p = checkVPNonline();
 die "VPN Offline\n" unless defined($p);
+my $devMap = getCoach($FleetFile,$targCoach);
 my $coachOnline = 0;
+print "\n";
 while (!$coachOnline) {
    foreach my $dev (sort(keys(%Devices))) {
-      my $ip = $Devices{$dev};
-      my $devOnline = 1 if ($p->ping($ip));
+      my $ip = $devMap->{$dev};
+      my $devOnline = 0;
+      $devOnline = 1 if (defined($ip) && ($ip ne '') && ($p->ping($ip)) );
       $coachOnline = 1 if ($devOnline);
       if ($coachOnline) {
-         print "ONLINE \t$dev\$ip\n" if ($devOnline);
-         print "OFFLINE\t$dev\$ip\n" unless ($devOnline);
+         print "\tONLINE\t$dev\t$ip\n" if ($devOnline);
+         print "\tOFF   \t$dev\t$ip\n" unless ($devOnline);
       }
    }
    
    if (!$coachOnline) {
-      print ".";
+      print "Offline Wait\n";
       sleep(60);
+   } else {
+      print "Coach $targCoach ONLINE\n";
    }
 }
 
