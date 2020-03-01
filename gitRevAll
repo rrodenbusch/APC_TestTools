@@ -1,0 +1,8 @@
+#!/bin/bash
+[ -z "$HOME" ] && $HOME="home/pi"
+$HOME/APC_TestTools/gitRev "Pi" 
+$HOME/APC_TestTools/gitRev "Tools" 
+$HOME/APC_TestTools/gitRev "Ard" 
+$HOME/APC_TestTools/gitRev "Install" 
+$HOME/APC_TestTools/gitRev "NUC" 
+$HOME/APC_TestTools/gitRev "Binary" 

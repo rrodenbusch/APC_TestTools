@@ -1,0 +1,13 @@
+#!/bin/bash
+[ -z "$1" ] && DIR="."
+[ -z "$HOME" ] && $HOME="home/pi"
+[ "$1" == "Pi" ]      && export DIR="$HOME/updates/RPi" 
+[ "$1" == "Tools" ]   && export DIR="$HOME/APC_TestTools" 
+[ "$1" == "Ard" ]     && export DIR="$HOME/Arduino/Arduino" 
+[ "$1" == "Install" ] && export DIR="$HOME/updates/PiInstall" 
+[ "$1" == "NUC" ]     && export DIR="$HOME/NUC" 
+[ "$1" == "Binary" ]  && export DIR="$HOME/updates/PiBinary" 
+echo "$DIR" && cd $DIR && git rev-parse HEAD && git diff |wc -l 
+#cd $DIR
+#git rev-parse HEAD
+#git diff |wc -l
