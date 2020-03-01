@@ -1,3 +1,3 @@
 #!/bin/bash
-cp -p /home/pi/updates/RPi/* /home/pi/RPi
+cp -p $HOME/updates/RPi/* $HOME/RPi
 

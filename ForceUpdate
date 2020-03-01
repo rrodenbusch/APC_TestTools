@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Preparing to Force Pi update"
+cd $HOME/updates/RPi
+$HOME/APC_TestTools/GitForce.sh
+echo "RPi update forced"
