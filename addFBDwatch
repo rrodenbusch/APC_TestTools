@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i s/^ProcsToWatch=.*/ProcsToWatch=i2c_fbd.pl/ $HOME/RPi/config.ini
