@@ -19,8 +19,7 @@ while ( !$hostOK && (scalar @fields > 0)) {
 if (!$hostOK) {
    print "Hostname not found, Fixing\n";
    if (open (my $fh, ">$ENV{HOME}/fixhost.sh")) {
-      print $fh "echo '127.0.01      
-      $hostname' >>/etc/hosts\n";
+      print $fh "echo '127.0.0.1      $hostname' >>/etc/hosts\n";
       close $fh;
       `chmod +x $ENV{HOME}/fixhost.sh`;
       `sudo $ENV{HOME}/fixhost.sh`;
