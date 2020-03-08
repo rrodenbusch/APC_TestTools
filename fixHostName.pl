@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 use strict;
 use warnings;
 
@@ -17,8 +17,11 @@ while ( !$hostOK && (scalar @fields > 0)) {
 }
 
 if (!$hostOK) {
+   print "Hostname not found, Fixing\n";
    my $cmd = "sudo echo '127.0.0.1  $hostname' >> /etc/hosts";  
    `$cmd`;
 }
+$lines = `grep $hostname /etc/hosts`;
+print "Found the following:\n$lines\n";
 
 1;
