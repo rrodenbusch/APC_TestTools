@@ -7,7 +7,7 @@ read var
 /home/pi/APC_TestTools/pushRPi.sh
 echo -- Done
 read var
-ecno -- Backup config file
+echo -- Backup config file
 cp -p /home/pi/RPi/config.ini /home/pi/config.0306
 echo --- Done	
 read var
