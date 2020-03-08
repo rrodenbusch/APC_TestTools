@@ -1,23 +1,29 @@
 #!/bin/bash
-TARG=$1
-vcmd $TARG gitAll
-echo - Done
+gitAll
+echo - Update etc/hosts
+/home/pi/APC_TestTools/fixHostName.pl
+echo - Done, Enter to push updates
 read var
-vcmd $TARG /home/pi/APC_TestTools/pushRPi.sh
+/home/pi/APC_TestTools/pushRPi.sh
 echo -- Done
 read var
-vcmd $TARG "cp -p /home/pi/RPi/config.ini /home/pi/config.0302"
+cp -p /home/pi/RPi/config.ini /home/pi/config.0306
 echo --- Done
 read var
-vcmd $TARG "sed -i s/ProcsToWatch=.*/ProcsToWatch=i2c_fbd.pl/ /home/pi/RPi/config.ini"
-vcmd $TARG "grep ProcsToWatch /home/pi/RPi/config.ini"
+## Remove the fbd code if it exists ##
+echo --- Remove i2c_fbd from Procs to Watch
+sed -i s/ProcsToWatch=i2c_fbd.pl/ProcsToWatch=/ /home/pi/RPi/config.ini
+sed -i s/I2C_sleep=.*/I2C_sleep=0.001/ /home/pi/RPi/config.ini
+grep -e _sleep -e ProcsToWatch /home/pi/RPi/config.ini
 echo ---- Done
+echo ---- Ready to Restart Procs
 read var
-vcmd $TARG "/home/pi/APC_TestTools/stopRPi.pl"
-vcmd $TARG "killall i2c_apc_v6.pl WatchRPi.pl"
+/home/pi/APC_TestTools/stopRPi.pl
+killall i2c_apc_v6.pl i2c_fbd.pl MapNetwork.pl WatchRPi.pl
 echo ----- Done
 read var
-vcmd $TARG "/home/pi/APC_TestTools/stopRPi.pl"
+/home/pi/APC_TestTools/stopRPi.pl
 echo ------ Done
+echo ------ Check for Fire Routes running
 read var
-vcmd $TARG "cat /var/fire/firebus/statemanager_root/component/config/routeman/init/routes.properties"
+grep -i -e wifi -e sensordata /var/fire/firebus/statemanager_root/component/config/routeman/init/routes.properties
