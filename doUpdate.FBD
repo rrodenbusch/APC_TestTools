@@ -7,8 +7,9 @@ read var
 /home/pi/APC_TestTools/pushRPi.sh
 echo -- Done
 read var
+ecno -- Backup config file
 cp -p /home/pi/RPi/config.ini /home/pi/config.0306
-echo --- Done
+echo --- Done	
 read var
 ## Remove the fbd code if it exists ##
 echo --- Remove i2c_fbd from Procs to Watch
