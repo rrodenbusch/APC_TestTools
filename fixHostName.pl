@@ -18,10 +18,16 @@ while ( !$hostOK && (scalar @fields > 0)) {
 
 if (!$hostOK) {
    print "Hostname not found, Fixing\n";
-   my $cmd = "sudo echo '127.0.0.1  $hostname' >> /etc/hosts";  
-   `$cmd`;
+   if (open (my $fh, ">$ENV{HOME}/fixhost.sh")) {
+      print $fh "echo '127.0.01 $hostname\n";
+      close $fh;
+      `chmod +x $ENV{HOME}/fixhost.sh`;
+      `sudo $ENV{HOME}/fixhost.sh`;
+      $lines = `grep $hostname /etc/hosts`;
+      print "Found the following:\n$lines\n";
+   } else {
+      print "Unable to open $ENV{HOST}/fixhost.sh\n$!";
+   }
 }
-$lines = `grep $hostname /etc/hosts`;
-print "Found the following:\n$lines\n";
 
 1;
