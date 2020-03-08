@@ -1,0 +1,23 @@
+#!/bin/bash
+TARG=$1
+vcmd $TARG gitAll
+echo - Done
+read var
+vcmd $TARG /home/pi/APC_TestTools/pushRPi.sh
+echo -- Done
+read var
+vcmd $TARG "cp -p /home/pi/RPi/config.ini /home/pi/config.0302"
+echo --- Done
+read var
+vcmd $TARG "sed -i s/ProcsToWatch=.*/ProcsToWatch=i2c_fbd.pl/ /home/pi/RPi/config.ini"
+vcmd $TARG "grep ProcsToWatch /home/pi/RPi/config.ini"
+echo ---- Done
+read var
+vcmd $TARG "/home/pi/APC_TestTools/stopRPi.pl"
+vcmd $TARG "killall i2c_apc_v6.pl WatchRPi.pl"
+echo ----- Done
+read var
+vcmd $TARG "/home/pi/APC_TestTools/stopRPi.pl"
+echo ------ Done
+read var
+vcmd $TARG "cat /var/fire/firebus/statemanager_root/component/config/routeman/init/routes.properties"
