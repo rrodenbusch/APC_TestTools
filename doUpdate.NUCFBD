@@ -1,0 +1,31 @@
+#!/bin/bash
+gitAll
+echo - Update etc/hosts & ping
+sudo chmod 4755 /bin/ping
+/home/pi/APC_TestTools/fixHostName.pl
+echo - Done, Enter to push updates
+read var
+/home/pi/APC_TestTools/pushRPi.sh
+echo -- Done
+read var
+echo -- Backup config file
+cp -p /home/pi/RPi/config.ini /home/pi/config.0306
+#echo --- Done	
+#read var
+## Remove the fbd code if it exists ##
+echo --- Remove i2c_fbd from Procs to Watch
+sed -i s/ProcsToWatch=i2c_fbd.pl/ProcsToWatch=/ /home/pi/RPi/config.ini
+sed -i s/I2C_sleep=.*/I2C_sleep=0.001/ /home/pi/RPi/config.ini
+grep -e _sleep -e ProcsToWatch /home/pi/RPi/config.ini
+echo ---- Done
+echo ---- Ready to Restart Procs
+read var
+/home/pi/APC_TestTools/stopRPi.pl
+killall i2c_apc_v6.pl i2c_fbd.pl MapNetwork.pl WatchRPi.pl MPU_interface.pl i2c_interface.pl
+echo ----- Done
+read var
+/home/pi/APC_TestTools/stopRPi.pl
+echo ------ Done
+echo ------ Check for Fire Routes running
+read var
+grep -i -e wifi -e sensordata /var/fire/firebus/statemanager_root/component/config/routeman/init/routes.properties
