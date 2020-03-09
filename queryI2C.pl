@@ -143,6 +143,7 @@ for (my $i =0; $i<=0x7F; $i++) {
 if ($ValidI2C[0x08]) {
    if ($device = attach(0x08)) {
       my $byte1 = $device->read_byte(0x01);
+      print "Checking $DeviceNames->{0x08}\n"
       my $line= sprintf( "Version: %04X\n",$byte1);
       print "$line\n";
    } else {
