@@ -1,6 +1,6 @@
 #!/bin/bash
 gitAll
-echo - Update etc/hosts & ping
+echo '- Update etc/hosts & Ping'
 sudo chmod 4755 /bin/ping
 ls -ltr /bin/ping
 ping 192.168.0.1
