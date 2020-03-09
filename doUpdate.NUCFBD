@@ -3,7 +3,7 @@ gitAll
 echo '- Update etc/hosts & Ping'
 sudo chmod 4755 /bin/ping
 ls -ltr /bin/ping
-ping 192.168.0.1
+ping -c 4 192.168.0.1
 /home/pi/APC_TestTools/fixHostName.pl
 echo - Done, Enter to push updates
 read var
