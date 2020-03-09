@@ -1,4 +1,9 @@
 #!/bin/bash
+if [[ ! -d /home/pi/updates/RPi ]] 
+then 
+   cd /home/pi/updates
+   git clone https://github.com/rrodenbusch/RPi
+fi
 gitAll
 echo '- Update etc/hosts & Ping'
 sudo chmod 4755 /bin/ping
