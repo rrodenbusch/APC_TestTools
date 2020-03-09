@@ -120,7 +120,7 @@ my @GPIOs = (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27);
 my @MPUs = (0x68,0x069);
 my @OneWires = (0x1b);
 my @A2Ds = (0x48);
-my $DeviceNames = { 0x0a => "RelayArd", 0x0f => "FBD_Ard", 0x1b => "FBD_1Wire",
+my $DeviceNames = {0x08 => "NUC_ARD" 0x0a => "RelayArd", 0x0f => "FBD_Ard", 0x1b => "FBD_1Wire",
             0x20 => "BrkrGPIO", 0x21 =>"RelaySns", 0x22=>"RelayCtrl", 0x23=>"GPIOx23",
             0x24 => "GPIOx24", 0x25 => "GPIOx25", 0x26=> "FBD_Sns", 0x27 => "FBD_DIO", 
             0x48=>  "FBDa2d",
@@ -138,6 +138,16 @@ for (my $i =0; $i<=0x7F; $i++) {
       my $str = sprintf("Found %02X :: $DeviceNames->{$i}\n",$i);
       print $str;
    }
+}
+
+if ($ValidI2C[0x08]) {
+   if ($device = attach(0x08)) {
+      my $byte1 = $device->read_byte(0x01);
+      my $line= sprintf( "Version: %04X\n",$byte1);
+      print "$line\n";
+   } else {
+      print "Error attaching to $curAddy\n";
+   }   
 }
 
 foreach $curAddy (@Ards) {
