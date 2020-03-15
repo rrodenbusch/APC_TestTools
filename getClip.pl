@@ -7,7 +7,7 @@ use Cwd qw(cwd);
 use Getopt::Std;
 # declare the perl command line flags/options we want to allow
 my %options=();
-getopts("hs:e:d:m:", \%options);
+getopts("hs:e:d:m:D:", \%options);
 if (defined $options{h})   {
    print "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
          "CSV file {startepoch,endepoch,fname}\n";
@@ -19,6 +19,7 @@ $startEpoch = $options{s} if defined($options{s});
 $startEpoch = 0 unless defined($startEpoch);
 $endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
 $endEpoch = $options{e} if defined($options{e});
+$endEpoch = $startEpoch + $options{D} if defined($options{D});
 my $curDir = cwd;
 $dir = $curDir;
 $dir = $options{d} if defined($options{d});
