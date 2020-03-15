@@ -35,7 +35,7 @@ if (scalar @ARGV > 0) { # No command line files
    $fList = \@files;
 }
 my $fCnt = scalar @$fList;
-print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n" . join (",",@$fList) . "\n";
+print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
 
 
 1;
