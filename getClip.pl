@@ -7,7 +7,7 @@ use Cwd qw(cwd);
 use Getopt::Std;
 # declare the perl command line flags/options we want to allow
 my %options=();
-getopts("hs:e:d:m", \%options);
+getopts("hs:e:d:m:", \%options);
 if (defined $options{h})   {
    print "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
          "CSV file {startepoch,endepoch,fname}\n";
