@@ -16,6 +16,7 @@ if (defined $options{h})   {
 
 my ($startEpoch, $endEpoch,$dirName,$MACs,$coach,$chan,$dir);
 $startEpoch = $options{s} if defined($options{s});
+$startEpoch = 0 unless defined($startEpoch);
 $endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
 $endEpoch = $options{e} if defined($options{e});
 my $curDir = cwd;
