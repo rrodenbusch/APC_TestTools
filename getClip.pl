@@ -25,16 +25,16 @@ $MACs = $options{m} if defined($options{m});
 
 die "Bad working directory\n" unless ( ($dir eq $curDir) || (chdir($dir)) );
 my $fList;
-if (@ARGV == 0) { # No command line files
+if (scalar @ARGV > 0) { # No command line files
    $fList = \@ARGV;
 } else {
    my @files;
-   @files = glob('*') unless (defined($MACs));
+   @files = glob('*.mp4') unless (defined($MACs));
    @files = glob($MACs) if (defined($MACs));
    $fList = \@files;
 }
 my $fCnt = scalar @$fList;
-print "Looking for $startEpoch to $endEpoch in $fCnt files\n" . join (",",@$fList) . "\n";
+print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n" . join (",",@$fList) . "\n";
 
 
 1;
