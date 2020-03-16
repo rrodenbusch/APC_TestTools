@@ -87,7 +87,6 @@ sub catMP4 {
 
 sub getClip {
    my ($fname,$start,$end) = @_;
-   my $ffmpeg = ;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
 
