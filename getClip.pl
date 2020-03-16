@@ -52,12 +52,21 @@ foreach my $curFile (@$fList) {
    my ($hh,$mm,$ss) = (substr($tofday,0,2),substr($tofday,2,2),substr($tofday,4,2));
    $mon--;
    print "Checking $curFile $ss $mm $hh $mday $mon $year\n";
-   my $fEpoch = timelocal($ss,$mm,$hh,$mday,$mon,$year);
+   my $fEpoch      = timelocal($ss,$mm,$hh,$mday,$mon,$year);
    my $fStartEpoch = $fEpoch + $start;
-   my $fEndEpoch = $fEpoch + $end;
-
-   my $firstFile = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) );
+   my $fEndEpoch   = $fEpoch + $end;
+   my $writeTime = (stat $curFile)[9];
+   my $fDur = $end - $start;
+   if ($end eq '28800') {
+      # sometimes it runs on, check duration
+      my $durStr = `ffmpeg -i $curFile 2>&1 |grep Duration | cut -d ' ' -f 4 | sed s/,//`;
+      my @durParts = split($durStr,':');
+      $fDur = 3600*$durParts[0] + 60*$durParts[1] + int($durParts[2]); 
+   }
+   $fStartEpoch = $writeTime - $fDur;
+   $fEndEpoch = $writeTime;
    
+   my $firstFile = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
    my $lastFile  = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
    my (@fullFiles);
    push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );
