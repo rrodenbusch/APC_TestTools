@@ -97,9 +97,9 @@ sub getClip {
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
-   my $cmd = 'ffmpeg -loglevel warning ' .
-             " $SSopt $TOopt  -i $fname -acodec copy -vcodec copy $targName";  
-   $cmd = 'ffmpeg -loglevel warning ' .
+#   my $cmd = 'ffmpeg -loglevel warning -y ' .
+#             " $SSopt $TOopt  -i $fname -acodec copy -vcodec copy $targName";  
+   my $cmd = 'ffmpeg -loglevel warning -y' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
    logMsg "cmd : $cmd";
