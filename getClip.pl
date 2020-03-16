@@ -39,7 +39,7 @@ my $fCnt = scalar @$fList;
 print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
 
 foreach my $curFile (@$fList) {
-   my $dateStr = substr($curFile,-4);
+   my $dateStr = substr($curFile,0,-4);
    $dateStr = substr($dateStr,8);
    my @parts = split('-',$dateStr);
    my $day =  substr($parts[0],0,8);
