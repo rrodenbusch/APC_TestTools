@@ -89,7 +89,7 @@ foreach my $curFile (@fullFiles) {
       my $endOffset = '';
       my $startOffset = '';
       print "Extracting from $startOffset for $clipLen from $curFile into $targName\n";
-      `ffmpeg -i $curFile -ss $startOffset -to $clipLen -acode copy -vcodec copy $targName`;
+      `ffmpeg -i $curFile -ss $startOffset -to $clipLen -acodec copy -vcodec copy $targName`;
    }
 }
 
