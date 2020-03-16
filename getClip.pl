@@ -45,7 +45,7 @@ foreach my $curFile (@$fList) {
    $dateStr = substr($dateStr,7);
    my @parts = split('-',$dateStr);
    my $dayStr =  substr($parts[0],0,8);
-   my $tofday = substr($parts[0],9,6);
+   my $tofday = substr($parts[0],8,6);
    my $start = $parts[1];
    my $end = $parts[2];
    my ($year,$mon,$mday) = (substr($dayStr,0,4),substr($dayStr,4,2),substr($dayStr,6,2));
