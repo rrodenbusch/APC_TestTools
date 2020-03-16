@@ -93,7 +93,7 @@ sub getClip {
    my ($SSopt,$TOopt) = ("-ss 0","");
    my $offset = $start -$fStartEpoch;
    $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
-   $offset = $end - $start;
+   $offset = $offset + $end - $start;
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
