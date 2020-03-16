@@ -50,7 +50,7 @@ foreach my $curFile (@$fList) {
    ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
    my ($year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
-               substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,6));
+               substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
    print "Checking $curFile $ss $mm $hh $mday $mon $year $start\n";
    my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
