@@ -88,8 +88,8 @@ foreach my $curFile (@fullFiles) {
       my $clipEnd = $clipStart + ($endEpoch - $startEpoch);
       $targName = 'clip_' . $startEpoch .'_'. $endEpoch . '.mp4';
       print "Extracting from $clipStart for $clipEnd from $curFile into $targName\n";
-      
-      my $cmdRet = `$ffmpeg -i $curFile -ss $clipStart -to $clipEnd $targName`;
+      my $cmd = "$ffmpeg -i $curFile -ss $clipStart -to $clipEnd $targName";  
+      my $cmdRet = `$cmd`;
    }
 }
 
