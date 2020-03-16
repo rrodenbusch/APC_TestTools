@@ -38,5 +38,17 @@ if (scalar @ARGV > 0) { # No command line files
 my $fCnt = scalar @$fList;
 print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
 
+foreach my $curFile (@$fList) {
+   my $dateStr = substr($curFile,-4);
+   $dateStr = substr($dateStr,8);
+   my @parts = split('-',$dateStr);
+   my $day =  substr($parts[0],0,8);
+   my $tofday = substr($parts[0],9,6);
+   my $start = $parts[1];
+   my $end = $parts[2];
+   
+   print "Checking files\n";
+   
+}
 
 1;
