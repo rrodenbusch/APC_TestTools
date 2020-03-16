@@ -99,7 +99,7 @@ sub getClip {
    
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = "$ffmpeg -i $fname $SSopt $TOopt $targName";  
-   logMsg "Extracting $SSopt $TOopt -i $fname into $targName\n";
+   logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
    logMsg "cmd : $cmd";
    my $cmdRet = `$cmd`;
    
@@ -111,7 +111,7 @@ my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 
 my $fCnt = scalar @$fList;
-print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
+logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";
 
 my @fullFiles;
 foreach my $curFile (@$fList) {
@@ -119,8 +119,8 @@ foreach my $curFile (@$fList) {
    my ($fStartEpoch,$fEndEpoch) = parseFname($curFile);
 
    $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) );   
-   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') );
-   $wholeFile   = 
+   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch)   && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') );
+   $wholeFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') && ($lastFile eq ''));
 
    push(@fullFiles,$curFile) if ( defined($firstFile) && ($firstFile eq $curFile));
    push(@fullFiles,$lastFile) if ( $lastFile ne '' );
