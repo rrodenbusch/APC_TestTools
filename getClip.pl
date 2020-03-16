@@ -19,7 +19,7 @@ sub getCmdLine {
    $endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
    $endEpoch = $options{e} if defined($options{e});
    $endEpoch = $startEpoch + $options{D} if defined($options{D});
-   
+   $dir = cwd;
    $dir = $options{d} if defined($options{d});
    $MACs = $options{m} if defined($options{m});
    $coach = $options{c} if defined($options{c});
@@ -28,7 +28,7 @@ sub getCmdLine {
    return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options);
 }
 
-my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
+my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
 die "Bad working directory\n" unless ( ($dir eq cwd()) || (chdir($dir)) );
 my $fList;
 if (scalar @ARGV > 0) { # No command line files
