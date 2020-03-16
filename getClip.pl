@@ -60,7 +60,7 @@ foreach my $curFile (@$fList) {
    if ($end eq '28800') {
       # sometimes it runs on, check duration
       my $durStr = `ffmpeg -i $curFile 2>&1 |grep Duration | cut -d ' ' -f 4 | sed s/,//`;
-      my @durParts = split($durStr,':');
+      my @durParts = split(':',$durStr);
       $fDur = 3600*$durParts[0] + 60*$durParts[1] + int($durParts[2]); 
    }
    $fStartEpoch = $writeTime - $fDur;
