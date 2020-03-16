@@ -32,7 +32,7 @@ if (scalar @ARGV > 0) { # No command line files
 } else {
    my @files;
    @files = glob('*.mp4') unless (defined($MACs));
-   @files = glob($MACs) if (defined($MACs));
+   @files = glob("$MACs".'_*') if (defined($MACs));
    $fList = \@files;
 }
 my $fCnt = scalar @$fList;
