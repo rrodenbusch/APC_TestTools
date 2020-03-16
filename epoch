@@ -3,7 +3,8 @@ use Date::Format;
 
 my $epoch = $ARGV[0];
 $epoch = time() unless defined($epoch);
-my $timestr = time2str("%c", $epoch);
-print "$epoch $timestr\n";
+my $utcstr = time2str("%c", $epoch,'UTC');
+my $localstr = time2str("%c", $epoch,'EDT');
+print "$epoch $utcstr UTC  $localstr EDT\n";
 
 1;
