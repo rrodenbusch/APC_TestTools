@@ -99,7 +99,7 @@ sub getClip {
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
 #   my $cmd = 'ffmpeg -loglevel warning -y ' .
 #             " $SSopt $TOopt  -i $fname -acodec copy -vcodec copy $targName";  
-   my $cmd = 'ffmpeg -loglevel warning -y' .
+   my $cmd = 'ffmpeg -loglevel warning -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
    logMsg "cmd : $cmd";
