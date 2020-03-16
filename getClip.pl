@@ -59,9 +59,9 @@ foreach my $curFile (@$fList) {
    push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );
 }
    
-my $lineStr = "$firstFile ";
+my $lineStr = "First: $firstFile Full: ";
 $lineStr .=  join(' ',@fullFiles) if (scalar @fullFiles > 0);
-$lineStr .= " $lastFile";
+$lineStr .= " Last: $lastFile";
    
 print "$lineStr\n";
 
