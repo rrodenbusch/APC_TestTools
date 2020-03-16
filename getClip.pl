@@ -83,11 +83,11 @@ my $targName;
 foreach my $curFile (@fullFiles) {
    if  ( ($curFile eq $firstFile) && ($curFile eq $lastFile) )  {
       my ($fStartEpoch,$fEndEpoch) = getFtimes($curFile);
-      my $startOffset = $startEpoch - $fStartEpoch;
-      my $clipLen = $endEpoch - $startEpoch;
-      $targName = 'clip_' . $startEpoch .'_'. $clipLen . '.mp4';
-      print "Extracting from $startOffset for $clipLen from $curFile into $targName\n";
-      `ffmpeg -i $curFile -ss $startOffset -to $clipLen -acodec copy -vcodec copy $targName`;
+      my $clipStart = $startEpoch - $fStartEpoch;
+      my $clipEnd = $clipStart + ($endEpoch - $startEpoch);
+      $targName = 'clip_' . $startEpoch .'_'. $endEpoch . '.mp4';
+      print "Extracting from $clipStart for $clipEnd from $curFile into $targName\n";
+      `ffmpeg -i $curFile -ss $clipStart -to $clipEnd -acodec copy -vcodec copy $targName`;
    }
 }
 
