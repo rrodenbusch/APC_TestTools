@@ -80,7 +80,7 @@ foreach my $curFile (@$fList) {
 }
 
 my $targName;
-my $ffmpeg = 'ffmpeg -loglevel panic -acodec copy -vcodec copy';
+my $ffmpeg = 'ffmpeg -loglevel warn -acodec copy -vcodec copy';
 foreach my $curFile (@fullFiles) {
    if  ( ($curFile eq $firstFile) && ($curFile eq $lastFile) )  {
       my ($fStartEpoch,$fEndEpoch) = getFtimes($curFile);
