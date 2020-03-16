@@ -54,9 +54,8 @@ foreach my $curFile (@$fList) {
    print "Checking $curFile $ss $mm $hh $mday $mon $year $start\n";
    my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
-   my $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
-   my $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
-   my (@fullFiles);
+   $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
+   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
    push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );
 }
    
