@@ -28,41 +28,72 @@ sub getCmdLine {
    return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options);
 }
 
-my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
-die "Bad working directory\n" unless ( ($dir eq cwd()) || (chdir($dir)) );
-my $fList;
-if (scalar @ARGV > 0) { # No command line files
-   $fList = \@ARGV;
-} else {
-   my @files;
-   @files = glob('*.mp4') unless (defined($MACs));
-   @files = glob("$MACs".'_*') if (defined($MACs));
-   $fList = \@files;
-}
-my $fCnt = scalar @$fList;
-print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
-
-my ($firstFile,$lastFile,@fullFiles);
-foreach my $curFile (@$fList) {
+sub getFtimes{
    ##   xxxxxx_YYYYMMDDhhmmss-aaaaaa-bbbbbb.mp4
    ##   xxxxxx  last 6 of MAC on video feed
    ##   YYYYYMMDDhhmmss  date time
    ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
+   my $curFile = shift;
    my ($year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
    print "Checking $curFile $ss $mm $hh $mday $mon $year $start\n";
    my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
-   $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
-   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
-   push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );
+   return($fStartEpoch,$fEndEpoch);
 }
+
+sub getFileList{
+   my ($dir,$MACs,$coach,$chan,$options) = @_;
+   my ($fList,@files);
    
-my $lineStr = "First: $firstFile Full: ";
-$lineStr .=  join(' ',@fullFiles) if (scalar @fullFiles > 0);
-$lineStr .= " Last: $lastFile";
-   
-print "$lineStr\n";
+   die "Bad working directory\n" unless ( ($dir eq cwd()) || (chdir($dir)) );
+   if (scalar @ARGV > 0) { # No command line files
+      $fList = \@ARGV;
+   } else {
+      my @files;
+      @files = glob('*.mp4') unless (defined($MACs));
+      @files = glob("$MACs".'_*') if (defined($MACs));
+      $fList = \@files;
+   }
+   return($fList);   
+}
+
+
+my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
+my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
+
+my $fCnt = scalar @$fList;
+print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
+
+my ($firstFile,$lastFile,@fullFiles);
+foreach my $curFile (@$fList) {
+   my ($fStartEpoch,$fEndEpoch) = getFtimes($curFile);
+   $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
+   push(@fullFiles,$curFile) if ( defined($firstFile) && ($firstFile eq $curFile));
+   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
+   push(@fullFiles,$curFile) if ( defined($lastFile) && ($lastFile eq $curFile));
+   if ( !( defined($firstFile) && ($firstFile eq $curFile) )   && 
+        !( defined($lastFile)  && ($lastFile eq $curFile) ) ){
+      push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );        
+   }
+}
+
+my $targName;
+foreach my $curFile (@fullFiles) {
+   if  ( ($curFile eq $firstFile) && ($curFile eq $lastFile) )  {
+      my ($fStartEpoch,$fEndEpoch) = getFtimes($curFile);
+      my $startDelta = $startEpoch - $fStartEpoch;
+      my $clipLen = $endEpoch - $startEpoch;
+      $targName = 'clip_' . $startDelta .'_'. $clipLen . '.mp4';
+      my $endOffset = '';
+      my $startOffset = '';
+      print "Extracting from $startOffset for $clipLen from $curFile into $targName\n";
+      `ffmpeg -i $curFile -ss $startOffset -to $clipLen -acode copy -vcodec copy $targName`;
+   }
+}
+
+my $ret = `ls -ltr $targName`;
+print $ret;
 
 1;
