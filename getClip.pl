@@ -3,30 +3,33 @@ use strict;
 use warnings;
 use Cwd qw(cwd);
 use Time::Local;
-
-
 use Getopt::Std;
-# declare the perl command line flags/options we want to allow
-my %options=();
-getopts("hs:e:d:m:D:", \%options);
-if (defined $options{h})   {
-   print "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
-         "CSV file {startepoch,endepoch,fname}\n";
-   exit;
+
+sub getCmdLine {
+   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan);
+   my %options=();
+
+   getopts("hs:e:d:m:D:c:n:", \%options);
+   if (defined $options{h})   {
+      die "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
+            "CSV file {startepoch,endepoch,fname}\n";
+   }
+   $startEpoch = $options{s} if defined($options{s});
+   $startEpoch = 0 unless defined($startEpoch);
+   $endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
+   $endEpoch = $options{e} if defined($options{e});
+   $endEpoch = $startEpoch + $options{D} if defined($options{D});
+   
+   $dir = $options{d} if defined($options{d});
+   $MACs = $options{m} if defined($options{m});
+   $coach = $options{c} if defined($options{c});
+   $chan = $options{n} if defined($options{n});
+   
+   return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options);
 }
 
-my ($startEpoch, $endEpoch,$dirName,$MACs,$coach,$chan,$dir);
-$startEpoch = $options{s} if defined($options{s});
-$startEpoch = 0 unless defined($startEpoch);
-$endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
-$endEpoch = $options{e} if defined($options{e});
-$endEpoch = $startEpoch + $options{D} if defined($options{D});
-my $curDir = cwd;
-$dir = $curDir;
-$dir = $options{d} if defined($options{d});
-$MACs = $options{m} if defined($options{m});
-
-die "Bad working directory\n" unless ( ($dir eq $curDir) || (chdir($dir)) );
+my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
+die "Bad working directory\n" unless ( ($dir eq cwd()) || (chdir($dir)) );
 my $fList;
 if (scalar @ARGV > 0) { # No command line files
    $fList = \@ARGV;
@@ -41,42 +44,26 @@ print "Looking for $startEpoch to $endEpoch in $fCnt files mac $MACs\n";
 
 my ($firstFile,$lastFile,@fullFiles);
 foreach my $curFile (@$fList) {
-   my $dateStr = substr($curFile,0,-4);
-   $dateStr = substr($dateStr,7);
-   my @parts = split('-',$dateStr);
-   my $dayStr =  substr($parts[0],0,8);
-   my $tofday = substr($parts[0],8,6);
-   my $start = $parts[1];
-   my $end = $parts[2];
-   my ($year,$mon,$mday) = (substr($dayStr,0,4),substr($dayStr,4,2),substr($dayStr,6,2));
-   my ($hh,$mm,$ss) = (substr($tofday,0,2),substr($tofday,2,2),substr($tofday,4,2));
-   $mon--;
-   print "Checking $curFile $ss $mm $hh $mday $mon $year\n";
-   my $fEpoch      = timelocal($ss,$mm,$hh,$mday,$mon,$year);
-   my $fStartEpoch = $fEpoch + $start;
-   my $fEndEpoch   = $fEpoch + $end;
-   my $writeTime = (stat $curFile)[9];
-   my $fDur = $end - $start;
-   if ($end eq '28800') {
-      # sometimes it runs on, check duration
-      my $durStr = `ffmpeg -i $curFile 2>&1 |grep Duration | cut -d ' ' -f 4 | sed s/,//`;
-      my @durParts = split(':',$durStr);
-      $fDur = 3600*$durParts[0] + 60*$durParts[1] + int($durParts[2]); 
-   }
-   $fStartEpoch = $writeTime - $fDur;
-   $fEndEpoch = $writeTime;
-   
-   my $firstFile = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
-   my $lastFile  = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
+   ##   xxxxxx_YYYYMMDDhhmmss-aaaaaa-bbbbbb.mp4
+   ##   xxxxxx  last 6 of MAC on video feed
+   ##   YYYYYMMDDhhmmss  date time
+   ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
+   my ($year,$mon,$mday,$hh,$mm,$ss,$start) = 
+              (substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
+               substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,6));
+   print "Checking $curFile $ss $mm $hh $mday $mon $year $start\n";
+   my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
+   my $fEndEpoch   = (stat $curFile)[9];
+   my $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) ); 
+   my $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) );
    my (@fullFiles);
    push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );
 }
    
-   my $lineStr = "$firstFile ";
-   $lineStr .=  join(' ',@fullFiles) if (scalar @fullFiles > 0);
-   $lineStr .= " $lastFile";
+my $lineStr = "$firstFile ";
+$lineStr .=  join(' ',@fullFiles) if (scalar @fullFiles > 0);
+$lineStr .= " $lastFile";
    
-   print "$lineStr\n";
-
+print "$lineStr\n";
 
 1;
