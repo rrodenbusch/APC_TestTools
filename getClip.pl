@@ -15,7 +15,7 @@ sub getCmdLine {
    my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan);
    my %options=();
 
-   getopts("hs:e:d:m:D:c:n:", \%options);
+   getopts("hs:e:d:m:D:c:n:o:", \%options);
    if (defined $options{h})   {
       die "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
             "CSV file {startepoch,endepoch,fname}\n";
@@ -43,7 +43,6 @@ sub parseFname {
    my ($MAC, $year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,0,6),substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
-   logMsg "Checking $curFile $ss $mm $hh $mday $mon $year $start";
    my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
    return($fStartEpoch,$fEndEpoch,$MAC);
@@ -86,7 +85,7 @@ sub catMP4 {
 }
 
 sub getClip {
-   my ($fname,$start,$end) = @_;
+   my ($fname,$start,$end,$odir) = @_;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
 
@@ -96,13 +95,10 @@ sub getClip {
    $offset = $offset + $end - $start;
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    
-   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
-#   my $cmd = 'ffmpeg -loglevel warning -y ' .
-#             " $SSopt $TOopt  -i $fname -acodec copy -vcodec copy $targName";  
+   my $targName = $odir . 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel warning -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
-   logMsg "cmd : $cmd";
    my $cmdRet = `$cmd`;
    
    my $retVal = $targName if (-e $targName);
@@ -134,12 +130,16 @@ foreach my $curFile (@$fList) {
 }
 
 my $firstFile  = shift(@fullFiles);
-my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch);
-
 my $lastFile   = pop(@fullFiles);
+my $odir = $options->{o} if defined($options->{o});
+
+my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
 my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch) if defined($lastFile);
 
 my $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
-logMsg `ls -ltr $fullClip`;
+my $targName = $options->{o} . '/' if defined($options->{o});
+$targName .= $fullClip;
+`mv -f $fullClip $odir/$fullClip` if defined($targName ne $fullClip);
+logMsg `ls -ltr $targName`;
 
 1;
