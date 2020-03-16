@@ -90,6 +90,7 @@ foreach my $curFile (@fullFiles) {
       print "Extracting from $clipStart for $clipEnd from $curFile into $targName\n";
       my $cmd = "$ffmpeg -i $curFile -ss $clipStart -to $clipEnd $targName";  
       my $cmdRet = `$cmd`;
+      print "$cmdRet";
    }
 }
 
