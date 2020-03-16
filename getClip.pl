@@ -51,7 +51,7 @@ foreach my $curFile (@$fList) {
    my ($year,$mon,$mday) = (substr($dayStr,0,4),substr($dayStr,4,2),substr($dayStr,6,2));
    my ($hh,$mm,$ss) = (substr($tofday,0,2),substr($tofday,2,2),substr($tofday,4,2));
    $mon--;
-   print "Checking $ss $mm $hh $mday $mon $year\n";
+   print "Checking $curFile $ss $mm $hh $mday $mon $year\n";
    my $fEpoch = timelocal($ss,$mm,$hh,$mday,$mon,$year);
    my $fStartEpoch = $fEpoch + $start;
    my $fEndEpoch = $fEpoch + $end;
