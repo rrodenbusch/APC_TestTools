@@ -85,7 +85,7 @@ sub catMP4 {
 }
 
 sub getClip {
-   my ($fname,$start,$end,$odir) = @_;
+   my ($fname,$start,$end) = @_;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
 
@@ -95,7 +95,7 @@ sub getClip {
    $offset = $offset + $end - $start;
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    
-   my $targName = $odir . 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel warning -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
