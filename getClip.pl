@@ -165,8 +165,12 @@ if (scalar @$fList > 1) {
    $SSopt = "-ss ". $durScale*$options->{S} if ( defined($options->{S}) );
    my $start = $fStartEpoch + $durScale*$options->{S} if ( defined($options->{S}) );
    my $fileStart = $fStartEpoch + $options->{S};
-   my $end = $durScale*$options->{E} if (defined($options->{E}));
-   my $fileEnd = $options->{E} - $fileStart if defined($options->{E});
+   my ($end,$fileEnd);
+   if (defined($options->{E})) {
+      $end = $durScale*$options->{E};
+      $fileEnd = $options->{E};
+      $fileEnd -= $options->{S} if defined($options->{S});
+   }
    $end = $start + $durScale*$options->{l} if defined($options->{l});
    $fileEnd = $options->{l} if defined($options->{l});
    $end = int($end) + 1 unless (int($end) == $end);
