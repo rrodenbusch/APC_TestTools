@@ -5,6 +5,21 @@ use Cwd qw(cwd);
 use Time::Local;
 use Getopt::Std;
 
+my $USAGE = "Usage: getClip.pl\n".
+                  "\t   -c Coach             \n" .
+                  "\t   -d Input dir         \n" .
+                  "\t   -D output dir        \n" .
+                  "\t   -e end time epoch    \n" .
+                  "\t   -E end offset (sec)  \n" .
+                  "\t   -f CSV data file     \n" .
+                  "\t   -l clip len (sec)    \n" .                  
+                  "\t   -m MACs              \n" .
+                  "\t   -n Channel [0..3]    \n" .
+                  "\t   -s start time epoch  \n" .              
+                  "\t   -S start offset (s)  \n" .              
+                  "\t   -t targDir           \n" .              
+                  "   file1 file2 ...        \n\n" .
+            "CSV file {startepoch,endepoch,fname}\n";
 
 sub logMsg {
    my $msg = shift;
@@ -14,11 +29,10 @@ sub logMsg {
 sub getCmdLine {
    my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan);
    my %options=();
-
-   getopts("hs:e:d:m:D:c:n:o:", \%options);
+   
+   getopts("hc:d:D:e:E:f:l:m:n:s:S:t:", \%options);
    if (defined $options{h})   {
-      die "Usage: getClip.pl -f CSV data file -s startepoch -e endepoch -d directory -m MACs -c Coach -n Channel [0..3]   file1 file2 ...\n" .
-            "CSV file {startepoch,endepoch,fname}\n";
+      die $USAGE;
    }
    $startEpoch = $options{s} if defined($options{s});
    $startEpoch = 0 unless defined($startEpoch);
@@ -105,39 +119,80 @@ sub getClip {
    return($retVal);
 }
 
+sub getClip {
+   my ($fname,$start,$end) = @_;
+
+   my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
+
+   my ($SSopt,$TOopt) = ("-ss 0","");
+   my $offset = $start -$fStartEpoch;
+   $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
+   $offset = $offset + $end - $start;
+   $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
+   
+   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   my $cmd = 'ffmpeg -loglevel warning -y ' .
+             "-i $fname $SSopt $TOopt -c copy $targName";  
+   logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
+   my $cmdRet = `$cmd`;
+   
+   my $retVal = $targName if (-e $targName);
+   return($retVal);
+}
+
 my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
+my $odir = $options->{o} if defined($options->{o});
 
 my $fCnt = scalar @$fList;
 logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";
-
-my @fullFiles;
-foreach my $curFile (@$fList) {
-   my ($firstFile,$lastFile,$wholeFile) = ('','','');
-   my ($fStartEpoch,$fEndEpoch) = parseFname($curFile);
-
-   $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) );   
-   $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch)   && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') );
-   $wholeFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') && ($lastFile eq ''));
-
-   push(@fullFiles,$curFile) if ( defined($firstFile) && ($firstFile eq $curFile));
-   push(@fullFiles,$lastFile) if ( $lastFile ne '' );
-
-   if ( !( defined($firstFile) && ($firstFile eq $curFile) )   && 
-        !( defined($lastFile)  && ($lastFile eq $curFile) ) ){
-      push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );        
+my $fullClip;
+if (scalar @$fList > 1) {
+   my @fullFiles;
+   foreach my $curFile (@$fList) {
+      my ($firstFile,$lastFile,$wholeFile) = ('','','');
+      my ($fStartEpoch,$fEndEpoch) = parseFname($curFile);
+   
+      $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) );   
+      $lastFile    = $curFile if ( ($endEpoch >= $fStartEpoch)   && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') );
+      $wholeFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($endEpoch <= $fEndEpoch) && ($firstFile eq '') && ($lastFile eq ''));
+   
+      push(@fullFiles,$curFile) if ( defined($firstFile) && ($firstFile eq $curFile));
+      push(@fullFiles,$lastFile) if ( $lastFile ne '' );
+   
+      if ( !( defined($firstFile) && ($firstFile eq $curFile) )   && 
+           !( defined($lastFile)  && ($lastFile eq $curFile) ) ){
+         push(@fullFiles,$curFile) if ( ($fStartEpoch >= $startEpoch) && ($fEndEpoch <= $endEpoch) );        
+      }
    }
+   my $firstFile  = shift(@fullFiles);
+   my $lastFile   = pop(@fullFiles);
+   
+   my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
+   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch) if defined($lastFile);
+   
+   $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
+} elsif (scalar @$fList ) {
+   # Process the only file on the list
+   my $curFile = shift @$fList;
+   my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($curFile);
+   my $SSopt = "-ss 0";
+   $SSopt = "-ss ". $options->{S} if ( defined($options->{S}) );
+   my $start = $fStartEpoch + $options->{S} if ( defined($options->{S}) );
+   my $end = $options->{E} if (defined($options->{E}));
+   $end = $start + $options->{l} if defined($options->{l});
+   my $TOopt = "-to $end";
+   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   my $cmd = 'ffmpeg -loglevel warning -y ' .
+             "-i $curFile $SSopt $TOopt -c copy $targName";  
+   logMsg "Extracting $SSopt $TOopt -i $curFile into $targName";
+   my $cmdRet = `$cmd`;
+} else {
+   die $USAGE;
 }
 
-my $firstFile  = shift(@fullFiles);
-my $lastFile   = pop(@fullFiles);
-my $odir = $options->{o} if defined($options->{o});
-
-my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
-my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch) if defined($lastFile);
-
-my $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
-my $targName = $options->{o} . '/' if defined($options->{o});
+## Copy back the file
+my $targName = $options->{t} . '/' if defined($options->{t});
 $targName .= $fullClip;
 `mv -f $fullClip $odir/$fullClip` if defined($targName ne $fullClip);
 logMsg `ls -ltr $targName`;
