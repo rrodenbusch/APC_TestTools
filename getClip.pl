@@ -183,10 +183,12 @@ if (scalar @$fList > 1) {
    $end = $start + $options->{l} if defined($options->{l});
    my $TOopt = "-to $end";
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
-   my $cmd = 'ffmpeg -loglevel warning -y ' .
+   #   my $cmd = 'ffmpeg -loglevel warning -y ' .
+   my $cmd = 'ffmpeg g -y ' .
              "-i $curFile $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $curFile into $targName";
    my $cmdRet = `$cmd`;
+   $fullClip = $targName;
 } else {
    die $USAGE;
 }
