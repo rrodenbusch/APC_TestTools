@@ -108,6 +108,7 @@ sub getClip {
                     substr($ret,6,2) + substr($ret,9,2)/100;
    my $fnDur = $fEndEpoch - $fStartEpoch;
    my $durScale = $ffDur / $fnDur;
+   
 
    my ($SSopt,$TOopt) = ("-ss 0","");
    my $FileOffset = $start -$fStartEpoch;
@@ -119,7 +120,7 @@ sub getClip {
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
-   logMsg "Extracting $SSopt $TOopt -i $fname into $targName\n$cmd";
+   logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
    my $cmdRet = `$cmd`;
    
    my $retVal = $targName if (-e $targName);
