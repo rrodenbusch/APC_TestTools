@@ -163,6 +163,12 @@ if (scalar @$fList > 1) {
    $end = $start + $options->{l} if defined($options->{l});
    my $TOopt = "-to $end";
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   my $ret = `ffmpeg -i $curFile 2>&1 | |grep "Duration" |cut -d ' ' -f 4 |sed s/,// | `;
+   my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
+                    substr($ret,6,2) + substr($ret,9,2)/100;
+   my $fnDur = $fEndEpoch - $fStartEpoch;
+   my $durScale = $ffDur / $fnDur;
+   print "ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
    my $cmd = 'ffmpeg -loglevel panic -y ' .
                 "-i $curFile $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $cmd";
