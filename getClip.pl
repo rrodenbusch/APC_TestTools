@@ -57,7 +57,7 @@ sub parseFname {
    my ($MAC, $year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,0,6),substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
-   my $fStartEpoch = timelocal($ss,$mm,$hh,$mday,--$mon,$year) + $start;
+   my $fStartEpoch = timegm($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
    return($fStartEpoch,$fEndEpoch,$MAC);
 }
