@@ -100,6 +100,7 @@ sub catMP4 {
 
 sub getClip {
    my ($fname,$start,$end) = @_;
+   print "File $fname start $start End $end\n";
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
    my $ret = `ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
@@ -155,7 +156,7 @@ if (scalar @$fList > 1) {
    my $lastFile   = pop(@fullFiles);
    
    my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
-   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch) if defined($lastFile);
+   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch)  if defined($lastFile);
  
    $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
 } elsif (scalar @$fList ) {
