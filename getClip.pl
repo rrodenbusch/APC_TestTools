@@ -119,36 +119,16 @@ sub getClip {
    return($retVal);
 }
 
-sub getClip {
-   my ($fname,$start,$end) = @_;
-
-   my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
-
-   my ($SSopt,$TOopt) = ("-ss 0","");
-   my $offset = $start -$fStartEpoch;
-   $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
-   $offset = $offset + $end - $start;
-   $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
-   
-   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
-   my $cmd = 'ffmpeg -loglevel warning -y ' .
-             "-i $fname $SSopt $TOopt -c copy $targName";  
-   logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
-   my $cmdRet = `$cmd`;
-   
-   my $retVal = $targName if (-e $targName);
-   return($retVal);
-}
-
 my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 my $odir = $options->{o} if defined($options->{o});
 
 my $fCnt = scalar @$fList;
-logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";
+logMsg "Searching $fCnt files";
 my $fullClip;
 if (scalar @$fList > 1) {
    my @fullFiles;
+   logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";  
    foreach my $curFile (@$fList) {
       my ($firstFile,$lastFile,$wholeFile) = ('','','');
       my ($fStartEpoch,$fEndEpoch) = parseFname($curFile);
@@ -170,7 +150,7 @@ if (scalar @$fList > 1) {
    
    my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
    my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch) if defined($lastFile);
-   
+ 
    $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
 } elsif (scalar @$fList ) {
    # Process the only file on the list
@@ -184,8 +164,8 @@ if (scalar @$fList > 1) {
    my $TOopt = "-to $end";
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel warning -y ' .
-                "-i $curFile $SSopt $TOopt -c copy $targName";  
-   logMsg "Extracting $SSopt $TOopt -i $curFile into $targName";
+                "-i $curFile $SSopt $TOopt -c:v libx264 -c:a copy $targName";  
+   logMsg "Extracting $cmd";
    my $cmdRet = `$cmd`;
    $fullClip = $targName;
 } else {
