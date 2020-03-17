@@ -164,11 +164,14 @@ if (scalar @$fList > 1) {
    my $SSopt = "-ss 0";
    $SSopt = "-ss ". $durScale*$options->{S} if ( defined($options->{S}) );
    my $start = $fStartEpoch + $durScale*$options->{S} if ( defined($options->{S}) );
+   my $fileStart = $fStartEpoch + $options->{S};
    my $end = $durScale*$options->{E} if (defined($options->{E}));
+   my $fileEnd = $options->{E} if defined($options->{E});
    $end = $start + $durScale*$options->{l} if defined($options->{l});
+   $fileEnd = $options->{l} if defined($options->{l});
    $end = int($end) + 1 unless (int($end) == $end);
    my $TOopt = "-to $end";
-   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   my $targName = 'clip_' . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
    print "ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
    my $cmd = 'ffmpeg -loglevel panic -y ' .
                 "-i $curFile $SSopt $TOopt -c copy $targName";  
