@@ -38,7 +38,7 @@ sub getCmdLine {
    $startEpoch = 0 unless defined($startEpoch);
    $endEpoch = $startEpoch + 15 * 60;           # default 15 minutes
    $endEpoch = $options{e} if defined($options{e});
-   $endEpoch = $startEpoch + $options{D} if defined($options{D});
+   $endEpoch = $startEpoch + $options{l} if defined($options{l});
    $dir = cwd;
    $dir = $options{d} if defined($options{d});
    $MACs = $options{m} if defined($options{m});
