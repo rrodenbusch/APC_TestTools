@@ -102,17 +102,23 @@ sub getClip {
    my ($fname,$start,$end) = @_;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
+   my $ret = `ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
+   my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
+                    substr($ret,6,2) + substr($ret,9,2)/100;
+   my $fnDur = $fEndEpoch - $fStartEpoch;
+   my $durScale = $ffDur / $fnDur;
 
    my ($SSopt,$TOopt) = ("-ss 0","");
-   my $offset = $start -$fStartEpoch;
+   my $FileOffset = $start -$fStartEpoch;
+   my $offset = $durScale * $FileOffset;
    $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
-   $offset = $offset + $end - $start;
+   $offset = $offset + $durScale*($end - $start);
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
-   logMsg "Extracting $SSopt $TOopt -i $fname into $targName";
+   logMsg "Extracting $SSopt $TOopt -i $fname into $targName\n$cmd";
    my $cmdRet = `$cmd`;
    
    my $retVal = $targName if (-e $targName);
