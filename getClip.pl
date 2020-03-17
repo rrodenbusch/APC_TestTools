@@ -184,7 +184,7 @@ if (scalar @$fList > 1) {
    my $TOopt = "-to $end";
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    #   my $cmd = 'ffmpeg -loglevel warning -y ' .
-   my $cmd = 'ffmpeg g -y ' .
+   my $cmd = 'ffmpeg -y ' .
              "-i $curFile $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting $SSopt $TOopt -i $curFile into $targName";
    my $cmdRet = `$cmd`;
