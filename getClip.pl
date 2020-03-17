@@ -162,7 +162,7 @@ if (scalar @$fList > 1) {
    my $fnDur = $fEndEpoch - $fStartEpoch;
    my $durScale = $ffDur / $fnDur;
    my $SSopt = "-ss 0";
-   $SSopt = "-ss ". $durScale*$options->{S} if ( defined($options->{S}) );
+   $SSopt = "-ss ". int($durScale*$options->{S}) if ( defined($options->{S}) );
    my $start = $fStartEpoch + $durScale*$options->{S} if ( defined($options->{S}) );
    my $fileStart = $fStartEpoch + $options->{S};
    my ($end,$fileEnd);
@@ -173,7 +173,7 @@ if (scalar @$fList > 1) {
    }
    $end = $start + $durScale*$options->{l} if defined($options->{l});
    $fileEnd = $options->{l} if defined($options->{l});
-   $end = int($end) + 1 unless (int($end) == $end);
+   $fileEnd = int($fileEnd) + 1 unless (int($fileEnd) == $fileEnd);
    my $TOopt = "-to $end";
    my $targName = 'clip_' . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
    print "ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
