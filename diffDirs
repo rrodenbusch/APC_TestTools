@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "------------------  Diffs    ---------------------"
 diff -rq $1 $2 |grep -v "^Only in" | sed "s/^.*and $2/$2/" | sed "s/ differ//g" 
 echo "------------------   Only In ----------------------"
 diff -rq $1 $2 |grep "^Only in" 
