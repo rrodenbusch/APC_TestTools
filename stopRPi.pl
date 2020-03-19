@@ -20,7 +20,7 @@ foreach my $curProc (@ProcList) {
  	}
 	push(@pidList,$pid) unless $pid == -1;
 }
-$ret0 = `ps -elf |grep openRTSP`;
+$ret0 = `ps -eopid,command |grep openRTSP |grep -v grep`;
 print "$ret0\n";
 if ( (scalar @pidList > 0) && defined($ARGV[0]) && ($ARGV[0] eq 'kill')) {
 	my $cmd = "kill " . join(" ",@pidList);
