@@ -1,28 +1,28 @@
 #!/bin/bash
 echo "---- Fetch Project file?"
 read var
-if [ [ $var == 'Y' ] || [ $var == 'y' ] ]
+if [ $var == 'Y' ] || [ $var == 'y' ]
 then
    wget https://www.dropbox.com/s/cjhzt8e26q7j18z/projects.7z
    md5sum projects.7z
 fi
 echo "---- Fetch V8 full File?"
 read var
-if [ [ $var == 'Y' ] || [ $var == 'y' ] ]
+if [ $var == 'Y' ] || [ $var == 'y' ]
 then
    wget https://www.dropbox.com/s/8tbls9iz2yvyfg4/MGPC.R8.7z
    md5sum MGPC.R8.7z
 fi
 echo "---- Fetch V9 full File?"
 read var
-if [ [ $var == 'Y' ] || [ $var == 'y' ] ]
+if [ $var == 'Y' ] || [ $var == 'y' ]
 then
    wget https://www.dropbox.com/s/ozzpaaa4ovwbaa8/MGPC.R9.7z
    md5sum MGPC.R9.7z
 fi
 echo "---- Fetch V9 patch File?"
 read var
-if [ [ $var == 'Y' ] || [ $var == 'y' ] ]
+if [ $var == 'Y' ] || [ $var == 'y' ]
 then
    wget https://www.dropbox.com/s/zg60eexx37wrsep/patch.tar.gz
    md5sum patch.tar.gz
