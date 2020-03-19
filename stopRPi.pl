@@ -5,7 +5,7 @@ use warnings;
 
 my @pidList;
 my @ProcList = ('SystemMonitor.pl','MapNetwork.pl','WatchDog.pl','ConfigServer.pl','ShutdownNUC.pl','i2c_apc_v6.pl',
-				'RemoteLog.pl', 'RunNVR.pl', 'RemoteData.pl','WatchSSD.pl','i2c_apc_v6.pl','Watcher.pl','WatchRPi.pl');
+				'RemoteLog.pl', 'RunNVR.pl', 'RemoteData.pl','WatchSSD.pl','i2c_apc_v6.pl','Watcher.pl','WatchRPi.pl','i2c_fbd.pl');
 my $ret0 = `ps -elf |grep perl` ;
 print "\nBEFORE:\n$ret0\n";
 foreach my $curProc (@ProcList) {
@@ -20,6 +20,8 @@ foreach my $curProc (@ProcList) {
  	}
 	push(@pidList,$pid) unless $pid == -1;
 }
+$ret0 = `ps -elf |grep openRTSP`;
+print "$ret0\n";
 if ( (scalar @pidList > 0) && defined($ARGV[0]) && ($ARGV[0] eq 'kill')) {
 	my $cmd = "kill " . join(" ",@pidList);
 	`$cmd`;	
