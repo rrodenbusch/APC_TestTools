@@ -134,8 +134,10 @@ sub mvClips {
    if (defined($targDir)  && (-d $targDir) ) {
       print "Copying files to $targDir\n";
       foreach my $curFname (@_) {
-         my $targName = $targDir . '/' . $curFname;
-         `mv -f $curFname $targName` if defined($targName ne $curFname);
+         if (defined($curFname) && (-e $curFname)) {
+            my $targName = $targDir . '/' . $curFname;
+            `mv -f $curFname $targName` if defined($targName ne $curFname);      
+         }
       }
    }
 }
