@@ -74,6 +74,8 @@ sub getCmdLine {
    $chan = $options{n} if defined($options{n});
    $ip = $options{i} if defined($options{i});
    
+   `mkdir $options{t}` if (defined($options{t})  && (!(-d $options{t})));
+   
    my $config = readINI() if (defined($ip));
    my %NVNhash;
    if (defined($ip)) {
