@@ -128,6 +128,18 @@ sub getClip {
    return($retVal);
 }
 
+sub mvClips {
+   my $targDir = shift;
+   
+   if (defined($targDir)  && (-d $targDir) ) {
+      print "Copying files to $$targDir\n";
+      foreach my $curFname (@_) {
+         my $targName = $targDir . '/' . $curFname;
+         `mv -f $curFname $targName` if defined($targName ne $curFname);
+      }
+   }
+}
+
 my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 my $odir = $options->{o} if defined($options->{o});
@@ -199,22 +211,8 @@ my $statLine = "Created $firstClip";
 $statLine .= "," . join(',',@fullFiles) if (scalar @fullFiles > 0);
 $statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
 logMsg "$statLine\n";
-if (defined($options->{t}) && (-d $options->{t})) {
-   print "Copying files to $options->{t}\n";
-   my $targName = $options->{t} . '/' . $firstClip;
-   `mv -f $firstClip $targName` if defined($targName ne $firstClip);
-   foreach my $curFname (@fullFiles) {
-      $targName = $options->{t} . '/' . $curFname;
-      `mv -f $firstClip $targName` if defined($targName ne $curFname);
-   }
-   logMsg `ls -ltr $options->{t}`;
-}
 
-
-### Copy back the file
-#my $targName = $options->{t} . '/' if defined($options->{t});
-#$targName .= $fullClip;
-#`mv -f $fullClip $targName` if defined($targName ne $fullClip);
-#logMsg `ls -ltr $targName`;
+mvClips($options->{t},$firstClip,$lastClip,@fullFiles);
+`ls -ltr $options->{t}`;
 
 1;
