@@ -117,8 +117,8 @@ sub getClip {
    $offset = $offset + $durScale*($end - $start);
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    my $cntrStr = "";
-   $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
-   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
+   $cntrStr = "(" . $cntr . ")" if ( defined($cntr) && ($cntr ne '') );
+   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
@@ -134,9 +134,8 @@ my $odir = $options->{o} if defined($options->{o});
 
 my $fCnt = scalar @$fList;
 logMsg "Searching $fCnt files";
-my $fullClip;
+my ($firstClip,$lastClip,@fullFiles,$fullClip);
 if (scalar @$fList > 1) {
-   my @fullFiles;
    logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";  
    foreach my $curFile (@$fList) {
       my ($firstFile,$lastFile,$wholeFile) = ('','','');
@@ -157,10 +156,10 @@ if (scalar @$fList > 1) {
    my $firstFile  = shift(@fullFiles);
    my $lastFile   = pop(@fullFiles);
    
-   my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
-   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
+   $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
+   $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
  
-   $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
+   $fullClip      = catMP4($firstClip,$lastClip,@fullFiles);
 } elsif (scalar @$fList ) {
    # Process the only file on the list
    my $curFile = shift @$fList;
@@ -190,15 +189,32 @@ if (scalar @$fList > 1) {
                 "-i $curFile $SSopt $TOopt -c copy $targName";  
    logMsg "Scale $durScale\nExtracting $cmd";
    my $cmdRet = `$cmd`;
+   $firstClip = $targName;
    $fullClip = $targName;
 } else {
    die $USAGE;
 }
 
-## Copy back the file
-my $targName = $options->{t} . '/' if defined($options->{t});
-$targName .= $fullClip;
-`mv -f $fullClip $targName` if defined($targName ne $fullClip);
-logMsg `ls -ltr $targName`;
+my $statLine = "Created $firstClip";
+$statLine .= "," . join(',',@fullFiles) if (scalar @fullFiles > 0);
+$statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
+logMsg "$statLine\n";
+if (defined($options->{t}) && (-d $options->{t})) {
+   print "Copying files to $options->{t}\n";
+   my $targName = $options->{t} . '/' . $firstClip;
+   `mv -f $firstClip $targName` if defined($targName ne $firstClip);
+   foreach my $curFname (@fullFiles) {
+      $targName = $options->{t} . '/' . $curFname;
+      `mv -f $firstClip $targName` if defined($targName ne $curFname);
+   }
+   logMsg `ls -ltr $options->{t}`;
+}
+
+
+### Copy back the file
+#my $targName = $options->{t} . '/' if defined($options->{t});
+#$targName .= $fullClip;
+#`mv -f $fullClip $targName` if defined($targName ne $fullClip);
+#logMsg `ls -ltr $targName`;
 
 1;
