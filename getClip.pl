@@ -99,7 +99,7 @@ sub catMP4 {
 }
 
 sub getClip {
-   my ($fname,$start,$end) = @_;
+   my ($fname,$start,$end,$cntr) = @_;
    print "File $fname start $start End $end\n";
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
@@ -116,7 +116,8 @@ sub getClip {
    $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
    $offset = $offset + $durScale*($end - $start);
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
-   
+   my $cntrStr = "";
+   $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
@@ -157,7 +158,7 @@ if (scalar @$fList > 1) {
    my $lastFile   = pop(@fullFiles);
    
    my $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
-   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch)  if defined($lastFile);
+   my $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
  
    $fullClip   = catMP4($firstClip,$lastClip,@fullFiles);
 } elsif (scalar @$fList ) {
