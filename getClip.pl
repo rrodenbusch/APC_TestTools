@@ -117,7 +117,7 @@ sub getClip {
    $offset = $offset + $durScale*($end - $start);
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    my $cntrStr = "";
-   $cntrStr = "(" . $cntr . ")" if ( defined($cntr) && ($cntr ne '') );
+   $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
    my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
@@ -159,7 +159,7 @@ if (scalar @$fList > 1) {
    $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
    $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
  
-   $fullClip      = catMP4($firstClip,$lastClip,@fullFiles);
+#   $fullClip      = catMP4($firstClip,$lastClip,@fullFiles);
 } elsif (scalar @$fList ) {
    # Process the only file on the list
    my $curFile = shift @$fList;
