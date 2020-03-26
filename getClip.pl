@@ -33,7 +33,7 @@ sub readINI {
    my %devices;
    my @file;
    
-   open(my $fh, 'config.ini');
+   open(my $fh, "$ENV{HOME}/RPi/config.ini");
    while( my $line = <$fh>) {
       $line =~ s/\R//g;
       push(@file, $line);
@@ -74,7 +74,7 @@ sub getCmdLine {
    $chan = $options{n} if defined($options{n});
    $ip = $options{i} if defined($options{i});
    
-   my $config = readINI();
+   my $config = readINI() if (defined($ip));
    my %NVNhash;
    if (defined($ip)) {
       $ip =~ s/\R//g;
