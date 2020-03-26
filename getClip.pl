@@ -101,6 +101,7 @@ sub getCmdLine {
          $mac =~ s/://g;
          $mac = substr($mac,-6) if ($mac ne '');
          $MACs = $mac  if ($mac ne '');
+         logMsg "Mapped -i $ip to -m $mac";
       }      
    }
 
