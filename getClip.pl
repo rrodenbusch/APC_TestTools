@@ -12,6 +12,7 @@ my $USAGE = "Usage: getClip.pl\n".
                   "\t   -e end time epoch    \n" .
                   "\t   -E end offset (sec)  \n" .
                   "\t   -f CSV data file     \n" .
+                  "\t   -i IP (csv: 10,13,20,23)\n".
                   "\t   -l clip len (sec)    \n" .                  
                   "\t   -m MACs              \n" .
                   "\t   -n Channel [0..3]    \n" .
@@ -26,11 +27,38 @@ sub logMsg {
    print "$msg\n";
 }
 
+sub readINI {
+   my $self = shift;
+   my %ini;
+   my %devices;
+   my @file;
+   
+   open(my $fh, 'config.ini');
+   while( my $line = <$fh>) {
+      $line =~ s/\R//g;
+      push(@file, $line);
+   }
+   close($fh);
+
+   @file = grep m/^[^#]/, @file;  # skip comments
+   for (@file) {
+      chomp;
+      my ($key, $val) = split /=/;
+      $key =~ s/\R//g;
+      $val =~ s/\R//g;
+      $val =~ s/ //g if ($key eq 'myRole');
+      $self->{$key}=$val;
+      $ini{$key}=$val;
+   }
+   return(\%ini);
+}  # end readINI
+
+
 sub getCmdLine {
-   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan);
+   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$ip);
    my %options=();
    
-   getopts("hc:d:D:e:E:f:l:m:n:s:S:t:", \%options);
+   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
@@ -44,7 +72,36 @@ sub getCmdLine {
    $MACs = $options{m} if defined($options{m});
    $coach = $options{c} if defined($options{c});
    $chan = $options{n} if defined($options{n});
+   $ip = $options{i} if defined($options{i});
    
+   my $config = readINI();
+   my %NVNhash;
+   if (defined($ip)) {
+      $ip =~ s/\R//g;
+      if (my $NVNmap = $config->{NVNmap} ) {
+         $NVNmap =~ s/\R//g if defined($NVNmap);
+         my @fields = split(':',$NVNmap);
+         foreach my $curField (@fields) {
+            my ($mac,$ip) = split(',',$curField);
+            $mac =~ s/://g;
+            $NVNhash{$ip} = uc substr($mac,-6);
+         }         
+      }
+
+      if (defined($NVNhash{$ip}) ) {
+         $MACs = $NVNhash{$ip};
+      } else {
+         my $subnet = '192.168.0';
+         $subnet = $config->{subnet} if (defined($config->{subnet}));
+         my $ret = "sudo nmap -p 80 " . $subnet . '.' . "$ip | MAC";
+         $ret = `$ret`;
+         my $mac = (split(' ',$ret))[2];
+         $mac =~ s/://g;
+         $mac = substr($mac,-6) if ($mac ne '');
+         $MACs = $mac  if ($mac ne '');
+      }      
+   }
+
    return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options);
 }
 
@@ -63,7 +120,7 @@ sub parseFname {
 }
 
 sub getFileList{
-   my ($dir,$MACs,$coach,$chan,$options) = @_;
+   my ($dir,$MACs,$coach,$chan,$fileList,$options) = @_;
    my ($fList,@files);
    
    if ( ($dir ne cwd()) && (!chdir($dir)) ) {
@@ -75,9 +132,8 @@ sub getFileList{
    if (scalar @ARGV > 0) { # No command line files
       $fList = \@ARGV;
    } else {
-      my @files;
+      my @files = glob("$MACs".'_*') if (defined($MACs));    
       @files = glob('*.mp4') unless (defined($MACs));
-      @files = glob("$MACs".'_*') if (defined($MACs));
       $fList = \@files;
    }
    return($fList);   
@@ -142,8 +198,8 @@ sub mvClips {
    }
 }
 
-my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
-my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
+my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$fileList,$options) = getCmdLine();
+my $fList = getFileList($dir,$MACs,$coach,$chan,$fileList,$options);
 my $odir = $options->{o} if defined($options->{o});
 
 my $fCnt = scalar @$fList;
@@ -173,7 +229,7 @@ if (scalar @$fList > 1) {
    $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
    $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
  
-#   $fullClip      = catMP4($firstClip,$lastClip,@fullFiles);
+
 } elsif (scalar @$fList ) {
    # Process the only file on the list
    my $curFile = shift @$fList;
