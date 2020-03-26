@@ -95,7 +95,7 @@ sub getCmdLine {
       } else {
          my $subnet = '192.168.0';
          $subnet = $config->{subnet} if (defined($config->{subnet}));
-         my $ret = "sudo nmap -p 80 " . $subnet . '.' . "$ip | MAC";
+         my $ret = "sudo nmap -p 80 " . $subnet . '.' . "$ip | grep MAC";
          $ret = `$ret`;
          my $mac = (split(' ',$ret))[2];
          $mac =~ s/://g;
