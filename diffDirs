@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "------------------  Diffs    ---------------------"
-diff -rq $1 $2 |grep -v "^Only in" 
+diff -rq $1 $2 |grep -v "^Only in" |grep -v ".git"
 #diff -rq $1 $2 |grep -v "^Only in" | sed "s/^.*and $2/$2/" | sed "s/ differ//g" 
 echo "------------------   Only In ----------------------"
-diff -rq $1 $2 |grep "^Only in" 
+diff -rq $1 $2 |grep "^Only in" |grep -v ".git"
