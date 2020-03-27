@@ -274,6 +274,8 @@ $statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
 logMsg "$statLine\n";
 
 mvClips($options->{t},$firstClip,$lastClip,@fullFiles);
-`ls -ltr $options->{t}`;
+my $cmd = 'ls -ltr ' . "$options->{t}";
+my $ret = `$cmd`;
+print "$ret\n";
 
 1;
