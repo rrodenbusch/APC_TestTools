@@ -123,7 +123,7 @@ sub parseFname {
 }
 
 sub getFileList{
-   my ($dir,$MACs,$coach,$chan,$fileList,$options) = @_;
+   my ($dir,$MACs,$coach,$chan,$options) = @_;
    my ($fList,@files);
    
    if ( ($dir ne cwd()) && (!chdir($dir)) ) {
@@ -201,8 +201,8 @@ sub mvClips {
    }
 }
 
-my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$fileList,$options) = getCmdLine();
-my $fList = getFileList($dir,$MACs,$coach,$chan,$fileList,$options);
+my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
+my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 my $odir = $options->{o} if defined($options->{o});
 
 my $fCnt = scalar @$fList;
@@ -274,8 +274,8 @@ $statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
 logMsg "$statLine\n";
 
 mvClips($options->{t},$firstClip,$lastClip,@fullFiles);
-my $cmd = 'ls -ltr ' . "$options->{t}";
-my $ret = `$cmd`;
-print "$ret\n";
+#my $cmd = 'ls -ltr ' . "$options->{t}";
+#my $ret = `$cmd`;
+#print "$ret\n";
 
 1;
