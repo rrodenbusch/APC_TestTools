@@ -18,7 +18,8 @@ my $USAGE = "Usage: getClip.pl\n".
                   "\t   -n Channel [0..3]    \n" .
                   "\t   -s start time epoch  \n" .              
                   "\t   -S start offset (s)  \n" .              
-                  "\t   -t targDir           \n" .              
+                  "\t   -t targDir           \n" . 
+                  "\t   -o output file prefix\n" .             
                   "   file1 file2 ...        \n\n" .
             "CSV file {startepoch,endepoch,fname}\n";
 
@@ -26,6 +27,48 @@ sub logMsg {
    my $msg = shift;
    print "$msg\n";
 }
+
+sub readActiveDoors {
+   my $logfh = shift;
+   my $fname = 'ActiveDoors.csv';
+   my %Doors;
+   
+   logMsg $logfh, "Unable to open $fname\$!\n" unless (open(my $fh,$fname));
+   <$fh>;  #take off header
+   while (my $line = <$fh>) {
+      chomp $line;
+      my @flds = split(',',$line);
+      $Doors{$flds[0]}->{'1L'} = $flds[1];
+      $Doors{$flds[0]}->{'1R'} = $flds[2];
+      $Doors{$flds[0]}->{'2L'} = $flds[3];
+      $Doors{$flds[0]}->{'2R'} = $flds[4];
+   }
+   close($fh);
+   return (\%Doors);
+}
+
+sub doorActiveOpen {
+   my ($doors,$coach,$end,$threshold,$activeDoors) = @_;
+   my $doorOpen = 0;
+   
+   my $doorID = '';
+   $doorID = '1L' if ($end == 1) && ($threshold eq 'LEFT');
+   $doorID = '1R' if ($end == 1) && ($threshold eq 'RIGHT');
+   $doorID = '2L' if ($end == 2) && ($threshold eq 'LEFT');
+   $doorID = '2R' if ($end == 2) && ($threshold eq 'RIGHT');
+   my $active = $activeDoors->{$coach}->{$doorID};
+   
+   my $mask = 0x00;
+   $mask = 0x01 if ($threshold eq 'LEFT');
+   $mask = 0x02 if ($threshold eq 'RIGHT');
+   my $open = ( ($doors ne '') && ($doors & $mask) == 0);
+   
+   if ( ($mask != 0) && ($open) && ($active)) {
+      $doorOpen = 1;
+   };
+   return($doorOpen);
+}
+
 
 sub readINI {
    my $self = shift;
@@ -55,10 +98,10 @@ sub readINI {
 
 
 sub getCmdLine {
-   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$ip);
+   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$ip,$prefix);
    my %options=();
    
-   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:", \%options);
+   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:o:", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
@@ -73,6 +116,8 @@ sub getCmdLine {
    $coach = $options{c} if defined($options{c});
    $chan = $options{n} if defined($options{n});
    $ip = $options{i} if defined($options{i});
+   $prefix = 'clip_';
+   $prefix .= $options{o} if defined($options{o});
    
    `mkdir $options{t}` if (defined($options{t})  && (!(-d $options{t})));
    
@@ -158,7 +203,7 @@ sub catMP4 {
 }
 
 sub getClip {
-   my ($fname,$start,$end,$cntr) = @_;
+   my ($fname,$start,$end,$cntr,$prefix) = @_;
    print "File $fname start $start End $end\n";
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
@@ -177,7 +222,7 @@ sub getClip {
    $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
    my $cntrStr = "";
    $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
-   my $targName = 'clip_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
+   my $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
    my $cmd = 'ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
@@ -201,7 +246,7 @@ sub mvClips {
    }
 }
 
-my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options) = getCmdLine();
+my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options,$prefix) = getCmdLine();
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 my $odir = $options->{o} if defined($options->{o});
 
@@ -229,8 +274,8 @@ if (scalar @$fList > 1) {
    my $firstFile  = shift(@fullFiles);
    my $lastFile   = pop(@fullFiles);
    
-   $firstClip  = getClip($firstFile,$startEpoch,$endEpoch) if defined($firstFile);
-   $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1)  if defined($lastFile);
+   $firstClip  = getClip($firstFile,$startEpoch,$endEpoch,$prefix) if defined($firstFile);
+   $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,"$prefix"."_1")  if defined($lastFile);
  
 
 } elsif (scalar @$fList ) {
@@ -256,7 +301,7 @@ if (scalar @$fList > 1) {
    $fileEnd = $options->{l} if defined($options->{l});
    $fileEnd = int($fileEnd) + 1 unless (int($fileEnd) == $fileEnd);
    my $TOopt = "-to $end";
-   my $targName = 'clip_' . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
+   my $targName = "$prefix" ."_" . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
    print "ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
    my $cmd = 'ffmpeg -loglevel panic -y ' .
                 "-i $curFile $SSopt $TOopt -c copy $targName";  
