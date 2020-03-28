@@ -150,7 +150,7 @@ sub getCmdLine {
       }      
    }
 
-   return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options);
+   return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options,$prefix);
 }
 
 sub parseFname {
