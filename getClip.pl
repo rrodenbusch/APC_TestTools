@@ -275,7 +275,7 @@ if (scalar @$fList > 1) {
    my $lastFile   = pop(@fullFiles);
    
    $firstClip  = getClip($firstFile,$startEpoch,$endEpoch,,$prefix) if defined($firstFile);
-   $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1,"$prefix")  if defined($lastFile);
+   $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,1,$prefix)  if defined($lastFile);
  
 
 } elsif (scalar @$fList ) {
