@@ -313,14 +313,15 @@ if (scalar @$fList > 1) {
    die $USAGE;
 }
 
-my $statLine = "Created $firstClip";
-$statLine .= "," . join(',',@fullFiles) if (scalar @fullFiles > 0);
-$statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
-logMsg "$statLine\n";
-
-mvClips($options->{t},$firstClip,$lastClip,@fullFiles);
-#my $cmd = 'ls -ltr ' . "$options->{t}";
-#my $ret = `$cmd`;
-#print "$ret\n";
+if (defined($firstClip) && ($firstClip ne '')) {
+   my $statLine = "Created $firstClip";
+   $statLine .= "," . join(',',@fullFiles) if (scalar @fullFiles > 0);
+   $statLine .= ",$lastClip" if defined($lastClip) && ($lastClip ne '');
+   logMsg "$statLine\n";
+   
+   mvClips($options->{t},$firstClip,$lastClip,@fullFiles);  
+} else {
+   logMsg "No files found.";
+}
 
 1;
