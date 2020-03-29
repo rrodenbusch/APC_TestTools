@@ -205,31 +205,35 @@ sub catMP4 {
 sub getClip {
    my ($fname,$start,$end,$cntr,$prefix) = @_;
    print "File $fname start $start End $end\n";
+   my $targName;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
    my $ret = `\/usr\/bin\/ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
-   print "$ret\n";
-   my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
+   if ( defined($ret) && ($ret ne '') ) {
+      my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
                     substr($ret,6,2) + substr($ret,9,2)/100;
-   my $fnDur = $fEndEpoch - $fStartEpoch;
-   my $durScale = $ffDur / $fnDur;
+      my $fnDur = $fEndEpoch - $fStartEpoch;
+      my $durScale = $ffDur / $fnDur;
+      
    
+      my ($SSopt,$TOopt) = ("-ss 0","");
+      my $FileOffset = $start -$fStartEpoch;
+      my $offset = $durScale * $FileOffset;
+      $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
+      $offset = $offset + $durScale*($end - $start);
+      $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
+      my $cntrStr = "";
+      $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
+      $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
+      my $cmd = '\/usr\/bin\/ffmpeg -loglevel panic -y ' .
+                "-i $fname $SSopt $TOopt -c copy $targName";  
+      logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
+      my $cmdRet = `$cmd`;
+   } else {
+      logMsg "Empty video file. Skipping";
+   }
 
-   my ($SSopt,$TOopt) = ("-ss 0","");
-   my $FileOffset = $start -$fStartEpoch;
-   my $offset = $durScale * $FileOffset;
-   $SSopt = "-ss $offset " if ($offset > 0);       # start of clip is in the file
-   $offset = $offset + $durScale*($end - $start);
-   $TOopt = "-to $offset" if ($end < $fEndEpoch);  # end of clip is in the file
-   my $cntrStr = "";
-   $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
-   my $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
-   my $cmd = '\/usr\/bin\/ffmpeg -loglevel panic -y ' .
-             "-i $fname $SSopt $TOopt -c copy $targName";  
-   logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
-   my $cmdRet = `$cmd`;
-   
-   my $retVal = $targName if (-e $targName);
+   my $retVal = $targName if ( defined($targName) && (-e $targName) );
    return($retVal);
 }
 
