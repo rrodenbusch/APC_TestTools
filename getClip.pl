@@ -207,7 +207,7 @@ sub getClip {
    print "File $fname start $start End $end\n";
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
-   my $ret = `ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
+   my $ret = `/usr/bin/ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
    my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
                     substr($ret,6,2) + substr($ret,9,2)/100;
    my $fnDur = $fEndEpoch - $fStartEpoch;
@@ -223,7 +223,7 @@ sub getClip {
    my $cntrStr = "";
    $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
    my $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
-   my $cmd = 'ffmpeg -loglevel panic -y ' .
+   my $cmd = '/usr/bin/ffmpeg -loglevel panic -y ' .
              "-i $fname $SSopt $TOopt -c copy $targName";  
    logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
    my $cmdRet = `$cmd`;
@@ -282,7 +282,7 @@ if (scalar @$fList > 1) {
    # Process the only file on the list
    my $curFile = shift @$fList;
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($curFile);
-   my $ret = `ffmpeg -i $curFile 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
+   my $ret = `/usr/bin/ffmpeg -i $curFile 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
    my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
                     substr($ret,6,2) + substr($ret,9,2)/100;
    my $fnDur = $fEndEpoch - $fStartEpoch;
@@ -302,8 +302,8 @@ if (scalar @$fList > 1) {
    $fileEnd = int($fileEnd) + 1 unless (int($fileEnd) == $fileEnd);
    my $TOopt = "-to $end";
    my $targName = "$prefix" ."_" . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
-   print "ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
-   my $cmd = 'ffmpeg -loglevel panic -y ' .
+   print "/usr/bin/ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
+   my $cmd = '/usr/bin/ffmpeg -loglevel panic -y ' .
                 "-i $curFile $SSopt $TOopt -c copy $targName";  
    logMsg "Scale $durScale\nExtracting $cmd";
    my $cmdRet = `$cmd`;

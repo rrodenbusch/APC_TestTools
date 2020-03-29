@@ -29,7 +29,7 @@ WDIR=`pwd` && echo "Working in $WDIR"
 cp -f $BASEDIR/$DATE/clips/$SCRIPTNAME .
 echo "###        Copying $SCRIPTNAME to $COACH at 10.50.$VPN"
 scp $SCRIPTNAME pi@10.50.$VPN:/data/NVR
-REMCMD="cd /data/NVR/Working | /data/NVR/$SCRIPTNAME f | ls -ltr $REMTARGDIR"
+REMCMD="cd /data/NVR/Working; /data/NVR/$SCRIPTNAME f ; ls -ltr $REMTARGDIR"
 echo "####      Executing $REMCMD  @ $10.50.$VPN"
 ssh pi@10.50.$VPN $REMCMD
 echo "#####     Copying clips back"
