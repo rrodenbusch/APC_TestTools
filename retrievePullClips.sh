@@ -38,7 +38,7 @@ cd $VDIR
 cd $DATE
 [[ -d clips ]] || mkdir clips
 cd clips
-FCMD="scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/$VDIR/$DATE/$FLIST ."
+FCMD="scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:home/ubuntu/MBTA/Working/$DATE/$FLIST ."
 echo "$FCMD"
 `scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
 `scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
