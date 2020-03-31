@@ -11,10 +11,13 @@ while [ "$1" != "" ]; do
         -d | --date )           shift
                                 DATE=$1
                                 ;;
-        -h | --help )           echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+        -D | --dir )            shift
+                                BASEDIR=$1
+                                ;;
+        -h | --help )           echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
                                 exit
                                 ;;
-        * )                     echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+        * )                     echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
                                 exit 1
     esac
     shift
@@ -28,7 +31,10 @@ then
    VPN=`findVPN.pl -c $COACH -r | awk  '{print $1}'`
 fi
 SCRIPTNAME=$COACH.CoachClips.$DATE.sh
-BASEDIR=$HOME/MBTA/Working
+if [[ -z $BASEDIR ]] ;
+then
+   BASEDIR=$HOME/MBTA/Working
+fi
 CLIPDIR=$BASEDIR/clips
 WORKDIR=$CLIPDIR/$DATE
 REMTARGDIR=/data/NVR/clips/$DATE
