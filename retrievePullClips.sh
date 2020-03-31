@@ -4,6 +4,9 @@ while [ "$1" != "" ]; do
         -c | --coach )          shift
                                 COACH=$1
                                 ;;
+        -v | --video )          shift
+                                VDIR=$1
+                                ;;
         -d | --date )           shift
                                 DATE=$1
                                 ;;
@@ -15,6 +18,12 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+
+if [[ -z $VDIR ]] ;
+then
+   VDIR="~/MBTA/Working"
+fi
+FLIST="$COACH.CoachClips.$DATE.sh"
 if [[ -z $DATE ]] ;
 then
    DATE=`date +%Y%m%d`
@@ -24,12 +33,12 @@ if [[ -z $COACH ]] ;
 then
    FLIST="*.CoachClips.$DATE.sh"
 fi
-cd ~/MBTA/Working
+cd $VDIR
 [[ -d $DATE ]] || mkdir $DATE
 cd $DATE
 [[ -d clips ]] || mkdir clips
 cd clips
-FCMD="scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/$FLIST ."
+FCMD="scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/$VDIR/$DATE/$FLIST ."
 echo "$FCMD"
 `scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
 `scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
