@@ -1,12 +1,32 @@
 #!/bin/bash
-if [[ -z "$1" || -z "$2" || -z "$3" ]] ;
+while [ "$1" != "" ]; do
+    case $1 in
+        -c | --coach )          shift
+                                COACH=$1
+                                ;;
+        -v | --vpn )            shift
+                                VAR=$1
+                                VPN="10.50.$VAR"
+                                ;;
+        -d | --date )           shift
+                                DATE=$1
+                                ;;
+        -h | --help )           echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+                                exit
+                                ;;
+        * )                     echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+                                exit 1
+    esac
+    shift
+done
+if [[ -z $DATE ]] ;
 then
-   echo "Usage:  retrieveClips.sh Coach VPN yyyymmdd"
-   exit
+   DATE=`date +%Y%m%d`
 fi
-COACH=$1
-VPN=$2
-DATE=$3
+if [[ -z $VPN ]];
+then
+   VPN=`findVPN.pl -c $COACH -r | awk  '{print $1}'`
+fi
 SCRIPTNAME=$COACH.CoachClips.$DATE.sh
 BASEDIR=$HOME/MBTA/Working
 CLIPDIR=$BASEDIR/clips
@@ -27,9 +47,9 @@ cd clips
 cd $COACH
 WDIR=`pwd` && echo "Working in $WDIR"
 cp -f $BASEDIR/$DATE/clips/$SCRIPTNAME .
-echo "###        Copying $SCRIPTNAME to $COACH at 10.50.$VPN"
+echo "###        Copying $SCRIPTNAME to $COACH at $VPN"
 scp $SCRIPTNAME pi@10.50.$VPN:/data/NVR
-REMCMD="cd /data/NVR/Working; /data/NVR/$SCRIPTNAME f ; ls -ltr $REMTARGDIR"
+REMCMD="rm -r $REMTARGDIR/*;cd /data/NVR/Working; /data/NVR/$SCRIPTNAME f ; ls -ltr $REMTARGDIR"
 echo "####      Executing $REMCMD  @ $10.50.$VPN"
 ssh pi@10.50.$VPN $REMCMD
 echo "#####     Copying clips back"

@@ -97,6 +97,6 @@ if ($options->{r}) {
    }
 }
 
-print "$retVal $sensor $phase";
+print "$retVal $sensor $phase\n";
 
 1;
