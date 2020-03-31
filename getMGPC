@@ -1,4 +1,11 @@
 #!/bin/bash
+echo "---- Fetch V10 Full Archive?"
+read var
+if [ $var == 'Y' ] || [ $var == 'y' ]
+then
+   wget https://www.dropbox.com/s/p25vo7pzd5kuepe/RC10.tar.gz
+   RC10.tar.gz
+fi
 echo "---- Fetch Project file?"
 read var
 if [ $var == 'Y' ] || [ $var == 'y' ]
@@ -27,5 +34,8 @@ then
    wget https://www.dropbox.com/s/zg60eexx37wrsep/patch.tar.gz
    md5sum patch.tar.gz
 fi
+
+
+
 echo "---- Done"
 ls -ltr
