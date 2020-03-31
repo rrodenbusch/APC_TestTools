@@ -10,10 +10,10 @@ while [ "$1" != "" ]; do
         -d | --date )           shift
                                 DATE=$1
                                 ;;
-        -h | --help )           echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+        -h | --help )           echo "Usage:  retrieveClips.sh -c {Coach} -d {yyyymmdd} -v {video dir [~/MBTA/Working]}"
                                 exit
                                 ;;
-        * )                     echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN}"
+        * )                     echo "Usage:  retrieveClips.sh -c {Coach} -d {yyyymmdd} -v {video dir [~/MBTA/Working]}"
                                 exit 1
     esac
     shift
