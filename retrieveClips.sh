@@ -52,7 +52,7 @@ cd clips
 [[ -d $COACH ]] || mkdir $COACH
 cd $COACH
 WDIR=`pwd` && echo "Working in $WDIR"
-cp -f $VDIR/$DATE/clips/$SCRIPTNAME .
+cp -f $BASEDIR/$DATE/clips/$SCRIPTNAME .
 echo "###        Copying $SCRIPTNAME to $COACH at $VPN"
 rsync $SCRIPTNAME pi@$VPN:/data/NVR
 REMCMD="rm -r $REMTARGDIR/*;cd /data/NVR/Working; /data/NVR/$SCRIPTNAME f ; ls -ltr $REMTARGDIR"
