@@ -256,7 +256,7 @@ sub mvClips {
             my $targName = $targDir . '/' . $curFname;
             `mv -f $curFname $targName` if defined($targName ne $curFname);      
          } else {
-            logMsg "Skipping move of $curFname to $targDir, source does not exist" if (-f "$targDir/$curFname");
+            logMsg "Skipping move of $curFname to $targDir, source does not exist" if ( defined($curFname) && (-f "$targDir/$curFname") );
          }
       }
    }
