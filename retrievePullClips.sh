@@ -21,7 +21,7 @@ done
 
 if [[ -z $VDIR ]] ;
 then
-   VDIR="~/MBTA/Working"
+   VDIR="$HOME/MBTA/Working"
 fi
 FLIST="$COACH.CoachClips.$DATE.sh"
 if [[ -z $DATE ]] ;
