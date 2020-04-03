@@ -13,7 +13,7 @@ my $USAGE = "Usage: findVPN.pl\n" .
             "       -n n : NUC 1|2\n" .
             "       -r   : rLog\n" .
             "       -C   : Cradlepoint\n".
-            "       -c   : coach #\n";
+            "       -c   : coach #(csv)\n";
             
             
 sub getCmdLine {
@@ -82,21 +82,22 @@ sub readFleetDefinition {
 my $options = getCmdLine();
 my $coachMap = readFleetDefinition($options);
 my ($retVal,$sensor,$phase) = ('','','');
-my $coach = $options->{c};
+my $coachList = $options->{c};
+my @coaches = split(',',$coachList);
 
-
-$phase = $coachMap->{NamedData}->{$coach}->{Phase};
-$sensor = $coachMap->{NamedData}->{$coach}->{Sensor};
-
-if ($options->{r}) {
-   if ($options->{m}) {
-      $retVal = $coachMap->{NamedData}->{$coach}->{NVR1MAC};
+foreach my $coach (@coaches) {
+   $phase = $coachMap->{NamedData}->{$coach}->{Phase};
+   $sensor = $coachMap->{NamedData}->{$coach}->{Sensor};
+   
+   if ($options->{r}) {
+      if ($options->{m}) {
+         $retVal = $coachMap->{NamedData}->{$coach}->{NVR1MAC};
+      }
+      if ( defined($options->{i}) || !defined($options->{m})){
+         $retVal = $coachMap->{NamedData}->{$coach}->{NVR1VPN};      
+      }
    }
-   if ( defined($options->{i}) || !defined($options->{m})){
-      $retVal = $coachMap->{NamedData}->{$coach}->{NVR1VPN};      
-   }
+   print "$coach $retVal $sensor $phase\n";   
 }
-
-print "$retVal $sensor $phase\n";
 
 1;

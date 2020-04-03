@@ -38,12 +38,10 @@ cd $VDIR
 cd $DATE
 [[ -d clips ]] || mkdir clips
 cd clips
-FCMD="scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/$FLIST ."
-echo "$FCMD"
-`scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
-`scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
-`scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/DoorEventData.$DATE.csv .`
-`scp -i ~/PEM/richard-processing.pem ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/*.PeopleCounts$DATE.csv .`
-`$FCMD`
+`rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
+`rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
+`rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/DoorEventData.$DATE.csv .`
+`rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/*.PeopleCounts$DATE.csv .`
+`rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/$FLIST .`
 echo "Copy Complete"
 ls -ltr

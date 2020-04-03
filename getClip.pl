@@ -164,6 +164,7 @@ sub parseFname {
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
    my $fStartEpoch = timegm($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    my $fEndEpoch   = (stat $curFile)[9];
+   $fStartEpoch = $fEndEpoch - 900;  # 15 minute files
    return($fStartEpoch,$fEndEpoch,$MAC);
 }
 
@@ -307,42 +308,8 @@ if (scalar @$fList > 1) {
    # Process the only file on the list
    my $curFile = shift @$fList;
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($curFile);
-   my $epoch = time();
-   if ($epoch - $fEndEpoch > 1200) {
-      my $ret = `\/usr\/bin\/ffmpeg -i $curFile 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
-      my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
-                       substr($ret,6,2) + substr($ret,9,2)/100;
-      my $fnDur = $fEndEpoch - $fStartEpoch;
-      my $durScale = $ffDur / $fnDur;
-      my $SSopt = "-ss 0";
-      $SSopt = "-ss ". int($durScale*$options->{S}) if ( defined($options->{S}) );
-      my $start = $fStartEpoch + $durScale*$options->{S} if ( defined($options->{S}) );
-      my $fileStart = $fStartEpoch + $options->{S};
-      my ($end,$fileEnd);
-      if (defined($options->{E})) {
-         $end = $durScale*$options->{E};
-         $fileEnd = $options->{E};
-         $fileEnd -= $options->{S} if defined($options->{S});
-      }
-      $end = $start + $durScale*$options->{l} if defined($options->{l});
-      $fileEnd = $options->{l} if defined($options->{l});
-      $fileEnd = int($fileEnd) + 1 unless (int($fileEnd) == $fileEnd);
-      my $TOopt = "-to $end";
-      my $targName = "$prefix" ."_" . $MAC . '_' . $fileStart .'_'. $fileEnd . '.mp4';
-   #   print "\/usr\/bin\ffmpeg Dur: $ffDur  file Dur: $fnDur  scale $durScale\n";
-      my $cmd = '\/usr/\bin\/ffmpeg -loglevel panic -y ' .
-                   "-i $curFile $SSopt $TOopt -c copy $targName"; 
-      if (! clipExists($options->{t},$targName) ) {
-         logMsg "Scale $durScale\nExtracting $cmd";
-         my $cmdRet = `$cmd`;      
-         $firstClip = $targName;
-         $fullClip = $targName;         
-      } else {
-         logMsg "Skipping file $targName, file exists";
-      }
-   }
-} else {
-   die $USAGE;
+   my $firstFile   = $curFile if ( ($startEpoch >= $fStartEpoch) && ($startEpoch <= $fEndEpoch) );
+   $firstClip = getClip($curFile,$startEpoch,$endEpoch,1,$prefix,$options);
 }
 
 if (defined($firstClip) && ($firstClip ne '')) {
