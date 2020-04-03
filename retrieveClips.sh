@@ -4,6 +4,9 @@ while [ "$1" != "" ]; do
         -c | --coach )          shift
                                 COACH=$1
                                 ;;
+        -f | --force )          
+                                FORCE=1
+                                ;;
         -v | --vpn )            shift
                                 VAR=$1
                                 VPN="10.50.$VAR"
@@ -14,10 +17,10 @@ while [ "$1" != "" ]; do
         -D | --dir )            shift
                                 BASEDIR=$1
                                 ;;
-        -h | --help )           echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
+        -h | --help )           echo "Usage:  retrieveClips.sh -f(force) -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
                                 exit
                                 ;;
-        * )                     echo "Usage:  retrieveClips.sh -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
+        * )                     echo "Usage:  retrieveClips.sh -f(force) -c Coach -d {yyyymmdd} -v {VPN} -V VideoDir"
                                 exit 1
     esac
     shift
@@ -40,7 +43,7 @@ WORKDIR=$CLIPDIR/$DATE
 REMTARGDIR=/data/NVR/clips/$DATE
 
 echo "Build and Retrieve clips from $COACH $DATE at $VPN? [Y/n] ?"
-read var
+[[ -n $FORCE ]] || read var
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 ssh pi@$VPN "/home/pi/APC_TestTools/gitAll"
 echo "##         Create local dir"

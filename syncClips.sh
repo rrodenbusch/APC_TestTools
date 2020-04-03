@@ -5,6 +5,7 @@ usage () {
    u="Usage:  syncClips.sh${NEW}"
    u="$u          -c (--coach)${NEW}"
    u="$u          -d (--date)${NEW}"
+   u="$u          -f (--force)${NEW}"
    u="$u          -t (--target)${NEW}"
    u="$u          -D (--basedir)${NEW}"
    echo "$u";
@@ -17,6 +18,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -d | --date )           shift
                                 DATE=$1
+                                ;;
+        -f | --force )          shift
+                                FORCE=1
                                 ;;
         -D | --dir )            shift
                                 BASEDIR=$1
@@ -57,11 +61,12 @@ then
 fi
 
 echo "Synchronize clips from local $CLIPDIR to $TARGET:$REMTARGDIR? [Y/n] ?"
-read var
+[[ -n $FORCE ]] || read var
+echo "Begin"
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 cd $CLIPDIR
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
 rsync -rva $CLIPDIR/* $TARGET:$REMTARGDIR
 echo "Copy Complete"
-ls -ltr
+#ls -ltr
