@@ -4,6 +4,21 @@ use Cwd qw(cwd);
 use Time::Local;
 use Getopt::Std;
 
+####################### Process a set of coaches ##########################
+#
+#   BuildClips.pl  : runs on server to generate clipping scripts per coach
+#
+#   retrievePullClips.sh:  script to pull files from the server
+#       $coach.CoachClips.$date.sh
+#   retrieveClips.sh:      script to push script to RPi and get clips
+#       put script on coach
+#       execute script on coach
+#       sync clips local
+#   syncClips.sh:          script to push all the clips to the target
+#       sync clips to the target
+#
+############################################################################
+
 
 my $USAGE = "Usage: getClip.pl\n".
                   "\t   -c Coach(es) {csv}   \n" .

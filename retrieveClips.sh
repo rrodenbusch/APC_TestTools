@@ -63,6 +63,6 @@ REMCMD="rm -r $REMTARGDIR/*;cd /data/NVR/Working; /data/NVR/$SCRIPTNAME f ; ls -
 echo "####      Executing $REMCMD  @ $VPN"
 ssh pi@$VPN $REMCMD
 echo "#####     Copying clips back"
-rsync pi@$VPN:/$REMTARGDIR/* .
+rsync -rva pi@$VPN:/$REMTARGDIR/* .
 echo "Copy Complete"
 ls -ltr
