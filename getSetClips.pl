@@ -44,9 +44,6 @@ sub getCmdLine {
    } else {
       $options{logname} = "getSetClips.log";   
    }
-   if (defined($options{c})) {
-      $options{coaches} = $options{c};
-   }
    
    if (defined($options{s})) {
       $options{sets} = $options{s};
@@ -111,6 +108,25 @@ sub readTripCoaches{
    return(\%setDefn,\%TripList);
 }
 
+sub retrieveCoachClips{
+   my ($coach,$options) = @_;
+         #########  Get this coaches information ##########
+   my $myPID = $$;
+   my $oldfh = select(STDOUT); # default
+   $| = 1;
+   select($oldfh);
+   ## Echo out the starting message      
+   my $echo = "fork $myPID for coach $coach starting";
+   `echo \"$echo\" >>$options->{logname}`;
+   ## Run the fork
+   my $cmd = "$ENV{HOME}/APC_TestTools/retrieveClips.sh -f -c $coach 2>&1 >>retrieve$coach.log";
+   `$cmd`;
+   ## Echo out the completed messagse
+   $echo = "Clips retrieved from $coach";
+   `echo \"$echo\" >>$options->{logname}`;
+   exit;       
+}  # end retrieveCoachClips
+
 ############################# Main ##############################
 my $options = getCmdLine();
 chdir "$options->{localDir}";
@@ -132,43 +148,47 @@ if (defined($options->{sets}) || defined($options->{coaches})) {
    }
    logMsg "$ret";
 }
-
 logMsg "Clips Commands Retrieved from server\n";
-my ($allSets,$TripSets) = readTripCoaches($options->{sets}) if defined($options->{sets});
-my @setList = split(',',$options->{sets});
-foreach my $curSet (@setList) {
-   my $curTripList = join(',',(keys(%{$TripSets->{$curSet}})));
-   my $coachList = $allSets->{$curSet};
-   logMsg "Processing Set $coachList";
-   my $echo = "Starting Set $coachList";
-   `echo \"$echo\" >>$options->{logname}`;
-   my @coaches = split(',',$coachList);
+
+if ( defined($options->{ses})) {  
+   my ($allSets,$TripSets) = readTripCoaches($options->{sets}) if defined($options->{sets});
+   my @setList = split(',',$options->{sets});
+   foreach my $curSet (@setList) {
+      my $curTripList = join(',',(keys(%{$TripSets->{$curSet}})));
+      my $coachList = $allSets->{$curSet};
+      logMsg "Processing Set $coachList";
+      my $echo = "Starting Set $coachList";
+      `echo \"$echo\" >>$options->{logname}`;
+      my @coaches = split(',',$coachList);
+      foreach my $coach (@coaches) {
+         my $pid;
+         next if $pid = fork(); # parent goes to the next
+         die "fork failed: $1" unless defined $pid;
+         retrieveCoachClips($coach,$options);
+      }
+      1 while (wait() != -1);
+      my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
+      logMsg "All forks done";
+      logMsg "Syncing $curSet to server for trips $curTripList";
+      `$cmd`;
+      logMsg "Set $curSet synced for trips $curTripList";
+   }
+}
+
+if ( defined($options->{coaches})) {
+   my @coaches=split(',', $options->{coaches}) if (defined($options->{coaches}));
    foreach my $coach (@coaches) {
       my $pid;
       next if $pid = fork(); # parent goes to the next
       die "fork failed: $1" unless defined $pid;
-      my $myPID = $$;
-      my $oldfh = select(STDOUT); # default
-      $| = 1;
-      select($oldfh);
-      ## Echo out the starting message      
-      my $echo = "fork $myPID for coach $coach starting";
-      `echo \"$echo\" >>getSetClips.log`;
-      ## Run the fork
-      my $cmd = "$ENV{HOME}/APC_TestTools/retrieveClips.sh -f -c $coach 2>&1 >>retrieve$coach.log";
-      `$cmd`;
-      ## Echo out the completed messagse
-      $echo = "Clips retrieved from $coach";
-      `echo \"$echo\" >>$options->{logname}`;
-      exit; 
+      retrieveCoachClips($coach,$options);
    }
-   1 while (wait() != -1);
-
+   1 while (wait() != -1);   
    my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
    logMsg "All forks done";
-   logMsg "Syncing $curSet to server for trips $curTripList";
+   logMsg "Syncing $options->{coaches} to server";
    `$cmd`;
-   logMsg "Set $curSet synced for trips $curTripList";
+   logMsg "Set $options->{coaches} synced";
 }
 
 1;
