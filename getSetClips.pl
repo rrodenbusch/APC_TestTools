@@ -47,7 +47,7 @@ sub getCmdLine {
    return(\%options);
 }
 
-
+my $logfh;
 sub logMsg {
    my ($msg,$fh) = @_;
 
@@ -56,7 +56,8 @@ sub logMsg {
    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
    my $dateStr = sprintf("%04d%02d%02d %02d:%02d:%02d",$year+1900,$mon+1,$mday,$hour,$min,$sec);
    $dateStr =~ s/\R//g;
-   print "$dateStr, $logName: $msg\n"
+   print "$dateStr, $logName: $msg\n" unless defined($logfh);
+   print $logfh "$dateStr, $logName: $msg\n" if defined($logfh);;
 }
 
 sub readTripCoaches{
@@ -94,23 +95,26 @@ sub readTripCoaches{
 
 
 my $options = getCmdLine();
-if (defined($options->{sets}) || defined($options->{coaches})) {
+chdir "$options->{localDir}";
+my $curDir = cwd();
+open ($logfh, ">>getSetClips.log");
+logMsg "Working in $curDir";
+
+if (defined($options->{sets}) || defined($options->{coaches})) { 
    logMsg "Get set data for $options->{sets}"    if (defined($options->{sets}));
    logMsg "Get coach data for $options->{coaches}" if (defined($options->{coaches}));
-   chdir "$options->{localDir}";
-   my $curDir = cwd();
-   logMsg "Working in $curDir";
    my $cmd = "$ENV{HOME}/APC_TestTools/retrievePullClips.sh -d $options->{dateStr} 2>&1";
    logMsg $cmd;
-#   my $ret= `$cmd`;
+   my $ret= `$cmd`;
    if ($?) {
       my $errCode = $? >> 8;
       $errCode = sprintf("%x", $errCode);
       logMsg "$errCode Error on $cmd";
       exit $? >> 8;
    }
-#   logMsg "$ret";
+   logMsg "$ret";
 }
+
 logMsg "Clips Commands Retrieved from server\n";
 my ($allSets,$TripSets) = readTripCoaches($options->{sets}) if defined($options->{sets});
 my @setList = split(',',$options->{sets});
@@ -130,11 +134,14 @@ foreach my $curSet (@setList) {
       my $oldfh = select(STDOUT); # default
       $| = 1;
       select($oldfh);
-      logMsg "fork $myPID for coach $coach starting";
+      ## Echo out the starting message      
+      my $echo = "fork $myPID for coach $coach starting";
+      `echo \"$echo\" >>getSetClips.log`;
+      ## Run the fork
       my $cmd = "$ENV{HOME}/APC_TestTools/retrieveClips.sh -f -c $coach 2>&1 >>retrieve$coach.log";
       `$cmd`;
-      logMsg "Clips retrieved from $coach";
-      my $echo = "Clips retrieved from $coach";
+      ## Echo out the completed messagse
+      $echo = "Clips retrieved from $coach";
       `echo \"$echo\" >>getSetClips.log`;
       exit; 
    }
