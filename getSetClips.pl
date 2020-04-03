@@ -91,11 +91,12 @@ sub logMsg {
 }
 
 sub readTripCoaches{
+   my $dateStr = shift;
    my %setDefn;
    my %coachDefn;
    my %TripList;
    
-   if ( (-s "TripCoaches.csv") && (open(my $fh, "<TripCoaches.csv")) ) {
+   if ( (-s "./$dateStr/TripCoaches.csv") && (open(my $fh, "<./$dateStr/TripCoaches.csv")) ) {
       chomp(my @file = <$fh>);
       close $fh;
       @file = grep m/^[^#]/, @file;  # skip comments
@@ -165,8 +166,8 @@ if (defined($options->{sets}) || defined($options->{coaches})) {
 }
 logMsg "Clips Commands Retrieved from server\n";
 
-if ( defined($options->{ses})) {  
-   my ($allSets,$TripSets) = readTripCoaches($options->{sets}) if defined($options->{sets});
+if ( defined($options->{sets})) {  
+   my ($allSets,$TripSets) = readTripCoaches($options->{dateStr}) if defined($options->{sets});
    my @setList = split(',',$options->{sets});
    foreach my $curSet (@setList) {
       my $curTripList = join(',',(keys(%{$TripSets->{$curSet}})));
