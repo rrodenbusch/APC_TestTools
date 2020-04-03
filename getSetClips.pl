@@ -10,13 +10,14 @@ my $USAGE = "Usage: getClip.pl\n".
                   "\t   -d date      yyyymmdd\n" .
                   "\t   -D local dir         \n" . 
                   "\t   -T target dir        \n" . 
+                  "\t   -l log file appendix \n" .                  
                   "\t   -s Set(s)    {csc}   \n" ;
 
 sub getCmdLine {
    my ($dateStr);
    my %options=();
    
-   getopts("hc:s:d:", \%options);
+   getopts("hc:s:d:l:", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
@@ -38,6 +39,15 @@ sub getCmdLine {
       $options{targDir} = "/home/mthinx/MBTA/Working"
    }
    
+   if (defined($options{l})) {
+      $options{logname} = "getSetClips.$options{l}.log";
+   } else {
+      $options{logname} = "getSetClips.log";   
+   }
+   if (defined($options{c})) {
+      $options{coaches} = $options{c};
+   }
+   
    if (defined($options{s})) {
       $options{sets} = $options{s};
    }
@@ -48,6 +58,14 @@ sub getCmdLine {
 }
 
 my $logfh;
+sub openLogFile {
+   my $logName = shift;
+   open ($logfh, ">>$logName");
+   my $oldfh = select(STDOUT); # default
+   $| = 1;
+   select($oldfh);
+   return($logfh);
+}
 sub logMsg {
    my ($msg,$fh) = @_;
 
@@ -93,11 +111,11 @@ sub readTripCoaches{
    return(\%setDefn,\%TripList);
 }
 
-
+############################# Main ##############################
 my $options = getCmdLine();
 chdir "$options->{localDir}";
 my $curDir = cwd();
-open ($logfh, ">>getSetClips.log");
+$logfh = openLogFile($options->{logname});
 logMsg "Working in $curDir";
 
 if (defined($options->{sets}) || defined($options->{coaches})) { 
@@ -123,9 +141,8 @@ foreach my $curSet (@setList) {
    my $coachList = $allSets->{$curSet};
    logMsg "Processing Set $coachList";
    my $echo = "Starting Set $coachList";
-   `echo \"$echo\" >>getSetClips.log`;
+   `echo \"$echo\" >>$options->{logname}`;
    my @coaches = split(',',$coachList);
-   
    foreach my $coach (@coaches) {
       my $pid;
       next if $pid = fork(); # parent goes to the next
@@ -142,12 +159,12 @@ foreach my $curSet (@setList) {
       `$cmd`;
       ## Echo out the completed messagse
       $echo = "Clips retrieved from $coach";
-      `echo \"$echo\" >>getSetClips.log`;
+      `echo \"$echo\" >>$options->{logname}`;
       exit; 
    }
    1 while (wait() != -1);
 
-   my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>getSetClips.log";
+   my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
    logMsg "All forks done";
    logMsg "Syncing $curSet to server for trips $curTripList";
    `$cmd`;
