@@ -1,0 +1,9 @@
+#!/bin/bash
+cd /home/mthinx/MBTA/Working
+for dir in  2*/
+do
+   echo $dir
+   cd /home/mthinx/MBTA/Working/$dir
+   ls -ltr *.fix
+    rsync -e "ssh -i /home/mthinx/PEM/richard-processing.pem" *.fix ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$dir/
+done
