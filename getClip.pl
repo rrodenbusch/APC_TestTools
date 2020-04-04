@@ -176,7 +176,7 @@ sub parseFname {
    
    $fEndEpoch   = (stat $curFile)[9] unless (defined($fEndEpoch) && ($fEndEpoch ne ''));
    my $fStartEpoch = $fEndEpoch - 900;  # 15 minute files
-   return($fStartEpoch,$fEndEpoch,$MAC);
+   return($fStartEpoch,$fEndEpoch,$MAC,$curFile);
 }
 
 sub getFileList{
@@ -227,8 +227,9 @@ sub getClip {
    print "File $fname start $start End $end\n";
    my $targName;
 
-   my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
-   my $ret = `/usr/bin/ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
+   my ($fStartEpoch,$fEndEpoch,$MAC,$curFname) = parseFname($fname);
+   
+   my $ret = `/usr/bin/ffmpeg -i $curFname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
    if ( defined($ret) && ($ret ne '') ) {
       my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
                     substr($ret,6,2) + substr($ret,9,2)/100;
@@ -244,8 +245,8 @@ sub getClip {
       $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
       $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
       my $cmd = '/usr/bin/ffmpeg -loglevel panic -y ' .
-                "-i $fname $SSopt $TOopt -c copy $targName";
-      logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
+                "-i $curFname $SSopt $TOopt -c copy $targName";
+      logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $curFname into $targName\n$cmd";
       my $cmdRet = `$cmd`;
    } else {
       logMsg "Empty video file. Skipping";
@@ -292,6 +293,7 @@ if ( ($fCnt > 0 ) && (!$options->{f}) ) {
    exit;
 }
 
+chdir "/data/NVR/Working";
 $fCnt = scalar @$fList;
 logMsg "Searching $fCnt files";
 my ($firstClip,$lastClip,@fullFiles,$fullClip);
