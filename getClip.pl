@@ -245,12 +245,8 @@ sub getClip {
       $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
       my $cmd = '\/usr\/bin\/ffmpeg -loglevel panic -y ' .
                 "-i $fname $SSopt $TOopt -c copy $targName";
-      if ( ! clipExists($options->{t},$targName) ) {
-         logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
-         my $cmdRet = `$cmd`;
-      } else {
-         logMsg "Skipping $targName, file exists";
-      }
+      logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
+      my $cmdRet = `$cmd`;
    } else {
       logMsg "Empty video file. Skipping";
    }
