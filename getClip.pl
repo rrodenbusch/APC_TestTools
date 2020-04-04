@@ -129,7 +129,7 @@ sub getCmdLine {
          $NVNmap =~ s/\R//g if defined($NVNmap);
          my @fields = split(':',$NVNmap);
          foreach my $curField (@fields) {
-            my ($mac,$ip) = split(',',$curField);
+            my ($ip,$mac) = split(',',$curField);
             $NVNhash{$ip} = uc substr($mac,-6);
          }
       }
