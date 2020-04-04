@@ -186,9 +186,9 @@ sub getFileList{
    
    ## Check for batch file timestamps
    if ( defined($options->{B}) ) {
-      my @file1 = `grep $MACs /data/NVR/fileList.txt`;
-      chomp(@files);
-      $fList = \@files;
+      my @files1 = `grep $MACs /data/NVR/fileList.txt`;
+      chomp(@files1);
+      $fList = \@files1;
    }
    
    if ( !defined($fList) || (scalar @$fList == 0) ) {
