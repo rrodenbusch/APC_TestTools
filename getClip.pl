@@ -328,7 +328,6 @@ if (scalar @$fList > 1) {
    
    $firstClip  = getClip($firstFile,$startEpoch,$endEpoch,1,$prefix,$options) if defined($firstFile);
    $lastClip   = getClip($lastFile,$startEpoch,$endEpoch,2,$prefix,$options)  if defined($lastFile);
- 
 
 } elsif (scalar @$fList ) {
    # Process the only file on the list
@@ -346,7 +345,8 @@ if (defined($firstClip) && ($firstClip ne '')) {
    
    mvClips($options->{t},$firstClip,$lastClip,@fullFiles);  
 } else {
-   logMsg "No files for $MACs found in $dir";
+   logMsg "No files for $MACs $startEpoch $endEpoch";
+   warn "No files found $MACs $startEpoch $endEpoch\n";
 }
 
 1;
