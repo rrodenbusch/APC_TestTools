@@ -324,7 +324,7 @@ if (defined($firstClip) && ($firstClip ne '')) {
    
    mvClips($options->{t},$firstClip,$lastClip,@fullFiles);  
 } else {
-   logMsg "No files for $MAC found in $dir";
+   logMsg "No files for $MACs found in $dir";
 }
 
 1;
