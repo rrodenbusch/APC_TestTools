@@ -31,7 +31,7 @@ then
 fi
 if [[ -z $VPN ]];
 then
-   VPN=`findVPN.pl -c $COACH -r | awk  '{print $2}'`
+   VPN=`$HOME/APC_TestTools/findVPN.pl -c $COACH -r | awk  '{print $2}'`
 fi
 SCRIPTNAME=$COACH.CoachClips.$DATE.sh
 if [[ -z $BASEDIR ]] ;
