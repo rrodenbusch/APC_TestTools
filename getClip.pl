@@ -290,8 +290,8 @@ if ($epoch - $endEpoch < 1200) {
    exit;
 }
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
-
-if ( (-e "$options->{t}/clip_$options->{o}*.mp4" ) && (!$options->{f}) ) {
+my $fCnt = `ls -ltr $options->{t}/clip_$options->{o}*.mp4 |wc -l`;
+if ( ($fCnt > 0 ) && (!$options->{f}) ) {
    logMsg "Skipping clip, $options->{t}/clip_$options->{o} exists.";
    exit;
 }
