@@ -6,6 +6,7 @@ use Time::Local;
 use Getopt::Std;
 
 my $USAGE = "Usage: getClip.pl\n".
+                  "\t   -B Batch Input       \n" .
                   "\t   -c Coach             \n" .
                   "\t   -d Input dir         \n" .
                   "\t   -D output dir        \n" .
@@ -98,10 +99,10 @@ sub readINI {
 
 
 sub getCmdLine {
-   my ($startEpoch, $endEpoch,$dir,$MACs,$coach,$chan,$ip,$prefix);
+   my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$ip,$prefix);
    my %options=();
    
-   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:o:", \%options);
+   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:o:B", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
@@ -130,13 +131,13 @@ sub getCmdLine {
          my @fields = split(':',$NVNmap);
          foreach my $curField (@fields) {
             my ($mac,$ip) = split(',',$curField);
-            $mac =~ s/://g;
             $NVNhash{$ip} = uc substr($mac,-6);
-         }         
+         }
       }
 
       if (defined($NVNhash{$ip}) ) {
          $MACs = $NVNhash{$ip};
+         logMsg "Found -i $ip as $MACs";
       } else {
          my $subnet = '192.168.0';
          $subnet = $config->{subnet} if (defined($config->{subnet}));
@@ -147,7 +148,16 @@ sub getCmdLine {
          $mac = substr($mac,-6) if ($mac ne '');
          $MACs = $mac  if ($mac ne '');
          logMsg "Mapped -i $ip to -m $mac";
-      }      
+         my $oldLine = `grep NVNmap /home/pi/RPi/config.ini`;
+         chomp $oldLine;
+         if ( defined($oldLine) ) {
+            my $newLine = $oldLine . ":$ip,$mac";
+            `sed -i 's/$oldLine/$newLine/g' /home/pi/RPi/config.ini`
+         } else {
+            my $newLine = "NVNmap=$ip,$mac";
+            `echo \"$newLine\" >>/home/pi/RPi/config.ini`;
+         }
+      }
    }
 
    return($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,\%options,$prefix);
@@ -158,12 +168,15 @@ sub parseFname {
    ##   xxxxxx  last 6 of MAC on video feed
    ##   YYYYYMMDDhhmmss  date time
    ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
-   my $curFile = shift;
+   my $fName = shift;
+   my ($curFile,$fEndEpoch) = split(' ',$fName);
+   
    my ($MAC, $year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,0,6),substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
    my $fStartEpoch = timegm($ss,$mm,$hh,$mday,--$mon,$year) + $start;
-   my $fEndEpoch   = (stat $curFile)[9];
+   
+   $fEndEpoch   = (stat $curFile)[9] unless (defined($fEndEpoch) && ($fEndEpoch ne ''));
    $fStartEpoch = $fEndEpoch - 900;  # 15 minute files
    return($fStartEpoch,$fEndEpoch,$MAC);
 }
@@ -172,18 +185,26 @@ sub getFileList{
    my ($dir,$MACs,$coach,$chan,$options) = @_;
    my ($fList,@files);
    
-   if ( ($dir ne cwd()) && (!chdir($dir)) ) {
-      my $msg = "Bad working directory, $!";
-      logMsg $msg;
-      die $msg;   
+   ## Check for batch file timestamps
+   if ( defined($options->{B}) ) {
+      my @file1 = `grep $MACs /data/NVR/fileList.txt`;
+      chomp(@files);
+      $fList = \@files;
    }
    
-   if (scalar @ARGV > 0) { # No command line files
-      $fList = \@ARGV;
-   } else {
-      my @files = glob("$MACs".'_*') if (defined($MACs));    
-      @files = glob('*.mp4') unless (defined($MACs));
-      $fList = \@files;
+   if ( !defined($fList) || (scalar @$fList == 0) ) {
+      if ( ($dir ne cwd()) && (!chdir($dir)) ) {
+         my $msg = "Bad working directory, $!";
+         logMsg $msg;
+         die $msg;   
+      }
+      if (scalar @ARGV > 0) { # No command line files
+         $fList = \@ARGV;
+      } else {
+         my @files = glob("$MACs".'_*') if (defined($MACs));    
+         @files = glob('*.mp4') unless (defined($MACs));
+         $fList = \@files;
+      }
    }
    return($fList);   
 }
