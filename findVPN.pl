@@ -8,6 +8,7 @@ my $USAGE = "Usage: findVPN.pl\n" .
             "       -e n : End 1|2\n" .
             "       -f   : FleetDefinition path\n".
             "       -p n : End 1|2\n" .
+            "       -P{11|12|21|22|32}\n".
             "       -i   : Return IP\n" .
             "       -m   : Return MAC\n".
             "       -n n : NUC 1|2\n" .
@@ -22,7 +23,7 @@ sub getCmdLine {
    my $SRCDIR="$ENV{SRCDIR}" if defined($ENV{SRCDIR});
    $SRCDIR="$ENV{HOME}/bin6" unless defined($ENV{SRCDIR});
    
-   getopts("he:p:n:rimc:f:", \%options);
+   getopts("he:p:n:rimc:f:P:", \%options);
    die $USAGE if (defined $options{h}) || (!defined($options{c}));
    $options{f} = $SRCDIR if defined($SRCDIR) && !defined($options{f});
    dir $USAGE unless defined($options{f}) || defined($SRCDIR);
@@ -97,6 +98,25 @@ foreach my $coach (@coaches) {
          $retVal = $coachMap->{NamedData}->{$coach}->{NVR1VPN};      
       }
    }
+   if ($options->{P}) {
+      if ( $options->{P} eq '31' ) {
+         $retVal = $coachMap->{NamedData}->{$coach}->{NVR1MAC} if ($options->{m});
+         $retVal = $coachMap->{NamedData}->{$coach}->{NVR1VPN} unless ($options->{m});
+      } elsif ($options->{P} eq '11') {
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi1-End1MAC'} if ($options->{m});         
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi1-End1VPN'} unless ($options->{m});         
+      } elsif ($options->{P} eq '12') {
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi2-End1MAC'}  if ($options->{m});         
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi2-End1VPN'}  unless ($options->{m});         
+      } elsif ($options->{P} eq '21') {
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi1-End2MAC'}  if ($options->{m});         
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi1-End2VPN'}  unless ($options->{m});         
+      } elsif ($options->{P} eq '22') {
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi2-End2MAC'}  if ($options->{m});         
+         $retVal = $coachMap->{NamedData}->{$coach}->{'Pi2-End2VPN'}  unless ($options->{m});         
+      }
+   }
+   
    print "$coach $retVal $sensor $phase\n";   
 }
 
