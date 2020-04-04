@@ -6,22 +6,22 @@ use Time::Local;
 use Getopt::Std;
 
 my $USAGE = "Usage: getClip.pl\n".
-                  "\t   -B Batch Input       \n" .
-                  "\t   -c Coach             \n" .
-                  "\t   -d Input dir         \n" .
-                  "\t   -D output dir        \n" .
-                  "\t   -e end time epoch    \n" .
-                  "\t   -E end offset (sec)  \n" .
-                  "\t   -f force if file exits   \n" .
-                  "\t   -i IP (csv: 10,13,20,23) \n".
-                  "\t   -l clip len (sec)    \n" .                  
-                  "\t   -m MACs              \n" .
-                  "\t   -n Channel [0..3]    \n" .
-                  "\t   -s start time epoch  \n" .              
-                  "\t   -S start offset (s)  \n" .              
-                  "\t   -t targDir           \n" . 
-                  "\t   -o output file prefix\n" .             
-                  "   file1 file2 ...        \n\n" .
+                  "\t   -B Batch Input          \n" .
+                  "\t   -c Coach                \n" .
+                  "\t   -d Input dir            \n" .
+                  "\t   -D output dir           \n" .
+                  "\t   -e end time epoch       \n" .
+                  "\t   -E end offset (sec)     \n" .
+                  "\t   -f force if file exits  \n" .
+                  "\t   -i IP (csv: 10,13,20,23)\n".
+                  "\t   -l clip len (sec)       \n" .                  
+                  "\t   -m MACs                 \n" .
+                  "\t   -n Channel [0..3]       \n" .
+                  "\t   -s start time epoch     \n" .              
+                  "\t   -S start offset (s)     \n" .              
+                  "\t   -t targDir              \n" . 
+                  "\t   -o output file prefix   \n" .             
+                  "   file1 file2 ...           \n\n" .
             "CSV file {startepoch,endepoch,fname}\n";
 
 sub logMsg {
@@ -101,7 +101,7 @@ sub getCmdLine {
    my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$ip,$prefix);
    my %options=();
    
-   getopts("hc:d:D:e:E:f:i:l:m:n:s:S:t:o:B", \%options);
+   getopts("hfBc:d:D:e:E:i:l:m:n:s:S:t:o:", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
