@@ -97,7 +97,6 @@ sub readINI {
    return(\%ini);
 }  # end readINI
 
-
 sub getCmdLine {
    my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$ip,$prefix);
    my %options=();
