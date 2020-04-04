@@ -91,12 +91,11 @@ sub logMsg {
 }
 
 sub readTripCoaches{
-   my $dateStr = shift;
    my %setDefn;
    my %coachDefn;
    my %TripList;
    
-   if ( (-s "./$dateStr/TripCoaches.csv") && (open(my $fh, "<./$dateStr/TripCoaches.csv")) ) {
+   if ( (-s "./clips/TripCoaches.csv") && (open(my $fh, "<./clips/TripCoaches.csv")) ) {
       chomp(my @file = <$fh>);
       close $fh;
       @file = grep m/^[^#]/, @file;  # skip comments
@@ -119,7 +118,7 @@ sub readTripCoaches{
          $setDefn{$curSet} = join(',',@coachList);
       }
    } else {
-      logMsg "ERROR TripCoaches.csv does not exist";
+      logMsg "ERROR clips/TripCoaches.csv does not exist";
    }
    return(\%setDefn,\%TripList);
 }
@@ -167,7 +166,7 @@ if (defined($options->{sets}) || defined($options->{coaches})) {
 logMsg "Clips Commands Retrieved from server\n";
 
 if ( defined($options->{sets})) {  
-   my ($allSets,$TripSets) = readTripCoaches($options->{dateStr}) if defined($options->{sets});
+   my ($allSets,$TripSets) = readTripCoaches() if defined($options->{sets});
    my @setList = split(',',$options->{sets});
    foreach my $curSet (@setList) {
       my $curTripList = join(',',(keys(%{$TripSets->{$curSet}})));

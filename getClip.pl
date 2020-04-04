@@ -264,6 +264,11 @@ sub mvClips {
 }
 
 my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options,$prefix) = getCmdLine();
+my $epoch = time();  
+if ($epoch - $endEpoch < 1200) {
+   logMsg "Skipping search, start too soon";
+   exit;
+}
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
 my $odir = $options->{o} if defined($options->{o});
 
@@ -272,7 +277,6 @@ logMsg "Searching $fCnt files";
 my ($firstClip,$lastClip,@fullFiles,$fullClip);
 if (scalar @$fList > 1) {
    logMsg "Looking for $startEpoch to $endEpoch in $fCnt files";
-   my $epoch = time();  
    foreach my $curFile (@$fList) {
       my ($firstFile,$lastFile,$wholeFile) = ('','','');
       my ($fStartEpoch,$fEndEpoch) = parseFname($curFile);
@@ -320,7 +324,7 @@ if (defined($firstClip) && ($firstClip ne '')) {
    
    mvClips($options->{t},$firstClip,$lastClip,@fullFiles);  
 } else {
-   logMsg "No files found.";
+   logMsg "No files for $MAC found in $dir";
 }
 
 1;
