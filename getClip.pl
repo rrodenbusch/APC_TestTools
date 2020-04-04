@@ -228,7 +228,7 @@ sub getClip {
    my $targName;
 
    my ($fStartEpoch,$fEndEpoch,$MAC) = parseFname($fname);
-   my $ret = `\/usr\/bin\/ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
+   my $ret = `/usr/bin/ffmpeg -i $fname 2>&1 | grep "Duration" |cut -d ' ' -f 4 |sed s/,//`;
    if ( defined($ret) && ($ret ne '') ) {
       my $ffDur = 3600*substr($ret,0,2) + 60*substr($ret,3,2) +
                     substr($ret,6,2) + substr($ret,9,2)/100;
