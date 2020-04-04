@@ -138,8 +138,7 @@ sub retrieveCoachClips{
    `$cmd`;
    ## Echo out the completed messagse
    $echo = "Clips retrieved from $coach";
-   `echo \"$echo\" >>$options->{logname}`;
-   exit;       
+   `echo \"$echo\" >>$options->{logname}`;      
 }  # end retrieveCoachClips
 
 ############################# Main ##############################
@@ -180,8 +179,17 @@ if ( defined($options->{sets})) {
          next if $pid = fork(); # parent goes to the next
          die "fork failed: $1" unless defined $pid;
          retrieveCoachClips($coach,$options);
+         ## Sync this coaches clips ##
+         $echo = "$coach Syncing STARTED";
+         `echo \"$echo\" >>$options->{logname}`;
+         my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -c $coach -f 2>&1 >>$options->{logname}";
+         `$cmd`;
+         $echo = "$coach Syncing DONE";
+         `echo \"$echo\" >>$options->{logname}`;
+         exit;
       }
       1 while (wait() != -1);
+      ## Sync all clips just in case ##
       my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
       logMsg "All forks done";
       logMsg "Syncing $curSet to server for trips $curTripList";
