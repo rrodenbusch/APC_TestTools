@@ -170,7 +170,7 @@ sub parseFname {
    my $fName = shift;
    my ($File,$fEndEpoch) = split(' ',$fName);
    my @flds = split('\/',$File);
-   $curFile = pop(@flds); 
+   my $curFile = pop(@flds); 
    my ($MAC, $year,$mon,$mday,$hh,$mm,$ss,$start) = 
               (substr($curFile,0,6),substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
                substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
