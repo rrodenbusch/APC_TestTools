@@ -169,12 +169,6 @@ sub parseFname {
    ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
    my $fName = shift;
    my ($File,$fEndEpoch) = split(' ',$fName);
-   my @flds = split('\/',$File);
-   my $curFile = pop(@flds); 
-   my ($MAC, $year,$mon,$mday,$hh,$mm,$ss,$start) = 
-              (substr($curFile,0,6),substr($curFile,7,4),substr($curFile,11,2),substr($curFile,13,2),
-               substr($curFile,15,2),substr($curFile,17,2),substr($curFile,19,2),substr($curFile,22,5));
-   my $fStartEpoch = timegm($ss,$mm,$hh,$mday,--$mon,$year) + $start;
    
    $fEndEpoch   = (stat $curFile)[9] unless (defined($fEndEpoch) && ($fEndEpoch ne ''));
    $fStartEpoch = $fEndEpoch - 900;  # 15 minute files
@@ -290,14 +284,15 @@ if ($epoch - $endEpoch < 1200) {
    logMsg "Skipping search, too early to build clips.";
    exit;
 }
+
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
-my $fCnt = `ls -ltr $options->{t}/clip_$options->{o}*.mp4 |wc -l`;
+my $fCnt = `ls -ltr $options->{t}/clip_$options->{o}*.mp4 |wc -l 2>/dev/null`;
 if ( ($fCnt > 0 ) && (!$options->{f}) ) {
    logMsg "Skipping clip, $options->{t}/clip_$options->{o} exists.";
    exit;
 }
 
-my $fCnt = scalar @$fList;
+$fCnt = scalar @$fList;
 logMsg "Searching $fCnt files";
 my ($firstClip,$lastClip,@fullFiles,$fullClip);
 if (scalar @$fList > 1) {
