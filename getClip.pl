@@ -12,8 +12,8 @@ my $USAGE = "Usage: getClip.pl\n".
                   "\t   -D output dir        \n" .
                   "\t   -e end time epoch    \n" .
                   "\t   -E end offset (sec)  \n" .
-                  "\t   -f CSV data file     \n" .
-                  "\t   -i IP (csv: 10,13,20,23)\n".
+                  "\t   -f force if file exits   \n" .
+                  "\t   -i IP (csv: 10,13,20,23) \n".
                   "\t   -l clip len (sec)    \n" .                  
                   "\t   -m MACs              \n" .
                   "\t   -n Channel [0..3]    \n" .
@@ -286,11 +286,15 @@ sub mvClips {
 my ($startEpoch,$endEpoch,$dir,$MACs,$coach,$chan,$options,$prefix) = getCmdLine();
 my $epoch = time();  
 if ($epoch - $endEpoch < 1200) {
-   logMsg "Skipping search, start too soon";
+   logMsg "Skipping search, too early to build clips.";
    exit;
 }
 my $fList = getFileList($dir,$MACs,$coach,$chan,$options);
-my $odir = $options->{o} if defined($options->{o});
+
+if ( (-e "$options->{t}/clip_$options->{o}*.mp4" ) && (!$options->{f}) ) {
+   logMsg "Skipping clip, $options->{t}/clip_$options->{o} exists.";
+   exit;
+}
 
 my $fCnt = scalar @$fList;
 logMsg "Searching $fCnt files";
