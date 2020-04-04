@@ -149,7 +149,7 @@ sub getCmdLine {
          logMsg "Mapped -i $ip to -m $mac";
          my $oldLine = `grep NVNmap /home/pi/RPi/config.ini`;
          chomp $oldLine;
-         if ( defined($oldLine) ) {
+         if ( defined($oldLine) && ($oldLine ne '') ) {
             my $newLine = $oldLine . ":$ip,$mac";
             `sed -i 's/$oldLine/$newLine/g' /home/pi/RPi/config.ini`
          } else {
