@@ -169,6 +169,8 @@ sub parseFname {
    ##   aaaaaaa, bbbbbbb start and end offset (secs) of the file vs datetime
    my $fName = shift;
    my ($File,$fEndEpoch) = split(' ',$fName);
+   my @flds = split('\/',$File);
+   my $curFile = pop(@flds); 
    
    $fEndEpoch   = (stat $curFile)[9] unless (defined($fEndEpoch) && ($fEndEpoch ne ''));
    $fStartEpoch = $fEndEpoch - 900;  # 15 minute files
