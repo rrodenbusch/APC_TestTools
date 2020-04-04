@@ -243,7 +243,7 @@ sub getClip {
       my $cntrStr = "";
       $cntrStr = "_" . $cntr . "_" if ( defined($cntr) && ($cntr ne '') );
       $targName = $prefix .'_' . $MAC . '_' . $start .'_'. $end . $cntrStr . '.mp4';
-      my $cmd = '\/usr\/bin\/ffmpeg -loglevel panic -y ' .
+      my $cmd = '/usr/bin/ffmpeg -loglevel panic -y ' .
                 "-i $fname $SSopt $TOopt -c copy $targName";
       logMsg "Extracting Scale $ffDur,$fnDur,$durScale $SSopt $TOopt -i $fname into $targName\n$cmd";
       my $cmdRet = `$cmd`;
