@@ -26,7 +26,6 @@ if [[ -z $VDIR ]] ;
 then
    VDIR="$HOME/MBTA/Working"
 fi
-FLIST="$COACH.CoachClips.$DATE.sh"
 if [[ -z $DATE ]] ;
 then
    DATE=`date +%Y%m%d`
@@ -34,13 +33,13 @@ fi
 FLIST="$COACH.CoachClips.$DATE.sh"
 if [[ -z $COACH ]] ;
 then
-   FLIST="*.CoachClips.$DATE.sh"
+   FLIST="\*.CoachClips.$DATE.sh"
 fi
 cd $VDIR
-[[ -d clips ]] || mkdir clips
-cd clips
 [[ -d $DATE ]] || mkdir $DATE
 cd $DATE
+[[ -d clips ]] || mkdir clips
+cd clips
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/DoorEventData.$DATE.csv .`
