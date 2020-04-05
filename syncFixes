@@ -3,9 +3,9 @@ cd /data/Videos
 for dir in  2*/
 do
    echo $dir
-   cd $dir
+   cd /data/Videos/$dir
    ls -ltr *.fix
-   sed -i 's/[\r\n]/\n/g' *.fix
    sed -i -e '$a\' *.fix
+   sed -i 's/[\r\n]/\n/g' *.fix
     rsync -e "ssh -i /home/mthinx/PEM/richard-processing.pem" *.fix ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$dir/
 done
