@@ -19,7 +19,7 @@ while [ "$1" != "" ]; do
         -d | --date )           shift
                                 DATE=$1
                                 ;;
-        -f | --force )          shift
+        -f | --force )          #shift
                                 FORCE=1
                                 ;;
         -D | --dir )            shift
