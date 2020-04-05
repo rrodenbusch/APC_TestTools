@@ -48,3 +48,4 @@ cd clips
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/$FLIST .`
 echo "Copy Complete"
 [[ -z QUIET ]] && ls -ltr
+exit 0
