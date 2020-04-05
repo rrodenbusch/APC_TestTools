@@ -136,7 +136,7 @@ sub retrieveCoachClips{
    my $echo = "fork $myPID for coach $coach starting";
    `echo \"$echo\" >>$options->{logname}`;
    ## Run the fork
-   my $cmd = "$ENV{HOME}/APC_TestTools/retrieveClips.sh -f -c $coach 2>&1 >>retrieve$coach.log";
+   my $cmd = "$ENV{HOME}/APC_TestTools/retrieveClips.sh -f -c $coach -d $options->{dateStr} 2>&1 >>retrieve$coach.log";
    `$cmd`;
    ## Echo out the completed messagse
    $echo = "Clips retrieved from $coach";
@@ -184,7 +184,7 @@ if ( defined($options->{sets})) {
          ## Sync this coaches clips ##
          $echo = "$coach Syncing STARTED";
          `echo \"$echo\" >>$options->{logname}`;
-         my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -c $coach -f 2>&1 >>$options->{logname}";
+         my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -c $coach -f $options->{dateStr} 2>&1 >>$options->{logname}";
          `$cmd`;
          $echo = "$coach Syncing DONE";
          `echo \"$echo\" >>$options->{logname}`;
@@ -192,7 +192,7 @@ if ( defined($options->{sets})) {
       }
       1 while (wait() != -1);
       ## Sync all clips just in case ##
-      my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
+      my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f -d $options->{dateStr} 2>&1 >>$options->{logname}";
       logMsg "All forks done";
       logMsg "Syncing $curSet to server for trips $curTripList";
       `$cmd`;
@@ -209,7 +209,7 @@ if ( defined($options->{coaches})) {
       retrieveCoachClips($coach,$options);
    }
    1 while (wait() != -1);   
-   my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f 2>&1 >>$options->{logname}";
+   my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f -d $options->{dateStr} 2>&1 >>$options->{logname}";
    logMsg "All forks done";
    logMsg "Syncing $options->{coaches} to server";
    `$cmd`;
