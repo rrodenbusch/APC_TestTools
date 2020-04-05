@@ -75,7 +75,7 @@ my $logfh;
 sub openLogFile {
    my $logName = shift;
    open ($logfh, ">>$logName");
-   my $oldfh = select(STDOUT); # default
+   my $oldfh = select($logName); # default
    $| = 1;
    select($oldfh);
    return($logfh);
