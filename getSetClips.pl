@@ -32,7 +32,7 @@ sub getCmdLine {
    my ($dateStr);
    my %options=();
    
-   getopts("hc:s:d:l:", \%options);
+   getopts("hqc:s:d:l:", \%options);
    if (defined $options{h})   {
       die $USAGE;
    }
@@ -68,6 +68,9 @@ sub getCmdLine {
    if (defined($options{c})) {
       $options{coaches} = $options{c};
    }
+   $options{quiet} = 0;
+   $options{quiet} = 1 if (defined($options{q}));
+   
    return(\%options);
 }
 
