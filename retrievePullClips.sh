@@ -10,6 +10,9 @@ while [ "$1" != "" ]; do
         -d | --date )           shift
                                 DATE=$1
                                 ;;
+        -q | --quiet )          # shift
+                                QUIET=1
+                                ;;
         -h | --help )           echo "Usage:  retrieveClips.sh -c {Coach} -d {yyyymmdd} -v {video dir [~/MBTA/Working]}"
                                 exit
                                 ;;
@@ -44,4 +47,4 @@ cd clips
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/*.PeopleCounts$DATE.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/$FLIST .`
 echo "Copy Complete"
-ls -ltr
+[[ -z QUIET ]] && ls -ltr
