@@ -37,10 +37,10 @@ then
    FLIST="*.CoachClips.$DATE.sh"
 fi
 cd $VDIR
-[[ -d $DATE ]] || mkdir $DATE
-cd $DATE
 [[ -d clips ]] || mkdir clips
 cd clips
+[[ -d $DATE ]] || mkdir $DATE
+cd $DATE
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/DoorEventData.$DATE.csv .`
