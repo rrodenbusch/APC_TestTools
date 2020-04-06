@@ -29,7 +29,7 @@ LOGIP="HD$IPEND"
 DATE=`date +%Y%m%d%H%M%S`
 FNAME="HD${IPEND}_${DATE}"
 cd /data/NVR/Working
-CMD="/usr/local/bin/openRTSP -D 15 -c -B 200000 -b 200000 -4 -Q -F $FNAME -d 86400 -P 900 -t rtsp://$IP:554/ufirsttream >>HD$IPEND.log 2>&1  &"
+CMD="/usr/local/bin/openRTSP -D 15 -c -B 200000 -b 200000 -4 -Q -F $FNAME -d 86400 -P 900 -t rtsp://$IP:554/ufirststream >>HD$IPEND.log 2>&1  &"
 echo "$CMD"
 `$CMD`
 tail $LOGIP.log
