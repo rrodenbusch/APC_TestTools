@@ -6,7 +6,6 @@ usage () {
    u="$u          -I (--IP){231}${NEW}"
    echo "$u";
 }
-IPEND=231
 while [ "$1" != "" ]; do
     case $1 in
         -I | --IP )             shift
@@ -20,12 +19,17 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+if [[ -z $IPEND ]] ;
+then 
+   usage
+   exit 1
+fi
 IP="192.168.0.$IPEND"
-LOGIP="HD$IP"
+LOGIP="HD$IPEND"
 DATE=`date +%Y%m%d%H%M%S`
-FNAME="HD$IP_$DATE"
+FNAME="HD${IPEND}_${DATE}"
 cd /data/NVR/Working
-CMD="/usr/local/bin/openRTSP -D 15 -c -B 200000 -b 200000 -4 -Q -F $FNAME -d 86400 -P 900 -t rtsp://$IP:554/usecondstream >>$LOGIP.log 2>&1  &"
+CMD="/usr/local/bin/openRTSP -D 15 -c -B 200000 -b 200000 -4 -Q -F $FNAME -d 86400 -P 900 -t rtsp://$IP:554/usecondstream >>HD$IPEND.log 2>&1  &"
 echo "$CMD"
 `$CMD`
 tail $LOGIP.log
