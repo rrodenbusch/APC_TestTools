@@ -49,6 +49,7 @@ then
    TARGET=mthinx@192.168.1.140
 fi
 
+cd $BASEDIR
 [[ -d $DATE ]]  || mkdir $DATE
 cd $DATE
 CLIPDIR=$BASEDIR/$DATE/clips
