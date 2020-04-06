@@ -68,13 +68,15 @@ fi
 
 WORKDIR=$BASEDIR/$DATE
 PORTALDIR=$PORTALBASE/$DATE
-LOCALDIR=$HOME/MBTA/WORKING/$DATE
+LOCALDIR=$HOME/MBTA/Working/$DATE
 
 echo "Retrieve data from $DATE to $LOCALDIR [Y/n] ?"
 [[ -n $FORCE ]] || read var
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 
-cd $LOCALDIR
+cd $HOME/MBTA/Working
+[[ -d $DATE ]] || mkdir $DATE
+cd $DATE
 WDIR=`pwd` && echo "Working in $WDIR"
 
 [[ -n $PORTAL ]]   && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$PORTALDIR/* .`
