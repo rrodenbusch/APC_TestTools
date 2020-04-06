@@ -63,7 +63,7 @@ while [ "$1" != "" ]; do
 done
 if [[ -z $DATE ]] ;
 then
-   DATE=${PWD##*/} 
+   DATE=`date +%Y%m%d`
 fi
 
 WORKDIR=$BASEDIR/$DATE
