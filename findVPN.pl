@@ -116,8 +116,11 @@ foreach my $coach (@coaches) {
          $retVal = $coachMap->{NamedData}->{$coach}->{'Pi2-End2VPN'}  unless ($options->{m});         
       }
    }
-   
-   print "$coach $retVal $sensor $phase\n";   
+   if (defined($sensor) ) {
+      print "$coach $retVal $sensor $phase\n";      
+   } else {
+      print "$coach not found\n";
+   }
 }
 
 1;
