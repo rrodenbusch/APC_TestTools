@@ -21,5 +21,5 @@ while [ "$1" != "" ]; do
     shift
 done
 for pid in $(ps -elf |grep openR |grep HD$IPEND | awk '{print $4}'); do 
-   echo $pid; 
+   kill $pid; 
 done
