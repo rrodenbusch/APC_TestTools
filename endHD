@@ -1,0 +1,25 @@
+#!/bin/bash
+
+usage () {
+   NEW=$'\n'
+   u="Usage:  startHDNVR${NEW}"
+   u="$u          -I (--IP){231}${NEW}"
+   echo "$u";
+}
+IPEND=""
+while [ "$1" != "" ]; do
+    case $1 in
+        -I | --IP )             shift
+                                IPEND=$1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+for pid in $(ps -elf |grep openR |grep HD$IPEND | awk '{print $4}'); do 
+   echo $pid; 
+done
