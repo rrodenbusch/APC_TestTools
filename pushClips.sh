@@ -10,7 +10,7 @@ usage () {
    u="$u          -D (--target dir)${NEW}"
    echo "$u";
 }
-
+LOGPREFIX="pushClips"
 while [ "$1" != "" ]; do
     case $1 in
         -c | --coach )          shift
@@ -27,6 +27,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -t | --target)          shift
                                 TARGIP=$1
+                                ;;
+        -l| --logprefix)        shift
+                                LOGPREFIX=$1
                                 ;;
         -h | --help )           usage
                                 exit
@@ -66,5 +69,5 @@ echo "Begin"
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
 ssh $TARGET mkdir -p $TARGDIR/$DATE/clips/$COACH
-rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR/$DATE/clips/$COACH
+rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR/$DATE/clips/$COACH >>$LOGPREFIX.log 2>&1
 echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
