@@ -65,6 +65,6 @@ echo "Begin"
 
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
-ssh $TARGET 'mkdir -p $TARGDIR/$DATE/clips/$COACH'
+ssh $TARGET mkdir -p $TARGDIR/$DATE/clips/$COACH
 rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR/$DATE/clips/$COACH
 echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
