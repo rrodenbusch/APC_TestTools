@@ -56,6 +56,7 @@ cd clips
 [[ -d $COACH ]]  || mkdir $COACH
 cd $COACH
 WDIR=`pwd` && echo "Working in $WDIR"
+cd $HOME/MBTA/Working
 
 echo "Push $COACH clips to $TARGET:$TARGDIR? [Y/n] ?"
 [[ -n $FORCE ]] || read var
@@ -64,5 +65,5 @@ echo "Begin"
 
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
-rsync -rva ./clips/$COACH/* $TARGET:$TARGDIR
+rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR
 echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
