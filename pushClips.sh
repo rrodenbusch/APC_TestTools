@@ -65,5 +65,5 @@ echo "Begin"
 
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
-rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR
+rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR/$DATE/clips/$COACH
 echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
