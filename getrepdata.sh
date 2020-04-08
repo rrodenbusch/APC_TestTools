@@ -40,7 +40,7 @@ while [ "$1" != "" ]; do
                                 DETAILS=1
                                 ;;
         -m | --merged   )       #shift
-                                echo "Retrieve Trips"
+                                echo "Merged Data"
                                 MERGED=1
                                 ;;
         -T | --onlyTrip )       shift
