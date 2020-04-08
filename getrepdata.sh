@@ -68,7 +68,7 @@ while [ "$1" != "" ]; do
 done
 if [[ -z $DATE ]] ;
 then
-   DATE=`date +%Y%m%d`
+   DATE=`$HOME/APC_TestTools/getTripDate.pl`
 fi
 
 WORKDIR=$BASEDIR/$DATE
