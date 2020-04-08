@@ -85,7 +85,7 @@ cd $DATE
 WDIR=`pwd` && echo "Working in $WDIR"
 
 [[ -n $PORTAL ]]   && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$PORTALDIR/* .`
-[[ -n $COUNTS ]]   && `rsync -e "ssh -i ~/PEM/richard-processing.pem"ubuntu@mbta-temp-flowz-server.mthinx.com:/$PORTALDIR/*PeopleCounts* .`
+[[ -n $COUNTS ]]   && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*PeopleCounts* .`
 [[ -n $DETAILS ]]  && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*CountDetail* .`
 [[ -n $DOORS ]]    && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*DoorData* .`
 
