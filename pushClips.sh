@@ -56,11 +56,13 @@ cd $HOME/MBTA/Working
 cd $DATE
 [[ -d clips ]]  || mkdir clips
 cd clips
-[[ -d $COACH ]]  || mkdir $COACH
-cd $COACH
-WDIR=`pwd` && echo "Working in $WDIR"
-cd $HOME/MBTA/Working
+for CURCOACH in $(echo $COACH | sed "s/,/ /g")
+do
+   [[ -d $CURCOACH ]]  || mkdir $CURCOACH
+done
 
+cd $HOME/MBTA/Working
+WDIR=`pwd` && echo "Working in $WDIR"
 echo "Push $COACH clips to $TARGET:$TARGDIR? [Y/n] ?"
 [[ -n $FORCE ]] || read var
 echo "Begin"
