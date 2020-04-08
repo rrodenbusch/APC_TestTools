@@ -68,6 +68,9 @@ echo "Begin"
 
 WDIR=`pwd` && echo "Working in $WDIR"
 echo "###        Copying clips"
-ssh $TARGET mkdir -p $TARGDIR/$DATE/clips/$COACH
-rsync -rva ./$DATE/clips/$COACH/* $TARGET:$TARGDIR/$DATE/clips/$COACH >>$LOGPREFIX.log 2>&1
-echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
+for CURCOACH in $(echo $COACH | sed "s/,/ /g")
+do
+   ssh $TARGET mkdir -p $TARGDIR/$DATE/clips/$CURCOACH
+   rsync -rva ./$DATE/clips/$CURCOACH/* $TARGET:$TARGDIR/$DATE/clips/$CURCOACH >>$LOGPREFIX.log 2>&1
+   echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
+done
