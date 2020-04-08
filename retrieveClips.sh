@@ -56,6 +56,7 @@ cd clips
 [[ -d $COACH ]] || mkdir $COACH
 cd $COACH
 WDIR=`pwd` && echo "Working in $WDIR"
+ ssh pi@$VPN 'VAR=`grep -n "If not running interactively" /home/pi/.bashrc | cut -f1 -d:`; VAR2=$(($VAR+4)) ;sed -i "$VAR,$VAR2 s/^./#/" /home/pi/.bashrc ; head -$VAR2 /home/pi/.bashrc'
 cp -f $BASEDIR/$DATE/clips/scripts/$SCRIPTNAME .
 echo "###        Copying $SCRIPTNAME to $COACH at $VPN"
 rsync $SCRIPTNAME pi@$VPN:/data/NVR
