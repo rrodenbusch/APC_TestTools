@@ -46,7 +46,7 @@ then
 fi
 if [[ -z $DATE ]] ;
 then
-   DATE=`date +%Y%m%d`
+   DATE=`$HOME/APC_TestTools/getTripDate.pl`
 fi
 TARGET=mthinx@10.50.$TARGIP
 

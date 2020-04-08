@@ -8,6 +8,7 @@ usage () {
    u="$u          -C (--details${NEW}"
    u="$u          -D (--date)${NEW}"
    u="$u          -p (--portal)${NEW}"
+   u="$u          -m (--merged)${NEW}"
    u="$u          -t (--trip)${NEW}"
 
    echo "$u";
@@ -37,6 +38,10 @@ while [ "$1" != "" ]; do
         -C | --details )        #shift
                                 echo "Retrieve Details"
                                 DETAILS=1
+                                ;;
+        -m | --merged   )       #shift
+                                echo "Retrieve Trips"
+                                MERGED=1
                                 ;;
         -T | --onlyTrip )       shift
                                 echo "Retrieve Trips"
@@ -87,6 +92,7 @@ WDIR=`pwd` && echo "Working in $WDIR"
 [[ -n $TRIPS ]]    && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*CoachTrip* .`
 [[ -n $TRIPS ]]    && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*TripCoach* .`
 [[ -n $ONLYTRIP ]] && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/T$ONLYTRIP* .`
+[[ -n $MERGED ]]   && `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/$WORKDIR/*Merged* .`
 
 
 exit
