@@ -73,7 +73,7 @@ do
    #echo "Executing in Team: $CMD"
    [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]} >>/home/mthinx/MBTA/Working/Push$TARG.log 2>&1`
 done
-DATE=date
+DATE=`date`
 echo "$DATE pushTeam complete"
 
 exit 0
