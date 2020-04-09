@@ -66,5 +66,7 @@ done
 ## Loop through each team member and sync to any selected ##
 for TARG in "${TEAM[@]}" ;
 do
+   CMD="/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]}"
+   echo "Executing: $CMD"
    [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]}`
 done
