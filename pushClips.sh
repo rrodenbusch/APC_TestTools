@@ -69,10 +69,16 @@ echo "Begin"
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 
 WDIR=`pwd` && echo "Working in $WDIR"
-echo "###        Copying clips"
+
 for CURCOACH in $(echo $COACH | sed "s/,/ /g")
 do
+   DATE=`date +%Y%m%d%H%M%S`
+   echo "$DATE pushclips push $COACH to $TARGET:$TARGDIR Starting"
    ssh $TARGET mkdir -p $TARGDIR/$DATE/clips/$CURCOACH
    rsync -rva ./$DATE/clips/$CURCOACH/* $TARGET:$TARGDIR/$DATE/clips/$CURCOACH >>$LOGPREFIX.log 2>&1
-   echo "Sync of $COACH to $TARGET:$TARGDIR Complete"
+   DATE=`date +%Y%m%d%H%M%S`
+   echo "$DATE pushClips push $COACH to $TARGET:$TARGDIR Complete"
 done
+echo "$DATE pushClips push to $TARGET:$TARGDIR Complete"
+
+exit 0
