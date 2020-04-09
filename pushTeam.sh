@@ -73,4 +73,3 @@ do
    echo "Executing in Team: $CMD"
    [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]}`
 done
-DATE=`
