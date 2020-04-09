@@ -1,4 +1,16 @@
 #!/bin/bash
+
+
+usage () {
+   NEW=$'\n'
+   u="Usage:  retrieveClips.sh${NEW}"
+   u="$u          -c (--coach)${NEW}"
+   u="$u          -d (--date)${NEW}"
+   u="$u          -v (--video) [MBTA/Working]${NEW}"
+   u="$u          -q (--quiet)${NEW}"
+   echo "$u";
+}
+
 while [ "$1" != "" ]; do
     case $1 in
         -c | --coach )          shift
@@ -13,10 +25,10 @@ while [ "$1" != "" ]; do
         -q | --quiet )          # shift
                                 QUIET=1
                                 ;;
-        -h | --help )           echo "Usage:  retrieveClips.sh -c {Coach} -d {yyyymmdd} -v {video dir [~/MBTA/Working]}"
+        -h | --help )           usage
                                 exit
                                 ;;
-        * )                     echo "Usage:  retrieveClips.sh -c {Coach} -d {yyyymmdd} -v {video dir [~/MBTA/Working]}"
+        * )                     usage
                                 exit 1
     esac
     shift

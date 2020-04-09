@@ -119,7 +119,8 @@ foreach my $coach (@coaches) {
    if (defined($sensor) ) {
       print "$coach $retVal $sensor $phase\n";      
    } else {
-      print "$coach not found\n";
+      print "$coach\n";
+      exit 0;
    }
 }
 
