@@ -59,4 +59,6 @@ cd clips
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/*.CoachClips.$DATE.sh ./scripts`
 echo "Copy Complete"
 [[ -z QUIET ]] && ls -ltr
+LDATE=`date "+%Y%m%d %T"`
+echo "$LDATE retrievePullClips $DATEcomplete"
 exit 0

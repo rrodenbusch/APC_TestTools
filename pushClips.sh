@@ -70,7 +70,7 @@ echo "Begin"
 
 WDIR=`pwd` && echo "Working in $WDIR"
 
-DATE=`date "+%Y%m%d %T"`
+DATE=`date "+%Y%m%d %T" `
 echo "$DATE pushclips push $COACH to $TARGET:$TARGDIR Starting"
 for CURCOACH in $(echo $COACH | sed "s/,/ /g")
 do
