@@ -7,7 +7,9 @@ declare -a TEAM
 TEAM=( Carlos Don Jacob Patrick Sandra )
 
 COACHDEF[Carlos]=' -c 618,248,240 '
-DEFAULT[Carlos]='-t 5.40 -D /data/Videos/ -f -l Carlos'
+DEFAULTS[Carlos]='-t 5.40 -D /data/Videos/ -f -l Carlos'
+
+DATE=`date +%Y%m%d`
 
 COACHDEF[Don]=' -c 1811,1804 ' 
 DEFAULTS[Don]='-t 5.11 -D /data/Videos/ -f -l Don'
@@ -25,6 +27,7 @@ usage () {
    NEW=$'\n'
    u="Usage:  retrieveClips.sh${NEW}"
    u="$u          -c (--coaches [csv])${NEW}"
+   u="$u          -d (--date [yyyymmdd])${NEW}"   
    u="$u          -C (--Carlos)${NEW}"
    u="$u          -D (--Don)${NEW}"
    u="$u          -J (--Jacob)${NEW}"
@@ -67,6 +70,7 @@ done
 for TARG in "${TEAM[@]}" ;
 do
    CMD="/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]}"
-   echo "Executing: $CMD"
+   echo "Executing in Team: $CMD"
    [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]}`
 done
+DATE=`
