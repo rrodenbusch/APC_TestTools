@@ -6,20 +6,20 @@ declare -a TEAM
 
 TEAM=( Carlos Don Jacob Patrick Sandra )
 
-COACHDEF[Carlos] = ' -c 618,248,240 '
-DEFAULT[Carlos]  = '-t 5.40 -D /data/Videos/ -f -l Carlos'
+COACHDEF[Carlos]=' -c 618,248,240 '
+DEFAULT[Carlos]='-t 5.40 -D /data/Videos/ -f -l Carlos'
 
-COACHDEF[Don]    = ' -c 1811,1804 ' 
-DEFAULTS[Don]    = '-t 5.11 -D /data/Videos/ -f -l Don'
+COACHDEF[Don]=' -c 1811,1804 ' 
+DEFAULTS[Don]='-t 5.11 -D /data/Videos/ -f -l Don'
 
-COACHDEF[Jacob]  = ' -c 846,808,767 '
-DEFAULTS[Jacob]  = '-t 5.78 -D /data/Videos/ -f -l Jacob'
+COACHDEF[Jacob]=' -c 846,808,767 '
+DEFAULTS[Jacob]='-t 5.78 -D /data/Videos/ -f -l Jacob'
 
-COACHDEF[Patrick]= ' -c 610,204 '
-DEFAULTS[Patrick]= '-t 5.28 -D /data/Videos/ -f -l Patrick'
+COACHDEF[Patrick]=' -c 610,204 '
+DEFAULTS[Patrick]='-t 5.28 -D /data/Videos/ -f -l Patrick'
 
-COACHDEF[Sandra] = ' -c 767,254 '
-DEFAULTS[Sandra] = '-t 5.77 -D /data/Videos/ -f -l Sandra'
+COACHDEF[Sandra]=' -c 767,254 '
+DEFAULTS[Sandra]='-t 5.77 -D /data/Videos/ -f -l Sandra'
 
 usage () {
    NEW=$'\n'
