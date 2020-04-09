@@ -61,13 +61,14 @@ then
    REMTARGDIR=$REMTARGDIR/$COACH
 fi
 
-echo "Synchronize clips from local $CLIPDIR to $TARGET:$REMTARGDIR? [Y/n] ?"
+echo "SyncClips from local $CLIPDIR to $TARGET:$REMTARGDIR? [Y/n] ?"
 [[ -n $FORCE ]] || read var
-echo "Begin"
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 cd $CLIPDIR
 WDIR=`pwd` && echo "Working in $WDIR"
-echo "###        Copying clips"
+LDATE=`date "+%Y%m%d %T"`
+echo "$LDATE syncClips $CLIPDIR to $TARGET:$REMTARGDIR Starting"
 rsync -rva $CLIPDIR/* $TARGET:$REMTARGDIR
 echo "Copy Complete"
-#ls -ltr
+LDATE=`date "+%Y%m%d %T"`
+echo "$LDATE syncClips $CLIPDIR to $TARGET:$REMTARGDIR Completed"
