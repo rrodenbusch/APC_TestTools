@@ -210,6 +210,13 @@ if ( defined($options->{coaches})) {
       next if $pid = fork(); # parent goes to the next
       die "fork failed: $1" unless defined $pid;
       retrieveCoachClips($coach,$options);
+      my $echo = "$coach Syncing STARTED";
+     `echo \"$echo\" >>$options->{logname}`;
+      my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -c $coach -f -d $options->{dateStr} 2>&1 >>$options->{logname}";
+     `$cmd`;
+      $echo = "$coach Syncing DONE";
+      `echo \"$echo\" >>$options->{logname}`;
+      exit;
    }
    1 while (wait() != -1);   
    my $cmd = "$ENV{HOME}/APC_TestTools/syncClips.sh -f -d $options->{dateStr} 2>&1 >>$options->{logname}";

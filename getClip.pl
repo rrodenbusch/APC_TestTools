@@ -15,6 +15,8 @@ my $USAGE = "Usage: getClip.pl\n".
                   "\t   -f force if file exits  \n" .
                   "\t   -i IP (csv: 10,13,20,23)\n".
                   "\t   -l clip len (sec)       \n" .                  
+                  "\t   -L Start yyyymmddhhmmss EST\n" .                  
+                  "\t   -G Start yyyymmddhhmmss GMT\n" .                  
                   "\t   -m MACs                 \n" .
                   "\t   -n Channel [0..3]       \n" .
                   "\t   -s start time epoch     \n" .              
