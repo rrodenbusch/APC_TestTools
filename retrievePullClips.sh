@@ -51,8 +51,8 @@ cd $VDIR
 [[ -d $DATE ]] || mkdir $DATE
 cd $DATE
 [[ -d clips ]] || mkdir clips
-[[ -f scripts ]] && [[ rm scripts ]]
 cd clips
+[[ -f scripts ]] &&  rm scripts
 [[ -d scripts ]] || mkdir scripts
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/TripCoaches.csv .`
 `rsync -e "ssh -i ~/PEM/richard-processing.pem" ubuntu@mbta-temp-flowz-server.mthinx.com:/home/ubuntu/MBTA/Working/$DATE/CoachTrips.csv .`
