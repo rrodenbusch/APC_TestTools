@@ -7,7 +7,7 @@ declare -a TEAM
 
 DATE=`date +%Y%m%d`
 
-source /home/mthinx/APC_TestTools/teams.sh
+source /home/mthinx/APC_TestTools/teams.ini
 
 usage () {
    NEW=$'\n'
