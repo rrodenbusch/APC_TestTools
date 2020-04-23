@@ -30,6 +30,9 @@ while [ "$1" != "" ]; do
         -c | --coaches )      shift
                               COACHES=$1
                               ;;    
+        -d | --date )         shift
+                              PUSHDATE=" -d $1"
+                              ;;
         -N | --name )         shift
                               TARGETS[$1]=1;
                               ;;    
@@ -61,7 +64,8 @@ for TARG in "${TEAM[@]}" ;
 do
    #CMD="/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]} >>/home/mthinx/MBTA/Working/Push$TARG.log 2>&1"
    #echo "Executing in Team: $CMD"
-   [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]} >>/home/mthinx/MBTA/Working/Push$TARG.log 2>&1`
+   [[ -z PUSHDATE ]] && PUSHDATE='';
+   [[ -n ${TARGETS[$TARG]} ]] && `/home/mthinx/APC_TestTools/pushClips.sh ${PUSHDATE} ${COACHDEF[$TARG]} ${DEFAULTS[$TARG]} >>/home/mthinx/MBTA/Working/Push$TARG.log 2>&1`
 done
 DATE=`date "+%Y%m%d %T"`
 echo "$DATE pushTeam complete"
