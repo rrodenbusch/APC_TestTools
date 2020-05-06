@@ -15,7 +15,7 @@ sub cronCheck {
       push (@newLines, $curLine) if ($curLine =~ m/^\s*#/);
       next                       if ($curLine =~ m/^\s*#/);
       foreach my $key (keys(%required)) {
-         if (substr($curLine,$key) != -1) {
+         if (index($curLine,$key) != -1) {
             $matched{$key} = 1;
             if ($required{$key} ne $curLine) {
                $newfile = 1;
