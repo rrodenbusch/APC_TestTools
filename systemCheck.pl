@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 sub cronCheck {
-   my %required = ( 'openRTSP' => '0 7 * * * /usr/bin/killall openRTPS');
+   my %required = ( 'openRTSP' => '0 7 * * * /usr/bin/killall openRTSP');
    my %matched;
    my $newfile = 0;
    my @newLines;
