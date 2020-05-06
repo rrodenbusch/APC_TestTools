@@ -18,6 +18,7 @@ sub cronCheck {
          if (index($curLine,$key) != -1) {
             $matched{$key} = 1;
             if ($required{$key} ne $curLine) {
+               print "cron update,$curLine\n";
                $newfile = 1;
                $curLine = $required{$key};
                next;
