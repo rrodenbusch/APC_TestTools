@@ -60,6 +60,6 @@ echo "Run system check on $COACH at $VPN? [Y/n]"
 LDATE=`date "+%Y%m%d %T"` 
 echo "$LDATE,systemCheck.sh,Begin,$COACH,$VPN"
 ssh pi@$VPN 'cd /home/pi/APC_TestTools/; git pull origin master'
-
+ssh pi@$VPN 'cd /home/pi;/home/pi/APC_TestTools/systemCheck.pl $OPT'
 LDATE=`date "+%Y%m%d %T"` 
 echo "$LDATE,systemCheck,Complete,$COACH,$VPN"
