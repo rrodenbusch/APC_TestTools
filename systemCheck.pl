@@ -29,7 +29,7 @@ sub cronCheck {
    
    if ($newfile) {
       my $newLines = join("\n",@newLines);
-      `crontab -l $ENV{HOME}/RPi/cron.bak`;
+      `crontab -l >$ENV{HOME}/RPi/cron.bak`;
       my $fname = "$ENV{HOME}/RPi/cron.new";
       open(my $fh, ">$fname") or die "Unable to open $fname\t$!\n";
       print $fh "$newLines\n";
