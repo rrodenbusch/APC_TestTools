@@ -46,6 +46,7 @@ echo "Build and Retrieve clips from $COACH $DATE at $VPN? [Y/n] ?"
 [[ -n $FORCE ]] || read var
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 ssh pi@$VPN "/home/pi/APC_TestTools/gitAll"
+ssh pi@$VPN "/home/pi/APC_TestTools/systemCheck.pl"
 echo "##         Create local dir"
 cd $BASEDIR
 WDIR=`pwd` && echo "Working in $WDIR"
