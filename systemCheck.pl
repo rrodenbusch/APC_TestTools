@@ -14,6 +14,7 @@ sub cronCheck {
       $curLine =~ s/\R//g;
       if ($curLine =~ m/^\s#/) {
          print "match";
+      }
       if ($curLine =~ m/^\s#/) {
          print "match2";
       }
