@@ -12,8 +12,13 @@ sub cronCheck {
    my @cronlines = split('\n',$cronfile);
    foreach my $curLine (@cronlines) {
       $curLine =~ s/\R//g;
-      push (@newLines, $curLine) if ($curLine =~ m/~\s#/);
-      next if ($curLine =~ m/~\s#/);
+      if ($curLine =~ m/^\s#/) {
+         print "match";
+      if ($curLine =~ m/^\s#/) {
+         print "match2";
+      }
+      push (@newLines, $curLine) if ($curLine =~ m/^\s#/);
+      next                       if ($curLine =~ m/^\s#/);
       foreach my $key (keys(%required)) {
          if (substr($curLine,$key) != -1) {
             $matched{$key} = 1;
