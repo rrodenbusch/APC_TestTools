@@ -58,7 +58,8 @@ echo "Run system check on $COACH at $VPN? [Y/n]"
 [[ -n $FORCE ]] || read var
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 LDATE=`date "+%Y%m%d %T"` 
-echo "$LDATE Begin System Check"
+echo "$LDATE,systemCheck.sh,Begin,$COACH,$VPN"
+ssh pi@$VPN 'cd /home/pi/APC_TestTools/; git pull origin master'
 
 LDATE=`date "+%Y%m%d %T"` 
 echo "$LDATE,systemCheck,Complete,$COACH,$VPN"
