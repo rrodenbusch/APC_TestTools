@@ -41,8 +41,4 @@ sub cronCheck {
 
 cronCheck();
 
-
-
-
-
 1;
