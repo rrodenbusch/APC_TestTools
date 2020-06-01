@@ -165,7 +165,7 @@ foreach $curAddy (@Ards) {
 }
 
 foreach $curAddy (@UIDs) {
-   if ($ValidI2C[$curAddy] ) { # check the Arduinos
+   if ($ValidI2C[$curAddy] ) { # check the UIDs
       print "\nChecking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
          my ($byte1,$cnt1) = getI2CdataByte($device,0xFC); 
@@ -180,14 +180,28 @@ foreach $curAddy (@UIDs) {
    }
 }
 
+#my $PwrBit  = 0x01;
+#my $CapBit  = 0x02;
+#my $PiBit   = 0x04;
+#my $NUCBit  = 0x08;
+#my $TNetBit = 0x10;
+#my $BrdgBit = 0x20;
+#my $NVNBit  = 0x40;
+#my $SnsrBit = 0x80;
+
 foreach $curAddy (@GPIOs) {
-   if ($ValidI2C[$curAddy] ) { # check the Arduinos
+   if ($ValidI2C[$curAddy] ) { # check the GPIOs
       print "\nChecking $DeviceNames->{$curAddy}\n";
       if ($device = attach($curAddy)) {
          my ($byte1,$cnt1) = getI2CdataByte($device,0x00);
          my ($byte2,$cnt2) = getI2CdataByte($device,0x09);
          my ($byte3,$cnt3) = getI2CdataByte($device,0x0A); 
          my $line= sprintf( "GPIO: IODIR: %08b OLAT: %08b GPIO: %08b\n",$byte1,$byte3,$byte2);
+         my ($bit1,$bit2,$bit3,$bit4,$bit5,$bit6,$bit7) = ( ($byte2 & 0x01),($byte2>>1 & 0x01),($byte2>>2 & 0x01)>,($byte2>>3 & 0x01),
+                                                            ($byte2>>4 & 0x01),($byte2>>5 & 0x01),($byte2>>6 & 0x01),($byte2>>7 & 0x01)   );
+         my $apcpwrstr = sprintf("Power Bits: Snsr %1x  NVN %1x Brdg %1x TNet %1x NUC %01x Pi %01x CapOk %01x PwrOk %01x\n",$bit7,$bit6,$bit5,$bit4,$bit3,$bit2,$bit1);
+         print $apcpwrstr if ( $curAddy} == 0x21 );
+         
          print $line;
       } else {
          print "Error attaching to $curAddy\n";
