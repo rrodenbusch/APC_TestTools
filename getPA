@@ -3,8 +3,8 @@
 usage () {
    NEW=$'\n'
    u="Usage:  getPA${NEW}"
-   u="$u     -b (--bits)${NEW}
-   u="$u     -d (--duration)${NEW}
+   u="$u     -b (--bits)${NEW}"
+   u="$u     -d (--duration)${NEW}"
    u="$u     -o (--outfile)${NEW}"
    echo "$u";
 }
