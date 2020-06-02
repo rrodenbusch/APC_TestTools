@@ -32,5 +32,5 @@ while [ "$1" != "" ]; do
     shift
 done
 
-arecord -D plughw:1,0 -d $DURATION -r $BITS $DATE.$OUTFILE
+arecord -D plughw:1,0 -d $DURATION -r $BITS $FDATE.$OUTFILE
 ls -ltr $OUTFILE
