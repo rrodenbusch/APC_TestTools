@@ -1,2 +1,35 @@
 #!/bin/bash
-arecord -D plughw:1,0 -d $1 -r 8 test.wav
+
+usage () {
+   NEW=$'\n'
+   u="Usage:  getPA${NEW}"
+   u="$u     -b (--bits)${NEW}
+   u="$u     -d (--duration)${NEW}
+   u="$u     -o (--outfile)${NEW}"
+   echo "$u";
+}
+FDATE=`date "+%Y%m%d"`
+DURATION=30
+OUTFILE=test.wav
+BITS=8
+while [ "$1" != "" ]; do
+    case $1 in
+        -b | --bits )         shift
+                              BITS=$1
+                              ;;
+        -d | --duration )     shift
+                              DURATION=$1
+                              ;;
+        -o | --outfile )      shift
+                              OUTFILE=$1
+                              ;;
+        -h | --help )         usage
+                              exit
+                              ;;
+        * )                   usage
+                              exit 1
+    esac
+    shift
+done
+arecord -D plughw:1,0 -d $DURATION -r $BITS $OUTFILE
+ls -ltr $OUTFILE
