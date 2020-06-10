@@ -1,37 +1,13 @@
 #!/bin/bash
-if [ -d $HOME/updates/PiInstall ]
-then
-   echo "Update PiInstall"
-   cd $HOME/updates/PiInstall
-   git pull origin master
-fi
-if [ -d $HOME/updates/RPi ]
-then
-   echo "Update RPi"
-   cd $HOME/updates/RPi
-   git pull origin master
-fi
-if [ -d $HOME/APC_TestTools ]
-then
-   echo "Update APC_TestTools"
-   cd $HOME/APC_TestTools
-   git pull origin master
-fi
-if [ -d $HOME/Arduino/Arduino ]
-then
-   echo "Update Arduino"
-   cd $HOME/Arduino/Arduino
-   git pull origin master
-fi
-if [ -d $HOME/updates/NUC ]
-then
-   echo "Update NUC"
-   cd $HOME/updates/NUC
-   git pull origin master
-fi
-if [ -d $HOME/NUC ]
-then 
-   echo "Update NUC"
-   cd $HOME/NUC
-   git pull origin master
-fi
+declare -a repos=('updates/PiInstall' 'updates/RPi' 'APC_TestTools'
+                  'Arduino/Arduino' 'updates/NUC' 'NUC' )
+                  
+for i in "${repos[@]}" 
+do        
+   if [ -d $HOME/$i ] && [ -d $HOME/$i/.git ]
+   then
+         cd $HOME/$i
+         echo "Refresh repo $HOME/$i"
+         git pull origin master
+   fi
+done
