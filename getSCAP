@@ -38,7 +38,7 @@ sub attach {
 
 my ($Pwr1,$Cap1,$Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr);
 ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
-
+my ($Line1,$gpio11) = (0,1);
 my ($prevScap,$prevNUC,$prevNVN) = (0,0,0);
 my ($ScapVolts,$NVNVolts,$NUCVolts) = (999,999,999);
 
@@ -70,6 +70,9 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    $Pwr1 = `gpio -g read 0x21`;
    $Cap1 = `gpio -g read 0x20`;
+   $gpio11 = `gpio -g read 0x11`;
+   if ( ($gpio & 0x01) == 0x01) {$Line1 = 0;}
+   if ( ($gpio & 0x01) == 0x00) {$Line1 = 1;}
    
    my $resp = $devA->read_word(0x0B);
    $resp = $resp & 0xFF;
@@ -96,11 +99,12 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
 
    my $outline = "\nCap %3.2f Volt Line %3.2f Volt\n".
+                   "              Line %01d DIO %01d\n".
                    "              Cap  %01d %01d\n" .
                    "              Pwr  %01d %01d\n" .
                    "              NUC  %01d NVN  %01d\n" .
                    "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
-   $line = sprintf($outline,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
+   $line = sprintf($outline,$Line1,$gpio11,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
    if ($line ne $prevLine) {
       print $line;
       $prevLine = $line;
