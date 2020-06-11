@@ -68,11 +68,11 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
-   $Pwr1 = `gpio -g read 0x21`;
-   $Cap1 = `gpio -g read 0x20`;
-   $gpio11 = `gpio -g read 0x11`;
-   if ( ($gpio & 0x01) == 0x01) {$Line1 = 0;}
-   if ( ($gpio & 0x01) == 0x00) {$Line1 = 1;}
+   $Pwr1   = `gpio -g read 21`;
+   $Cap1   = `gpio -g read 20`;
+   $gpio11 = `gpio -g read 11`;
+   if ( ($gpio11 & 0x01) == 0x01) {$Line1 = 0;}
+   if ( ($gpio11 & 0x01) == 0x00) {$Line1 = 1;}
    
    my $resp = $devA->read_word(0x0B);
    $resp = $resp & 0xFF;
@@ -104,7 +104,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
                    "              Pwr  %01d %01d\n" .
                    "              NUC  %01d NVN  %01d\n" .
                    "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
-   $line = sprintf($outline,$Line1,$gpio11,$CapVolt,$LineVolt,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
+   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
    if ($line ne $prevLine) {
       print $line;
       $prevLine = $line;
