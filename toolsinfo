@@ -1,0 +1,8 @@
+#!/bin/bash
+# ~/APC_TestTools
+
+declare -A apctools=( 
+   [gitAll]='git pull origin master in all repos in the list'
+   [rtailCSV]='tail a remote csv file (MPU, doors, DB, temp)'
+   [rTailLog]='tail a remote logfile (rLog, sysmon, Watch)'
+ )
