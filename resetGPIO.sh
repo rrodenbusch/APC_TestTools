@@ -1,8 +1,8 @@
 #!/bin/bash
-gpio -g mode 9 in
-gpio -g mode 13 in
-gpio -g mode 17 in
-gpio -g mode 22 in
-gpio -g mode 27 in
-gpio -g mode 11 in
 
+declare -a pins=(9,11,13,17,22,27);
+
+for p in "${pins[@]}"
+do
+   gpio -g mode $u in
+done
