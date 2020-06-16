@@ -1,3 +1,0 @@
-#!/bin/bash
-tail -f -n $1 /var/log/syslog | tr -d '\000' | grep 'Booting\|oltage'
-
