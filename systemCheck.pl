@@ -115,7 +115,7 @@ print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
-                'CLIPS'=> "ls -ltr /data/NVR/clips |tail -4",
+                'CLIPD'=> "ls -ltr /data/NVR/clips |tail -4",
                 'CLIPS'=> "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10"
                 );  
 my %cmdNames = ('USAGE'=>  'DISK USAGE',
