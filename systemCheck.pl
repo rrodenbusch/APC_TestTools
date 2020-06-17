@@ -108,6 +108,7 @@ sub cronCheck {
 }
 
 my $runDate=$ARGV[0];
+print "System Check $runDate\n";
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
