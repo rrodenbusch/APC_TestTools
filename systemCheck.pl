@@ -107,8 +107,11 @@ sub cronCheck {
    return($cronfile);
 }
 
-my $runDate=$ARGV[0];
-print "System Check $runDate\n";
+
+my $delim="#################";
+my $config = readINI();
+my ($coach,$runDate) = @ARGV;
+print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
@@ -128,8 +131,6 @@ my %cmdRoles = ('USAGE'=> 'ALL',
                 'CLIPS'=> 'rLog'
                 );
 my $resp;               
-my $config = readINI();
-my $delim="#################";
 print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
 foreach my $curKey (keys(%Commands)) {
    if ( ($cmdRoles{$curKey} eq 'ALL') || 
