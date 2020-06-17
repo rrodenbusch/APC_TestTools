@@ -48,7 +48,7 @@ then
 fi
 if [[ -z $VPN ]] ;
 then
-   VPN=`$HOME/APC_TestTools/findVPN.pl -c $COACH $OPT | awk '{print $2}'`
+   VPN=`$HOME/tools/findVPN.pl -c $COACH $OPT | awk '{print $2}'`
 fi
 [[ -z $VPN ]] && die "$COACH VPN not found"
 echo "Found $VPN"
