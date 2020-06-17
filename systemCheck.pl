@@ -45,8 +45,9 @@ sub cronCheck {
    #
    my $config = shift;
    my $required;
-   my %requiredrLog = ( 'openRTSP'   => '0 7 * * * /usr/bin/killall openRTSP',
-                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
+   my %requiredrLog = ( 'openRTSP'    => '0 7 * * * /usr/bin/killall openRTSP',
+                        'RunNVR.pl'   => '0 7 * * * /usr/bin/killall RunNVR.pl',
+                        'startPi.sh'  => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
                       );
    my %requiredPi1 = (
                         'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
