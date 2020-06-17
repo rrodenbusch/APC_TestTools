@@ -107,19 +107,26 @@ sub cronCheck {
    return($cronfile);
 }
 
+my $runDate=$ARGV[1];
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
-                'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4' );  
-my %cmdNames = ('USAGE'=> 'DISK USAGE',
-                'PROCS'=> 'PROCS RUNNING',
-                'NVR'  =>  'NVR');
-my %cmdRoles = ('USAGE'=>'ALL',
-                'PROCS'=>'ALL',
-                'NVR'  => 'rLog');
+                'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
+                'CLIPS'=> "ls -ltr /data/NVR/Working/clips/$runDate |tail -10"
+                );  
+my %cmdNames = ('USAGE'=>  'DISK USAGE',
+                'PROCS'=>  'PROCS RUNNING',
+                'NVR'  =>  'NVR',
+                'CLIPS'=>  'CLIP SERVER'
+                );
+my %cmdRoles = ('USAGE'=> 'ALL',
+                'PROCS'=> 'ALL',
+                'NVR'  => 'rLog',
+                'CLIPS'=> 'rLog'
+                );
 my $resp;               
 my $config = readINI();
 my $delim="#################";
-print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));
+print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
 foreach my $curKey (keys(%Commands)) {
    if ( ($cmdRoles{$curKey} eq 'ALL') || 
         ($cmdRoles{$curKey} eq $config->{myRole}) ) {
