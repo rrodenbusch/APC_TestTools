@@ -52,14 +52,15 @@ then
 fi
 [[ -z $VPN ]] && die "$COACH VPN not found"
 echo "Found $VPN"
+RDATE=`getTripDate.pl`
 PING=`ping -n 1 $VPN |Findstr /I /C:"timed out" /C:"host unreachable" /C:"could not find host"`
 [[ ! $PING  ]] || die "$VPN OFFLINE"
-echo "Run system check on $COACH at $VPN? [Y/n]"
+echo "Run system check on $COACH at $VPN for $RDATE? [Y/n]"
 [[ -n $FORCE ]] || read var
 [[ $var == 'Y' || $var  == 'y' || $var = '' ]] || exit
 LDATE=`date "+%Y%m%d %T"` 
 echo "$LDATE,systemCheck.sh,Begin,$COACH,$VPN"
 ssh pi@$VPN 'cd /home/pi/APC_TestTools/; git pull origin master'
-ssh pi@$VPN 'cd /home/pi;/home/pi/APC_TestTools/systemCheck.pl $OPT'
+ssh pi@$VPN 'cd /home/pi;/home/pi/APC_TestTools/systemCheck.pl $RDATE'
 LDATE=`date "+%Y%m%d %T"` 
 echo "$LDATE,systemCheck,Complete,$COACH,$VPN"
