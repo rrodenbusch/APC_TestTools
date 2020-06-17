@@ -112,6 +112,8 @@ my $delim="#################";
 my $config = readINI();
 my ($coach,$runDate) = @ARGV;
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
+
+my @cmdKeys = ( 'USAGE','PROCS','NVR','CLIPD','CLIPS');
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
@@ -132,7 +134,7 @@ my %cmdRoles = ('USAGE'=> 'ALL',
                 );
 my $resp;               
 print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
-foreach my $curKey (keys(%Commands)) {
+foreach my $curKey (@cmdKeys) {
    if ( ($cmdRoles{$curKey} eq 'ALL') || 
         ($cmdRoles{$curKey} eq $config->{myRole}) ) {
       my $curCmd = $Commands{$curKey};
