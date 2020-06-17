@@ -96,6 +96,15 @@ sub cronCheck {
       close $fh;
       `crontab $fname`;
    }
+   $cronfile = `crontab -l`;
+   @cronlines = split('\n',$cronfile);
+   $cronfile = '';
+   foreach my $curLine (@cronlines) {
+      $curLine =~ s/\R//g;
+      next                       if ($curLine =~ m/^\s*#/);
+      $cronfile .= "$curLine\n";
+   }
+   return($cronfile);
 }
 
 sub checkNVR{
@@ -107,12 +116,12 @@ sub checkNVR{
 my @commands = ('df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 "$ENV{HOME}/APC_TestTools/stopRPi.pl");
 
-my $cmdList = 
+#my $cmdList = 
 my $resp;
 my $config = readINI();
 
 print $resp if ($resp=cronCheck($config));
-print $resp if ($resp = checkNVR($config));
+print $resp if ($resp=checkNVR($config));
 foreach my $curCmd (@commands) {
    $resp = `$curCmd`;
    print "$resp\n";
