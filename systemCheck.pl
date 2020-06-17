@@ -107,24 +107,26 @@ sub cronCheck {
    return($cronfile);
 }
 
-sub checkNVR{
-   my $config = shift;
-   return (0) unless ( $config->{myRole} eq 'rLog' );
-   
-}
-
-my @commands = ('df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
-                "$ENV{HOME}/APC_TestTools/stopRPi.pl");
-
-#my $cmdList = 
-my $resp;
+my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
+                'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
+                'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4' );  
+my %cmdNames = ('USAGE'=> 'DISK USAGE',
+                'PROCS'=> 'PROCS RUNNING',
+                'NVR'  =>  'NVR');
+my %cmdRoles = ('USAGE'=>'ALL',
+                'PROCS'=>'ALL',
+                'NVR'  => 'rLog');
+my $resp;               
 my $config = readINI();
-
-print $resp if ($resp=cronCheck($config));
-print $resp if ($resp=checkNVR($config));
-foreach my $curCmd (@commands) {
-   $resp = `$curCmd`;
-   print "$resp\n";
+my $delim="#################";
+print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));
+foreach my $curKey (keys(%Commands)) {
+   if ( ($cmdRoles{$curKey} eq 'ALL') || 
+        ($cmdRoles{$curKey} eq $config->{myRole}) ) {
+      my $curCmd = $Commands{$curKey};
+      $resp = `$curCmd`;
+      print "$delim  $cmdNames{$curKey}  $delim\n$resp\n";     
+   }
 }
 
 1;
