@@ -111,7 +111,7 @@ my $runDate=$ARGV[1];
 my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
-                'CLIPS'=> "ls -ltr /data/NVR/Working/clips/$runDate |tail -10"
+                'CLIPS'=> "ls -ltr /data/NVR/clips/$runDate |tail -10"
                 );  
 my %cmdNames = ('USAGE'=>  'DISK USAGE',
                 'PROCS'=>  'PROCS RUNNING',
