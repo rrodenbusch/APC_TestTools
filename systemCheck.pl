@@ -88,6 +88,15 @@ sub cronCheck {
       push(@newLines,$curLine);      
    }  # next line of file
    
+   foreach my $key (keys(%{$required})) {
+      if (!defined($matched{$key}) || ($matched{key} == 0) ) {
+         print "cron add,$required->{$key}\n";
+         $newfile = 1;
+         my $curLine = $required->{$key};
+         push(@newLines,$curLine);
+      }
+   }
+   
    if ($newfile) {
       my $newLines = join("\n",@newLines);
       `crontab -l >$ENV{HOME}/RPi/cron.bak`;
