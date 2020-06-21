@@ -124,23 +124,26 @@ my ($coach,$runDate) = @ARGV;
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
 my @cmdKeys = ( 'USAGE','PROCS','NVR','CLIPD','CLIPS');
-my %Commands = ('USAGE'=> 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
-                'PROCS'=> "$ENV{HOME}/APC_TestTools/stopRPi.pl",
-                'NVR'  => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
-                'CLIPD'=> "ls -ltr /data/NVR/clips |tail -4",
-                'CLIPS'=> "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10"
+my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
+                'PROCS'    => "$ENV{HOME}/APC_TestTools/stopRPi.pl",
+                'NVR'      => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
+                'CLIPD'    => "ls -ltr /data/NVR/clips |tail -4",
+                'CLIPS'    => "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10",
+                'UPTIME'   => 'uptime'
                 );  
-my %cmdNames = ('USAGE'=>  'DISK USAGE',
-                'PROCS'=>  'PROCS RUNNING',
-                'NVR'  =>  'NVR',
-                'CLIPD'=>  'CLIP DATES',
-                'CLIPS'=>  'CLIP SERVER'
+my %cmdNames = ('USAGE'    => 'DISK USAGE',
+                'PROCS'    => 'PROCS RUNNING',
+                'NVR'      => 'NVR',
+                'CLIPD'    => 'CLIP DATES',
+                'CLIPS'    => 'CLIP SERVER',
+                'UPTIME'   => 'UPTIME'
                 );
-my %cmdRoles = ('USAGE'=> 'ALL',
-                'PROCS'=> 'ALL',
-                'NVR'  => 'rLog',
-                'CLIPD'=> 'rLog',
-                'CLIPS'=> 'rLog'
+my %cmdRoles = ('USAGE'    => 'ALL',
+                'PROCS'    => 'ALL',
+                'NVR'      => 'rLog',
+                'CLIPD'    => 'rLog',
+                'CLIPS'    => 'rLog',
+                'UPTIME'   => 'ALL'
                 );
 my $resp;               
 print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
