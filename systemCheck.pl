@@ -89,7 +89,7 @@ sub cronCheck {
    }  # next line of file
    
    foreach my $key (keys(%{$required})) {
-      if (!defined($matched{$key}) || ($matched{key} == 0) ) {
+      if (!defined($matched{$key}) || ($matched{$key} == 0) ) {
          print "cron add,$required->{$key}\n";
          $newfile = 1;
          my $curLine = $required->{$key};
