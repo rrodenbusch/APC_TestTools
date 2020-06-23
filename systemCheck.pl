@@ -121,6 +121,9 @@ sub cronCheck {
 my $delim="#################";
 my $config = readINI();
 my ($coach,$runDate) = @ARGV;
+$coach = $config->{coach} unless defined($coach);
+$runDate = `date "+%Y%m%d` unless defined($runDate);
+
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
 my @cmdKeys = ( 'USAGE','PROCS','NVR','CLIPD','CLIPS','UPTIME');
