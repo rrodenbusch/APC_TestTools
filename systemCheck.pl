@@ -132,6 +132,7 @@ my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$he
                 'NVR'      => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
                 'CLIPD'    => "ls -ltr /data/NVR/clips |tail -4",
                 'CLIPS'    => "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10",
+                'JPGS'     => "tail -1 /data/NVR/jpgSizes.csv",
                 'UPTIME'   => 'uptime'
                 );  
 my %cmdNames = ('USAGE'    => 'DISK USAGE',
@@ -139,6 +140,7 @@ my %cmdNames = ('USAGE'    => 'DISK USAGE',
                 'NVR'      => 'NVR',
                 'CLIPD'    => 'CLIP DATES',
                 'CLIPS'    => 'CLIP SERVER',
+                'JPGS'     => 'JPEG CAPTURES',
                 'UPTIME'   => 'UPTIME'
                 );
 my %cmdRoles = ('USAGE'    => 'ALL',
@@ -146,6 +148,7 @@ my %cmdRoles = ('USAGE'    => 'ALL',
                 'NVR'      => 'rLog',
                 'CLIPD'    => 'rLog',
                 'CLIPS'    => 'rLog',
+                'JPGS'     => 'rLog',
                 'UPTIME'   => 'ALL'
                 );
 my $resp;               
