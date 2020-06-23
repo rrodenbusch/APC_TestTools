@@ -126,7 +126,8 @@ $runDate = `date "+%Y%m%d` unless defined($runDate);
 
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
-my @cmdKeys = ( 'USAGE','PROCS','NVR','CLIPD','CLIPS','UPTIME');
+my @cmdKeys = ( 'USAGE','PROCS','NVR','JPGS','CLIPD','CLIPS','UPTIME');
+
 my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'    => "$ENV{HOME}/APC_TestTools/stopRPi.pl",
                 'NVR'      => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
