@@ -31,7 +31,7 @@ sub updateIniFile {
       push(@file, $line);
    }
    close($fh);
-   `mv $ENV{HOME}RPi/config.ini $ENV{HOME}.RPi/config.bak`;
+   `mv $ENV{HOME}/RPi/config.ini $ENV{HOME}/RPi/config.bak`;
    
    open($fh, ">$ENV{HOME}/RPi/config.ini") or die "Unable to open overwrite config file\n$!\n";
    my %OrigVal;
@@ -41,13 +41,13 @@ sub updateIniFile {
       if (defined($var) && defined($value)) {
          if ($var eq 'xMPU') {
             $axout = 1;
-            print"xMPU=$AX\n";
+            print $fh "xMPU=$AX\n";
          } elsif ($var eq 'yMPU') {
             $axout = 1;
-            print"yMPU=$AY\n";
+            print $fh "yMPU=$AY\n";
          } elsif ($var eq 'zMPU') {
             $ayout = 1;
-            print"zMPU=$AZ\n";
+            print $fh "zMPU=$AZ\n";
          } else {         
             print $fh "$line\n";
          }
@@ -55,9 +55,9 @@ sub updateIniFile {
          print $fh "$line\n";
       }
    }
-   print"xMPU=$AX\n" unless ($axout);
-   print"yMPU=$AY\n" unless ($ayout);
-   print"zMPU=$AZ\n" unless ($azout);
+   print $fh "xMPU=$AX\n" unless ($axout);
+   print $fh "yMPU=$AY\n" unless ($ayout);
+   print $fh "zMPU=$AZ\n" unless ($azout);
    close($fh);
 }
 
