@@ -17,36 +17,47 @@ use Time::HiRes;
 use MPU6050;
 use POSIX;
 
+
 sub updateIniFile {
    my $AX=shift;
    my $AY=shift;
    my $AZ=shift;
+   my ($axout,$ayout,$azout) = (0,0,0);
 
    my @file;   
    open(my $fh, "$ENV{HOME}/RPi/config.ini") or die "Unable to open config file\n$!\n";;
    while( my $line = <$fh>) {
       $line =~ s/\R//g;
-      my ($var,$value) = split('=',$line);
-      #$OrigVal{$var} = $value if (defined($var) && defined($varNames{$var}));
       push(@file, $line);
    }
    close($fh);
+   `mv $ENV{HOME}RPi/config.ini $ENV{HOME}.RPi/config.bak`;
    
    open($fh, ">$ENV{HOME}/RPi/config.ini") or die "Unable to open overwrite config file\n$!\n";
    my %OrigVal;
-   $OrigVal{xMPU}=$AX;
-   $OrigVal{yMPU}=$AY;
-   $OrigVal{zMPU}=$AZ;
    
    foreach my $line (@file) {
         my ($var,$value) = split('=',$line);
-      if (defined($var) && defined($OrigVal{$var}) ) {
-         $line = "$var=$OrigVal{$var}";
-         print $fh "$line\n";
+      if (defined($var) && defined($value)) {
+         if ($var eq 'xMPU') {
+            $axout = 1;
+            print"xMPU=$AX\n";
+         } elsif ($var eq 'yMPU') {
+            $axout = 1;
+            print"yMPU=$AY\n";
+         } elsif ($var eq 'zMPU') {
+            $ayout = 1;
+            print"zMPU=$AZ\n";
+         } else {         
+            print $fh "$line\n";
+         }
       } else {
          print $fh "$line\n";
       }
    }
+   print"xMPU=$AX\n" unless ($axout);
+   print"yMPU=$AY\n" unless ($ayout);
+   print"zMPU=$AZ\n" unless ($azout);
    close($fh);
 }
 
@@ -147,5 +158,5 @@ close FH;
 print "Update config file? [Y|n]? ";
 my $ans = <STDIN>;
 $ans =~ s/\R//g;
-#updateIniFile($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) if (($ans eq 'Y') || ($ans eq 'y'));
+updateIniFile($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) if (($ans eq 'Y') || ($ans eq 'y'));
 1;
