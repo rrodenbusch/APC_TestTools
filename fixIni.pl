@@ -46,6 +46,7 @@ sub readINI {
       $key =~ s/\R//g;
       $val =~ s/\R//g;
       $val =~ s/ //g if ($key eq 'myRole');
+      $ini{$val} = $val;
    }
    
    $ini{END} = 0;
