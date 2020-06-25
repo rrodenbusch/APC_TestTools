@@ -59,7 +59,7 @@ sub readINI {
 
 sub getMAC {
    my $ip = shift;
-   my $cmd = "sudo nmap -p80 $ip |grep 'MAC Address' |awk -F \" \" '{print $3}'";
+   my $cmd = "sudo nmap -p80 $ip |grep 'MAC Address' |awk -F \" \" '{print \$3}'";
    my $mac = `$cmd`;
    $mac =~ s/\R//g;   
    $mac =~ s/ //g;
