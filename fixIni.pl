@@ -26,6 +26,14 @@ sub getCmdLine {
    return(\%options);
 }
 
+sub readVoltages {
+   my $load = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0a 0x0a | awk -F \" \" '{print \$3}'`;
+   $load = $load /10.0;
+   my $cap = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0a 0x0a | awk -F \" \" '{print \$3}'`;
+   $cap = $cap / 10.0;   
+  return($load,$cap);
+}
+
 sub readINI {
    my %ini;
    my %devices;
@@ -68,6 +76,12 @@ sub getMAC {
 }
 
 my $options = getCmdLine();
+if (defined($options->{C}) || (defined($options->{L}) ) ) {
+   my ($load,$cap) = readVoltages();
+   print "Load=$load   Cap=$cap\n";
+   $options->{c} = ($options->{C} / $cap) if (defined($options->{C}));
+   $options->{l} = ($options->{L} / $load) if (defined($options->{L}));   
+}
 my $config = readINI();
 
 my ($NVNmac1,$NVNmac2,$NVNmac3,$NVNmac4,$NUCmac);
