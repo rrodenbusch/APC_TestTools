@@ -177,5 +177,5 @@ close FH;
 print "Update config file? [Y|n]? ";
 my $ans = <STDIN>;
 $ans =~ s/\R//g;
-updateIniFile($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) if ( defined($options->{f} || ($ans eq 'Y') || ($ans eq 'y'));
+updateIniFile($xMPU,$yMPU,$zMPU,$xGyro,$yGyro,$zGyro) if ( defined($options->{f}) || ($ans eq 'Y') || ($ans eq 'y'));
 1;
