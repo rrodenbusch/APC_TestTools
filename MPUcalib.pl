@@ -16,6 +16,24 @@ use Time::HiRes;
 #use RPiConfig;
 use MPU6050;
 use POSIX;
+use Getopt::Std;
+
+my $USAGE = "Usage: fixIni.pl\n".
+                  "\t   -f --force          \n" .
+                  "\t   -d --delay          \n" ;
+
+sub getCmdLine {
+   my ($dateStr);
+   my %options=();
+   
+   getopts("hd:f", \%options);
+   dir $USAGE if (defined $options{h});
+   $options{FORCE} = (defined($options{f}));
+   $options{NUC} = (defined($options{N}));
+   $options{NVN} = (defined($options{n}));
+      
+   return(\%options);
+}
 
 
 sub updateIniFile {
@@ -72,8 +90,9 @@ $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
 
+my $options = getCmdLine();
 my $delaySec = 0.01;
-$delaySec = $ARGV[0] if defined($ARGV[0]);
+$delaySec = $options->{d} if defined($options->{d});
 print "Configuring MPU; delay $delaySec\n";
 my $deviceAddress = 0x68;
 my $device = MPU6050->new($deviceAddress);
