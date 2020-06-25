@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use Getopt::Std;
 
-
 my $USAGE = "Usage: fixIni.pl\n".
                   "\t   -f --force          \n" .
                   "\t   -c --capscale          \n" .
