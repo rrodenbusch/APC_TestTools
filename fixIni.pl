@@ -79,8 +79,8 @@ my $options = getCmdLine();
 if (defined($options->{C}) || (defined($options->{L}) ) ) {
    my ($load,$cap) = readVoltages();
    print "Load=$load   Cap=$cap\n";
-   $options->{c} = ($options->{C} / $cap) if (defined($options->{C}));
-   $options->{l} = ($options->{L} / $load) if (defined($options->{L}));   
+   $options->{c} = sprintf("%4.2f",$options->{C} / $cap) if (defined($options->{C}));
+   $options->{l} = sprintf("%4.2f",$options->{L} / $load) if (defined($options->{L}));   
 }
 my $config = readINI();
 
