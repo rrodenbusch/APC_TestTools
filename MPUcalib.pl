@@ -64,7 +64,7 @@ sub updateIniFile {
             $axout = 1;
             print $fh "yMPU=$AY\n";
          } elsif ($var eq 'zMPU') {
-            $ayout = 1;
+            $azout = 1;
             print $fh "zMPU=$AZ\n";
          } else {         
             print $fh "$line\n";
