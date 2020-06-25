@@ -29,7 +29,7 @@ sub getCmdLine {
 sub readVoltages {
    my $load = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0a 0x0a | awk -F \" \" '{print \$3}'`;
    $load = $load /10.0;
-   my $cap = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0a 0x0a | awk -F \" \" '{print \$3}'`;
+   my $cap = `$ENV{HOME}/APC_TestTools/I2Cio.pl read 0x0a 0x0b | awk -F \" \" '{print \$3}'`;
    $cap = $cap / 10.0;   
   return($load,$cap);
 }
@@ -150,11 +150,11 @@ foreach my $line (@file) {
       print $fh "$line\n";
    }
 }
-if (defined($options->{c} && (!$cOut) ) ) {
+if (defined($options->{c} && ($cOut == 0) ) ) {
    print $fh "CAPscale=$options->{c}\n";
    print     "CAPscale=$options->{c}\n";
 }
-if (defined($options->{l} && (!$lOut) ) ) {
+if (defined($options->{l} && ($lOut == 0) ) ) {
    print $fh "LOADscale=$options->{l}\n";
    print     "LOADscale=$options->{l}\n";
 }
