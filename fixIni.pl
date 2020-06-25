@@ -93,6 +93,7 @@ while( my $line = <$fh>) {
 }
 close($fh);
 `mv $ENV{HOME}/RPi/config.ini $ENV{HOME}/RPi/config.bak.fix`;
+my ($cOut,$lOut) = (0,0);
 
 #   Output forced values
 open($fh, ">$ENV{HOME}/RPi/config.ini") or die "Unable to open overwrite config file\n$!\n";
@@ -108,18 +109,26 @@ foreach my $line (@file) {
       } elsif ($var eq 'SysMonLogDir') {
          print $fh "subnet=/var/log/sysmon\n";
          print     "subnet=/var/log/sysmon\n";
-      } elsif ($var eq 'myNVN1') {
+      } elsif  ( ($var eq 'myNVN1') && ($options->{NVN})) {
          print $fh "myNVN1=$NVNmac1\n";
          print     "myNVN1=$NVNmac1\n";
-      } elsif ($var eq 'myNVN2') {
+      } elsif ( ($var eq 'myNVN2') && ($options->{NVN})) {
          print $fh "myNVN1=$NVNmac2\n";
          print     "myNVN1=$NVNmac2\n";
-      } elsif ($var eq 'myNVN3') {
+      } elsif ( ($var eq 'myNVN3') && ($options->{NVN})) {
          print $fh "myNVN1=$NVNmac3\n";
          print     "myNVN1=$NVNmac3\n";
-      } elsif ($var eq 'myNVN4') {
+      } elsif ( ($var eq 'myNVN4') && ($options->{NVN})) {
          print $fh "myNVN1=$NVNmac4\n";
          print     "myNVN1=$NVNmac4\n";
+      } elsif ( ($var eq 'CAPscale') && defined($options->{c})) {
+         print $fh "CAPscale=$options->{c}\n";
+         print     "CAPscale=$options->{c}\n";
+         $cOut = 1;
+      } elsif ( ($var eq 'LOADscale') && defined($options->{l})) {
+         print $fh "LOADscale=$options->{l}\n";
+         print     "LOADscale=$options->{l}\n";
+         $lOut = 1;
       } else {
           print $fh "$line\n";
       }
@@ -127,6 +136,15 @@ foreach my $line (@file) {
       print $fh "$line\n";
    }
 }
+if (defined($options->{c} && (!$cOut) ) ) {
+   print $fh "CAPscale=$options->{c}\n";
+   print     "CAPscale=$options->{c}\n";
+}
+if (defined($options->{l} && (!$lOut) ) ) {
+   print $fh "LOADscale=$options->{l}\n";
+   print     "LOADscale=$options->{l}\n";
+}
+
 close($fh);
    
 
