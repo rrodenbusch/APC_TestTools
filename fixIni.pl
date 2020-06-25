@@ -113,14 +113,14 @@ foreach my $line (@file) {
          print $fh "myNVN1=$NVNmac1\n";
          print     "myNVN1=$NVNmac1\n";
       } elsif ( ($var eq 'myNVN2') && ($options->{NVN})) {
-         print $fh "myNVN1=$NVNmac2\n";
-         print     "myNVN1=$NVNmac2\n";
+         print $fh "myNVN2=$NVNmac2\n";
+         print     "myNVN2=$NVNmac2\n";
       } elsif ( ($var eq 'myNVN3') && ($options->{NVN})) {
-         print $fh "myNVN1=$NVNmac3\n";
-         print     "myNVN1=$NVNmac3\n";
+         print $fh "myNVN3=$NVNmac3\n";
+         print     "myNVN3=$NVNmac3\n";
       } elsif ( ($var eq 'myNVN4') && ($options->{NVN})) {
-         print $fh "myNVN1=$NVNmac4\n";
-         print     "myNVN1=$NVNmac4\n";
+         print $fh "myNVN4=$NVNmac4\n";
+         print     "myNVN4=$NVNmac4\n";
       } elsif ( ($var eq 'CAPscale') && defined($options->{c})) {
          print $fh "CAPscale=$options->{c}\n";
          print     "CAPscale=$options->{c}\n";
