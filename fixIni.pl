@@ -51,7 +51,7 @@ sub readINI {
    
    $ini{END} = 0;
    $ini{END} = 1 if (($ini{myRole} eq 'Pi1-End1') || ($ini{myRole} eq 'Pi2-End1'));
-   $ini{END} = 2 if (($ini{myRole} eq 'Pi1-End1') || ($ini{myRole} eq 'Pi2-End1'));
+   $ini{END} = 2 if (($ini{myRole} eq 'Pi1-End2') || ($ini{myRole} eq 'Pi2-End2'));
    $ini{END} = 3 if (($ini{myRole} eq 'rLog'));
    
    return(\%ini);
