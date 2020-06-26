@@ -10,6 +10,6 @@ movelog() {
    fi
 }
 
-for $fname in "${lognames[@]}"; do
+for fname in "${lognames[@]}"; do
    movelog($fname)
 done
