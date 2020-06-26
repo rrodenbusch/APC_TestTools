@@ -201,14 +201,13 @@ my %cmdRoles = ('USAGE'    => 'ALL',
                 'CLIPD'    => 'rLog',
                 'CLIPS'    => 'rLog',
                 'JPGS'     => 'rLog',
-                'VBOX'     => 'NUC1',
-                'VBOX'     => 'NUC2',
+                'VBOX'     => 'NUC1 NUC2'
                 );
 my $resp;               
 print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
 foreach my $curKey (@cmdKeys) {
    if ( ($cmdRoles{$curKey} eq 'ALL') || 
-        ($cmdRoles{$curKey} eq $config->{myRole}) ) {
+        (index( $cmdRoles{$curKey}, $config->{myRole}) != -1 ) ) {
       my $curCmd = $Commands{$curKey};
       $resp = `$curCmd`;
       print "\n$delim  $cmdNames{$curKey}  $delim\n$resp\n";     
