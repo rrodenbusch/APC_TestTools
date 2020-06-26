@@ -69,11 +69,11 @@ if  (!$cfg) {
 };
 
 sub getCfgVal{
-   my ($cfg,$val)=@_;
-   $val = '';
-   $val = $cfg->val('default',$val) if ($cfg->exists('default',$val));
-   $val =~ s/\R//g;
-   return($val);
+   my ($cfg,$key)=@_;
+   my $rval = '';
+   $rval = $cfg->val('default',$key) if ($cfg->exists('default',$key));
+   $rval =~ s/\R//g;
+   return($rval);
 }
 
 my ($PwrBit,$CapBit,$PiBit,$NUCBit,$TNetBit,$BrdgBit,$NVNBit,$SnsrBit)  = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
