@@ -5,7 +5,7 @@ lognames=('/home/pi/Watch.log' '/home/pi/RPi/WatchDog.log' '/home/pi/power.log'
 MaxFileSize=209715200
 movelog() {
    if [ -f $1 ]; then
-      file_size=`du -b /script_logs/test.log | tr -s '\t' ' ' | cut -d' ' -f1`
+      file_size=`du -b $1 | tr -s '\t' ' ' | cut -d' ' -f1`
       echo "$1 file size $file_size vs Max $MaxFileSize"
       if [ $file_size -gt $MaxFileSize ]; then /usr/bin/savelog $1; fi
    fi
