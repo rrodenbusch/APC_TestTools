@@ -66,7 +66,14 @@ if  (!$cfg) {
    my $list = join("\n",@Config::IniFiles::errors);
    print $list;
    die;
-} ;
+};
+sub getCfgVal{
+   my ($cfg,$val)=@_;
+   my $val = ''
+   $val = $cfg->val('default',$val) if ($cfg->exists('default',$val));
+   $val =~ s/\R//g;
+   return($val);
+}
 
 my ($PwrBit,$CapBit,$PiBit,$NUCBit,$TNetBit,$BrdgBit,$NVNBit,$SnsrBit)  = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
@@ -81,7 +88,8 @@ my $devG = attach(0x21);
 my ($dotCnt, $prevLine, $line) = (0,'1','2');
 
 my ($CAPscale,$LOADscale,$CapVolt,$LineVolt)=(1.0,1.0,1.0,1.0);
-$CAPscale=$cfg->val('default','CAPscale') if ($cfg->exists('default','CAPscale'));
+$CAPscale=getCfgVal($cfg,'CAPscale');
+$LOADscale=getCfgVal($cfg,'LOADscale');
 $LOADscale=$cfg->val('default','LOADscale') if ($cfg->exists('default','LOADscale'));
 logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale";
 

@@ -51,13 +51,14 @@ sub cronCheck {
    my $required;
    my %requiredrLog = ( 'openRTSP'    => '0 7 * * * /usr/bin/killall openRTSP',
                         'RunNVR.pl'   => '0 7 * * * /usr/bin/killall RunNVR.pl',
-                        'startPi.sh'  => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
+                        'startPi.sh'  => '@reboot   /home/pi/RPi/startPi.sh          >>/home/pi/Watch.log 2>&1'
                       );
    my %requiredPi1 = (
-                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
+                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh           >>/home/pi/Watch.log 2>&1',
+                        'watchPower' => '@reboot   /home/pi/APC_TestTools/watchPower >>/home/pi/Watch.log 2>&1'
                      );
    my %requiredPi2 = (
-                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh >>/home/pi/Watch.log 2>&1'
+                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh           >>/home/pi/Watch.log 2>&1'
                      );
                      
    if ($config->{myRole} eq 'rLog') {
