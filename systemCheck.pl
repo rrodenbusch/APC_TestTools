@@ -70,10 +70,10 @@ sub cronCheck {
                         'startPi.sh'  => '@reboot   /home/pi/RPi/startPi.sh          >>/home/pi/Watch.log 2>&1'
                       );
    my %requiredPi1 = (
-                        'logs.sh'     => '0 * * * * /home/pi/APC_TestTools/logs.sh   >>/home/pi/Watch.log 2>&1', 
-                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh           >>/home/pi/Watch.log 2>&1',
-                        'rmNMAP.sh'  => '@reboot  /home/pi/APC_TestTools/rmNMAP.sh >>/home/pi/Watch.log 2>&1',
-                        'watchPower' => '@reboot   /home/pi/APC_TestTools/watchPower >>/home/pi/Watch.log 2>&1'
+                        'logs.sh'     => '0 * * * * /home/pi/APC_TestTools/logs.sh      >>/home/pi/Watch.log 2>&1', 
+                        'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh              >>/home/pi/Watch.log 2>&1',
+                        'rmNMAP.sh'  => '@reboot  /home/pi/APC_TestTools/rmNMAP.sh      >>/home/pi/Watch.log 2>&1',
+                        'watchPower' => '@reboot   /home/pi/APC_TestTools/watchPower -q >>/home/pi/Watch.log 2>&1'
                      );
    my %requiredPi2 = (
                         'logs.sh'     => '0 * * * * /home/pi/APC_TestTools/logs.sh   >>/home/pi/Watch.log 2>&1', 

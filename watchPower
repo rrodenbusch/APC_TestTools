@@ -45,7 +45,7 @@ sub logMsg {
    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
    my $dateStr = sprintf("%04d%02d%02d %02d:%02d:%02d",$year+1900,$mon+1,$mday,$hour,$min,$sec);
    $dateStr =~ s/\R//g;
-   print "$dateStr, $logName: $msg\n" unless (defined($options) && ($options->{quiet}));
+   print "$dateStr, $logName: $msg\n" unless (defined($options) && (!$options->{quiet}));
    print $logfh "$dateStr, $logName: $msg\n" if defined($logfh);
 }  # logMsg
 
