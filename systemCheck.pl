@@ -171,7 +171,7 @@ my $delim="#################";
 my $config = readINI();
 my ($coach,$runDate) = @ARGV;
 $coach = $config->{coach} unless defined($coach);
-$runDate = `date "+%Y%m%d"` unless defined($runDate);
+$runDate = `date \"+%Y%m%d\"` unless defined($runDate);
 $runDate =~ s\/R\\g;
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
