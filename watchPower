@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Config::IniFiles;
-:use Getopt::Std;
+use Getopt::Std;
 use RPi::I2C;
 
 # Setup Signals
