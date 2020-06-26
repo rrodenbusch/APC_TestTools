@@ -13,8 +13,8 @@ foreach my $curLine (@lines) {
       $dev = $flds[0];
       $dev =~ s/://g;
    }
-   $ether = $flds[1] if ($flds[0] eq 'ether');
-   $inet = $flds[1] if ($flds[0] eq 'inet');
+   $ether = $flds[1] if (defined($flds[0]) && ($flds[0] eq 'ether'));
+   $inet = $flds[1]  if (defined($flds[0]) && ($flds[0] eq 'inet'));
    $lineNum++;
    if ($curLine eq '' ) {
       $lineNum=1;
