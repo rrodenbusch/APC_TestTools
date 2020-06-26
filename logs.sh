@@ -11,5 +11,5 @@ movelog() {
 }
 
 for fname in "${lognames[@]}"; do
-   movelog($fname)
+   movelog  $fname 
 done
