@@ -27,7 +27,7 @@ sub readINI {
       chomp;
       my ($key, $val) = split /=/;
       $key =~ s/\R//g;
-      $val =~ s/\R//g;
+      $val =~ s/\R//g if (defined($val));
       $val =~ s/ //g if ($key eq 'myRole');
       if ($key eq 'I2C_Device') {
          my($I2addy,$I2device,$I2name,$I2optional) = split(',',$val);
