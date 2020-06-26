@@ -89,9 +89,10 @@ my $devG = attach(0x21);
 my ($dotCnt, $prevLine, $line) = (0,'1','2');
 
 my ($CAPscale,$LOADscale,$CapVolt,$LineVolt)=(1.0,1.0,1.0,1.0);
-$CAPscale=getCfgVal($cfg,'CAPscale');
-$LOADscale=getCfgVal($cfg,'LOADscale');
-$LOADscale=$cfg->val('default','LOADscale') if ($cfg->exists('default','LOADscale'));
+$CAPscale =  getCfgVal($cfg,'CAPscale');
+$LOADscale = getCfgVal($cfg,'LOADscale');
+$CAPscale=1.0  if ($CAPscale eq '');
+$LOADscale=1.0 if ($LOADscale eq '');
 logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale";
 my $header="CapVolt,LineVolt,Line,LineGPIO,CapDIO,Cap1GPIO,PwrDIO,PwrDIO,NUC,NVN,TNet,Bridge,Sensor,Pi,CapOnVolt,NVNonVolt,NUConVolt";
 logMsg "$header";
