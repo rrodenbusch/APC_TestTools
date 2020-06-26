@@ -61,6 +61,8 @@ sub cronCheck {
    #
    my $config = shift;
    my $required;
+   my $retval;
+   
    my %requiredrLog = ( 'openRTSP'    => '0 7 * * * /usr/bin/killall openRTSP',
                         'RunNVR.pl'   => '0 7 * * * /usr/bin/killall RunNVR.pl',
                         'startPi.sh'  => '@reboot   /home/pi/RPi/startPi.sh          >>/home/pi/Watch.log 2>&1'
@@ -83,41 +85,45 @@ sub cronCheck {
    } elsif ( ($config->{myRole} eq 'NUC1') || ($config->{myRole} eq 'NUC2') ) {
       $required = \%requiredNUC;
    } else {
-      $required = \%requiredPi2;
+      $retval = "No match on mRole,$config->{myRole}\n";
    }
    my %matched;
    my $newfile = 0;
    my @newLines;
+   my @cronlines;
+   my $cronfile;
   
-   my $cronfile = `crontab -l`;
-   my @cronlines = split('\n',$cronfile);
-   foreach my $curLine (@cronlines) {
-      $curLine =~ s/\R//g;
-      push (@newLines, $curLine) if ($curLine =~ m/^\s*#/);
-      next                       if ($curLine =~ m/^\s*#/);
-      foreach my $key (keys(%{$required})) {
-         if (index($curLine,$key) != -1) {
-            $matched{$key} = 1;
-            if ($required->{$key} ne $curLine) {
-               print "cron update,$required->{$key}\n";
-               $newfile = 1;
-               $curLine = $required->{$key};
-               next;
+   if (defined($required) ) {
+      $cronfile = `crontab -l`;
+      @cronlines = split('\n',$cronfile);
+      foreach my $curLine (@cronlines) {
+         $curLine =~ s/\R//g;
+         push (@newLines, $curLine) if ($curLine =~ m/^\s*#/);
+         next                       if ($curLine =~ m/^\s*#/);
+         foreach my $key (keys(%{$required})) {
+            if (index($curLine,$key) != -1) {
+               $matched{$key} = 1;
+               if ($required->{$key} ne $curLine) {
+                  print "cron update,$required->{$key}\n";
+                  $newfile = 1;
+                  $curLine = $required->{$key};
+                  next;
+               }
             }
-         }
-      }  # next key
-      push(@newLines,$curLine);      
-   }  # next line of file
+         }  # next key
+         push(@newLines,$curLine);      
+      }  # next line of file
    
-   # Only need to match one startup @reboot
-   oneOf( \%matched,'WatchNUC.pl','startNUC.sh');
+      # Only need to match one startup @reboot
+      oneOf( \%matched,'WatchNUC.pl','startNUC.sh');
 
-   foreach my $key (keys(%{$required})) {
-      if (!defined($matched{$key}) || ($matched{$key} == 0) ) {
-         print "cron add,$required->{$key}\n";
-         $newfile = 1;
-         my $curLine = $required->{$key};
-         push(@newLines,$curLine);
+      foreach my $key (keys(%{$required})) {
+         if (!defined($matched{$key}) || ($matched{$key} == 0) ) {
+            print "cron add,$required->{$key}\n";
+            $newfile = 1;
+            my $curLine = $required->{$key};
+            push(@newLines,$curLine);
+         }
       }
    }
    
@@ -126,20 +132,22 @@ sub cronCheck {
       `crontab -l >$ENV{HOME}/RPi/cron.bak`;
       my $fname = "$ENV{HOME}/RPi/cron.new";
       open(my $fh, ">$fname") or die "Unable to open $fname\t$!\n";
+      
       print $fh "$newLines\n";
       close $fh;
       `crontab $fname`;
    }
+
    $cronfile = `crontab -l`;
    @cronlines = split('\n',$cronfile);
    $cronfile = '';
    foreach my $curLine (@cronlines) {
       $curLine =~ s/\R//g;
       next                       if ($curLine =~ m/^\s*#/);
-      $cronfile .= "$curLine\n";
+      $retval .= "$curLine\n";
    }
-   return($cronfile);
-}
+   return($retval);
+}  # checkCron
 
 
 my $delim="#################";
