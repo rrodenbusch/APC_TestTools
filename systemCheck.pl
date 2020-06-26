@@ -171,7 +171,7 @@ my $delim="#################";
 my $config = readINI();
 my ($coach,$runDate) = @ARGV;
 $coach = $config->{coach} unless defined($coach);
-$runDate = `date "+%Y%m%d` unless defined($runDate);
+$runDate = `date "+%Y%m%d"` unless defined($runDate);
 
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
@@ -203,7 +203,6 @@ my %cmdRoles = ('USAGE'    => 'ALL',
                 'JPGS'     => 'rLog',
                 'VBOX'     => 'NUC1',
                 'VBOX'     => 'NUC2',
-                'UPTIME'   => 'ALL'
                 );
 my $resp;               
 print "$delim  CRON $delim\n$resp" if ($resp=cronCheck($config));    
