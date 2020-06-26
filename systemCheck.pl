@@ -198,9 +198,10 @@ my %cmdNames = ('USAGE'    => 'DISK USAGE',
 my %cmdRoles = ('USAGE'    => 'ALL',
                 'PROCS'    => 'ALL',
                 'NVR'      => 'rLog',
+                'JPGS'     => 'rLog',
                 'CLIPD'    => 'rLog',
                 'CLIPS'    => 'rLog',
-                'JPGS'     => 'rLog',
+                'UPTIME'   => 'ALL',
                 'VBOX'     => 'NUC1 NUC2'
                 );
 my $resp;               
