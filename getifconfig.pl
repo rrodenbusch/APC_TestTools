@@ -13,11 +13,12 @@ foreach my $curLine (@lines) {
       $dev = $flds[0];
       $dev =~ s/://g;
    }
-   $ether = $flds[1] if (defined($flds[0]) && ($flds[0] eq 'ether'));
-   $inet = $flds[1]  if (defined($flds[0]) && ($flds[0] eq 'inet'));
+   $ether = uc($flds[1]) if (defined($flds[0]) && ($flds[0] eq 'ether'));
+   $inet =     $flds[1]  if (defined($flds[0]) && ($flds[0] eq 'inet'));
    $lineNum++;
    if ($curLine eq '' ) {
       $lineNum=1;
+      $ether =~ s/://g;
       print "$dev,$ether,$inet\n";
       ($dev,$ether,$inet) = ('','','');
    }
