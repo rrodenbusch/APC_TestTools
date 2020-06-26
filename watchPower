@@ -77,7 +77,7 @@ sub getCfgVal{
 }
 
 my ($PwrBit,$CapBit,$PiBit,$NUCBit,$TNetBit,$BrdgBit,$NVNBit,$SnsrBit)  = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
-
+my $options=getCmdLine;
 my ($Pwr1,$Cap1,$Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr);
 ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 my ($Line1,$gpio11) = (0,1);
@@ -93,9 +93,9 @@ $CAPscale =  getCfgVal($cfg,'CAPscale');
 $LOADscale = getCfgVal($cfg,'LOADscale');
 $CAPscale=1.0  if ($CAPscale eq '');
 $LOADscale=1.0 if ($LOADscale eq '');
-logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale";
+logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale",$options;
 my $header="CapVolt,LineVolt,Line,LineGPIO,CapDIO,Cap1GPIO,PwrDIO,PwrDIO,NUC,NVN,TNet,Bridge,Sensor,Pi,CapOnVolt,NVNonVolt,NUConVolt,LOADscale,CAPscale";
-logMsg "$header";
+logMsg "$header",$options;
 while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
@@ -147,7 +147,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    my $outline = "%3.2f,%3.2f,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f";
    $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi,$ScapVolts,$NVNVolts,$NUCVolts,$LOADscale,$CAPscale);
-   logMsg($line);
+   logMsg($line,$options);
    sleep 1;
 }
 1;
