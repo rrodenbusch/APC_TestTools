@@ -106,6 +106,13 @@ sub cronCheck {
       @cronlines = split('\n',$cronfile);
       foreach my $curLine (@cronlines) {
          $curLine =~ s/\R//g;
+         foreach my $key (@removeCron)  {
+            if (index($curLine,$key) != -1) {
+               print "cron Remove,$key\n";
+               $newfile = 1;
+               next;
+            }
+         }
          push (@newLines, $curLine) if ($curLine =~ m/^\s*#/);
          next                       if ($curLine =~ m/^\s*#/);
          foreach my $key (keys(%{$required})) {
