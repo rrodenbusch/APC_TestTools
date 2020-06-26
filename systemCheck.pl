@@ -43,6 +43,18 @@ sub readINI {
    return(\%ini);
 }
 
+sub oneOf {
+   my $matchHash = shift;
+   my @keys = @_;
+   my $anyMatch = 0;
+   foreach my $curKey (@keys) {
+      $anyMatch = 1 if (defined($matchHash->{$curKey}) && ($matchHash->{$curKey}==1));
+   }
+   foreach my $curKey (@keys) {
+      $matchHash->{$curKey} = $anyMatch;
+   }
+}  # oneOf
+
 sub cronCheck {
    #
    #  Make sure the required lines are present in the crontab
@@ -60,12 +72,16 @@ sub cronCheck {
    my %requiredPi2 = (
                         'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh           >>/home/pi/Watch.log 2>&1'
                      );
+   my %requiredNUC = ( 'WatchNUC.pl' => '@rebot    /home/mthinx/NUC/startNUC.sh      >>/home/mthinx/Watch.log 2>&1',
+                       'startNUC.sh' => '@rebot    /home/mthinx/NUC/startNUC.sh      >>/home/mthinx/Watch.log 2>&1' );
                      
    if ($config->{myRole} eq 'rLog') {
       $required = \%requiredrLog;
    } elsif ( ($config->{myRole} eq 'Pi1-End1') ||
              ($config->{myRole} eq 'Pi1-End2') ) {
       $required = \%requiredPi1;
+   } elsif ( ($config->{myRole} eq 'NUC1') || ($config->{myRole} eq 'NUC2') ) {
+      $required = \%requiredNUC;
    } else {
       $required = \%requiredPi2;
    }
@@ -93,6 +109,9 @@ sub cronCheck {
       push(@newLines,$curLine);      
    }  # next line of file
    
+   # Only need to match one startup @reboot
+   oneOf( \%matched,'WatchNUC.pl','startNUC.sh');
+
    foreach my $key (keys(%{$required})) {
       if (!defined($matched{$key}) || ($matched{$key} == 0) ) {
          print "cron add,$required->{$key}\n";
