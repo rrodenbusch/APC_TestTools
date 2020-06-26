@@ -10,6 +10,10 @@ sub readINI {
    my %devices;
    my @file;
    
+   my $fLine = `head -1 $ENV{HOME}/RPi/config.ini`;
+   $fLine =~ s/\R//g;
+   `sed -i '1 i\[default]' $ENV{HOME}/RPi/config.ini` unless ($fLine eq '[default]');
+   
    open(my $fh, "$ENV{HOME}/RPi/config.ini") 
                or die "Unable to open config.ini $!\n";;
    while( my $line = <$fh>) {
