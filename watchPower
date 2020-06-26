@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Config::IniFiles;
-#use RPI::I2C;
+use RPI::I2C;
 
 # Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0 );
@@ -22,17 +22,6 @@ my $logName='watchPower';
 my $USAGE = "Usage: watchPower\n".
                   "\t   -q Quiet, logfile only \n" ;
                   
-#sub readINI {
-#   my @file;
-#   my $line = '';
-#   open(my $fh, '/home/mthinx/NUC/config.ini') or die "Unable to open overwrite config file\n$!\n";;
-#   while( $line = <$fh>) {
-#      $line =~ s/\R//g;
-#      push(@file, $line);
-#   }
-#   close($fh);
-#   return(\@file);   
-#}
 sub getCmdLine {
    my ($dateStr);
    my %options=();
@@ -60,111 +49,95 @@ sub logMsg {
    print $logfh "$dateStr, $logName: $msg\n" if defined($logfh);
 }  # logMsg
 
+sub attach {
+   my $addy = shift;
+   my ($device,$retval);
+   if ($device = RPi::I2C->new($addy)) {
+      $retval = $device if ( $device->check_device($addy) );      
+   }
+   return ($retval);
+}  # attach 
+
+
+################################# Main ##########################################
 openLogFile();
 my $cfg=Config::IniFiles->new(-file => "$ENV{HOME}/RPi/config.ini") ;
 if  (!$cfg) {
    my $list = join("\n",@Config::IniFiles::errors);
    print $list;
+   die;
 } ;
 
-
 my ($PwrBit,$CapBit,$PiBit,$NUCBit,$TNetBit,$BrdgBit,$NVNBit,$SnsrBit)  = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
-
-sub attach {
-   my $addy = shift;
-   my ($device,$retval);
-
-   if ($device = RPi::I2C->new($addy)) {
-      $retval = $device if ( $device->check_device($addy) );      
-   }
-   return ($retval);
-}        
 
 my ($Pwr1,$Cap1,$Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr);
 ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 my ($Line1,$gpio11) = (0,1);
 my ($prevScap,$prevNUC,$prevNVN) = (0,0,0);
-my ($ScapVolts,$NVNVolts,$NUCVolts) = (999,999,999);
+my ($ScapVolts,$NVNVolts,$NUCVolts) = (-1,-1,-1);
 
 my $devA = attach(0x0A);
 my $devG = attach(0x21);
 my ($dotCnt, $prevLine, $line) = (0,'1','2');
 
-my $CAPscale = 1.0;
-my $LOADscale = 1.0;
-$line = `grep LOADscale $ENV{HOME}/RPi/config.ini`;
-if (defined($line)) {
-   $line =~ s/\R//g;
-   my ($var,$val) = split('=',$line);
-   $LOADscale = $val if (defined($val));
-}
-my 
-$line2 = `grep CAPscale $ENV{HOME}/RPi/config.ini`;
-if (defined($line) ) {
-   $line2 =~ s/\R//g;
-   my ($var,$val) = split('=',$line2);
-   $CAPscale = $val if (defined($val));
-}
-print "Using Load Scale $LOADscale  CAP scale $CAPscale\n";
+my ($CAPscale,$LOADscale,$CapVolt,$LineVolt)=(1.0,1.0,1.0,1.0);
+$CAPscale=$cfg->val('default','CAPscale') if ($cfg->exists('default','CAPscale'));
+$LOADscale=$cfg->val('default','LOADscale') if ($cfg->exists('default','LOADscale'));
+logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale";
 
 while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
+   ## GPIO LINE, power and cap bits
    $Pwr1   = `gpio -g read 21`;
    $Cap1   = `gpio -g read 20`;
    $gpio11 = `gpio -g read 11`;
    if ( ($gpio11 & 0x01) == 0x01) {$Line1 = 0;}
    if ( ($gpio11 & 0x01) == 0x00) {$Line1 = 1;}
    
-   my $resp = $devA->read_word(0x0B);
-   $resp = $resp & 0xFF;
-   my $CapVolt = $CAPscale * $resp / 10;
+   my $resp = -1;
+   $resp = $devA->read_word(0x0B) if defined($devA);
+   if ($resp != -1) {
+      $resp = $resp & 0xFF;   
+      $CapVolt = $CAPscale * $resp / 10;
+   }  else {
+      $devA = attach(0x0A);
+   }
 
-   $resp = $devA->read_word(0x0A);
-   $resp = $resp & 0xFF;
-   my $LineVolt = $LOADscale * $resp / 10;
+   $resp = -1;
+   $resp = $devA->read_word(0x0A) if defined($devA);
+   if ($resp != -1) {
+      $resp = $resp & 0xFF;
+      $LineVolt = $LOADscale * $resp / 10;
+   } else {
+      $devA = attach(0x0A);
+   }
 
-   my $Bits = $devG->read_byte(0x09);
-   $Pwr  = 1 if ($Bits & $PwrBit);
-   $Cap  = 1 if ($Bits & $CapBit);
-   $Pi   = 1 if ($Bits & $PiBit);
-   $NUC  = 1 if ($Bits & $NUCBit);
-   $TNet = 1 if ($Bits & $TNetBit);
-   $Brdg = 1 if ($Bits & $BrdgBit);
-   $NVN  = 1 if ($Bits & $NVNBit);
-   $Snsr = 1 if ($Bits & $SnsrBit);
+   ## MCP Bits
+   $resp = -1;
+   $resp = $devG->read_byte(0x09) if (defined($devG));
+   if ($resp != -1) {
+      $Pwr  = 1 if ($resp & $PwrBit);
+      $Cap  = 1 if ($resp & $CapBit);
+      $Pi   = 1 if ($resp & $PiBit);
+      $NUC  = 1 if ($resp & $NUCBit);
+      $TNet = 1 if ($resp & $TNetBit);
+      $Brdg = 1 if ($resp & $BrdgBit);
+      $NVN  = 1 if ($resp & $NVNBit);
+      $Snsr = 1 if ($resp & $SnsrBit);      
+   } else {
+      $devG = attach(0x21);
+   }
 
-   $ScapVolts = $CapVolt if (($Cap == 1) && ($prevScap == 0) && ($CapVolt < $ScapVolts) );
-   $NVNVolts = $CapVolt if (($NVN == 1) && ($prevNVN == 0)   && ($CapVolt < $NVNVolts) );
-   $NUCVolts = $CapVolt if (($NUC == 1) && ($prevNUC == 0)   && ($CapVolt < $NUCVolts) );
+   $ScapVolts = $CapVolt if (($Cap == 1) &&  ($prevScap == 0) && ($CapVolt < $ScapVolts) );
+   $NVNVolts  = $CapVolt if (($NVN == 1) &&  ($prevNVN == 0)  && ($CapVolt < $NVNVolts) );
+   $NUCVolts  = $CapVolt if (($NUC == 1) &&  ($prevNUC == 0)  && ($CapVolt < $NUCVolts) );
    ($prevScap,$prevNVN,$prevNUC) = ($Cap,$NVN,$NUC);
 
 
-   my $outline = "\nCap %3.2f Volt Line %3.2f Volt\n".
-                   "              Line %01d DIO %01d\n".
-                   "              Cap  %01d %01d\n" .
-                   "              Pwr  %01d %01d\n" .
-                   "              NUC  %01d NVN  %01d\n" .
-                   "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
-   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
-   if ($line ne $prevLine) {
-      print $line;
-      $prevLine = $line;
-   } else {
-      $dotCnt++;
-      print '.';
-      print "\n"  if ($dotCnt > 40);
-      $dotCnt = 0 if ($dotCnt > 40);
-   }
+   my $outline = "%3.2f,%3.2f,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%3.2f,%3.2f,%3.2f";
+   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi,$ScapVolts,$NVNVolts,$NUCVolts);
+   logMsg($line);
    sleep 1;
 }
-
-print "\nExit on Intterupt\n" if ($sig{INT} !=0);
-print "\nExit on Quit\n" if ($sig{QUIT} !=0);
-print "\nExit on Stop\n" if ($sig{STOP} !=0);
-
-$line2 = sprintf("SCap @ %3.2f\nNVN  @ %3.2f\nNUC  %3.2f\n",$ScapVolts,$NVNVolts,$NUCVolts);
-print $line2;
-
-
 1;
