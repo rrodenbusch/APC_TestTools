@@ -131,7 +131,7 @@ $runDate = `date "+%Y%m%d` unless defined($runDate);
 
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
-my @cmdKeys = ( 'USAGE','PROCS','NVR','JPGS','CLIPD','CLIPS','UPTIME');
+my @cmdKeys = ( 'USAGE','PROCS','NVR','JPGS','CLIPD','CLIPS','UPTIME','VBOX');
 
 my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'    => "$ENV{HOME}/APC_TestTools/stopRPi.pl",
@@ -139,7 +139,8 @@ my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$he
                 'CLIPD'    => "ls -ltr /data/NVR/clips |tail -4",
                 'CLIPS'    => "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10",
                 'JPGS'     => "tail -1 /data/NVR/jpgSizes.csv",
-                'UPTIME'   => 'uptime'
+                'UPTIME'   => 'uptime',
+                'VBOX'     => 'VBoxManage list runningvms'
                 );  
 my %cmdNames = ('USAGE'    => 'DISK USAGE',
                 'PROCS'    => 'PROCS RUNNING',
@@ -147,7 +148,8 @@ my %cmdNames = ('USAGE'    => 'DISK USAGE',
                 'CLIPD'    => 'CLIP DATES',
                 'CLIPS'    => 'CLIP SERVER',
                 'JPGS'     => 'JPEG CAPTURES',
-                'UPTIME'   => 'UPTIME'
+                'UPTIME'   => 'UPTIME',
+                'VBOX'     => 'VMs'
                 );
 my %cmdRoles = ('USAGE'    => 'ALL',
                 'PROCS'    => 'ALL',
@@ -155,6 +157,8 @@ my %cmdRoles = ('USAGE'    => 'ALL',
                 'CLIPD'    => 'rLog',
                 'CLIPS'    => 'rLog',
                 'JPGS'     => 'rLog',
+                'VBOX'     => 'NUC1',
+                'VBOX'     => 'NUC2',
                 'UPTIME'   => 'ALL'
                 );
 my $resp;               
