@@ -8,9 +8,7 @@ movelog() {
       file_size=`du -b $1 | tr -s '\t' ' ' | cut -d' ' -f1`
       echo "$1 file size $file_size vs Max $MaxFileSize"
       if [ $file_size -gt $MaxFileSize ]; then
-          cp $1 $1.sav
-          rm $1
-          /usr/bin/savelog $1.sav;
+          /usr/bin/savelog $1
       fi
    fi
 }
