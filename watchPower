@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Config::IniFiles;
-use RPI::I2C;
+use RPi::I2C;
 
 # Setup Signals
 my %sig = ( HUP => 0, ABRT => 0, USR1 => 0, USR2 => 0, CONT => 0, QUIT => 0, STOP => 0, INT => 0 );
