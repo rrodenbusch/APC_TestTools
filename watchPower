@@ -94,7 +94,7 @@ $LOADscale = getCfgVal($cfg,'LOADscale');
 $CAPscale=1.0  if ($CAPscale eq '');
 $LOADscale=1.0 if ($LOADscale eq '');
 logMsg "LOADscale,$LOADscale,CAPscale,$CAPscale";
-my $header="CapVolt,LineVolt,Line,LineGPIO,CapDIO,Cap1GPIO,PwrDIO,PwrDIO,NUC,NVN,TNet,Bridge,Sensor,Pi,CapOnVolt,NVNonVolt,NUConVolt";
+my $header="CapVolt,LineVolt,Line,LineGPIO,CapDIO,Cap1GPIO,PwrDIO,PwrDIO,NUC,NVN,TNet,Bridge,Sensor,Pi,CapOnVolt,NVNonVolt,NUConVolt,LOADscale,CAPscale";
 logMsg "$header";
 while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
@@ -145,8 +145,8 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    $NUCVolts  = $CapVolt if (($NUC == 1) &&  ($prevNUC == 0)  && ($CapVolt < $NUCVolts) );
    ($prevScap,$prevNVN,$prevNUC) = ($Cap,$NVN,$NUC);
 
-   my $outline = "%3.2f,%3.2f,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%3.2f,%3.2f,%3.2f";
-   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi,$ScapVolts,$NVNVolts,$NUCVolts);
+   my $outline = "%3.2f,%3.2f,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%01d,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f";
+   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi,$ScapVolts,$NVNVolts,$NUCVolts,$LOADscale,$CAPscale);
    logMsg($line);
    sleep 1;
 }
