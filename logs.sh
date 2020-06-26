@@ -4,6 +4,7 @@ lognames=('/home/pi/Watch.log','/home/pi/RPi/WatchDog.log','/home/pi/power.log',
 # rotate @ 200 Meg
 MaxFileSize=209715200
 movelog() {
+   echo "Check file $1"
    if [ -f $1 ]; then
       file_size=`du -b /script_logs/test.log | tr -s '\t' ' ' | cut -d' ' -f1`
       echo "$1 file size $file_size vs Max $MaxFileSize"
