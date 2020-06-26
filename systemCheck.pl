@@ -110,7 +110,7 @@ sub cronCheck {
             if (index($curLine,$key) != -1) {
                print "cron Remove,$key\n";
                $newfile = 1;
-               next;
+               $curLine = "#$curLine";
             }
          }
          push (@newLines, $curLine) if ($curLine =~ m/^\s*#/);
