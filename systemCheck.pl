@@ -172,7 +172,7 @@ my $config = readINI();
 my ($coach,$runDate) = @ARGV;
 $coach = $config->{coach} unless defined($coach);
 $runDate = `date \"+%Y%m%d\"` unless defined($runDate);
-$runDate =~ s\/R\\g;
+$runDate =~ s/\R//g;
 print "\n\n$delim  System Check $config->{myRole} $coach $runDate $delim\n";
 
 my @cmdKeys = ( 'USAGE','PROCS','NVR','JPGS','CLIPD','CLIPS','UPTIME','VBOX');
