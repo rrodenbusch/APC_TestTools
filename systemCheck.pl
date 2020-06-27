@@ -85,8 +85,8 @@ sub cronCheck {
                         'startPi.sh' => '@reboot   /home/pi/RPi/startPi.sh           >>/home/pi/Watch.log 2>&1',
                         'rmNMAP.sh'   => '@reboot   /home/pi/APC_TestTools/rmNMAP.sh >>/home/pi/Watch.log 2>&1'
                      );
-   my %requiredNUC = ( 'WatchNUC.pl' => '@rebot    /home/mthinx/NUC/startNUC.sh         >>/home/mthinx/Watch.log 2>&1',
-                       'startNUC.sh' => '@rebot    /home/mthinx/NUC/startNUC.sh         >>/home/mthinx/Watch.log 2>&1',
+   my %requiredNUC = ( 'WatchNUC.pl' => '@reboot   /home/mthinx/NUC/startNUC.sh         >>/home/mthinx/Watch.log 2>&1',
+                       'startNUC.sh' => '@reboot   /home/mthinx/NUC/startNUC.sh         >>/home/mthinx/Watch.log 2>&1',
                        'logs.sh'     => '0 * * * * /home/mthinx/APC_TestTools/logs.sh   >>/home/mthinx/Watch.log 2>&1'  );
    my @removeCron = ('i2c_apc_v6.pl','ConfigServer.pl');
                      
@@ -151,13 +151,13 @@ sub cronCheck {
    
    if ($newfile) {
       my $newLines = join("\n",@newLines);
-      `crontab -l >configpath/cron.bak`;
+      `crontab -l >$configpath/cron.bak`;
       my $fname = "$configpath/cron.new";
       open(my $fh, ">$fname") or die "Unable to open $fname\t$!\n";
       
       print $fh "$newLines\n";
       close $fh;
-      `crontab $fname`;
+      `crontab $configpath/$fname`;
    }
 
    $cronfile = `crontab -l`;
