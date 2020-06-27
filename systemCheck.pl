@@ -157,7 +157,7 @@ sub cronCheck {
       
       print $fh "$newLines\n";
       close $fh;
-      `crontab $configpath/$fname`;
+      `crontab $fname`;
    }
 
    $cronfile = `crontab -l`;
