@@ -65,6 +65,9 @@ sub cronCheck {
    my $required;
    my $retval;
    
+   my $configpath = "$ENV{HOME}/RPi";
+   $configpath = "$ENV{HOME}/NUC" unless (-d $configpath);
+   
    my %requiredrLog = ( 'openRTSP'    => '0 7 * * * /usr/bin/killall openRTSP',
                         'RunNVR.pl'   => '0 7 * * * /usr/bin/killall RunNVR.pl',
                         'rmNMAP.sh'   => '@reboot   /home/pi/APC_TestTools/rmNMAP.sh >>/home/pi/Watch.log 2>&1',
@@ -148,8 +151,8 @@ sub cronCheck {
    
    if ($newfile) {
       my $newLines = join("\n",@newLines);
-      `crontab -l >$ENV{HOME}/RPi/cron.bak`;
-      my $fname = "$ENV{HOME}/RPi/cron.new";
+      `crontab -l >configpath/cron.bak`;
+      my $fname = "$configpath/cron.new";
       open(my $fh, ">$fname") or die "Unable to open $fname\t$!\n";
       
       print $fh "$newLines\n";
