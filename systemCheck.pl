@@ -9,12 +9,14 @@ sub readINI {
    my %ini;
    my %devices;
    my @file;
+   my $configpath = "$ENV{HOME}/RPi";
+   $configpath = "$ENV{HOME}/NUC" unless (-d $configpath);
    
-   my $fLine = `head -1 $ENV{HOME}/RPi/config.ini`;
+   my $fLine = `head -1 $configpath/config.ini`;
    $fLine =~ s/\R//g;
-   `sed -i '1 i\[default]' $ENV{HOME}/RPi/config.ini` unless ($fLine eq '[default]');
+   `sed -i '1 i\[default]' $configpath/config.ini` unless ($fLine eq '[default]');
    
-   open(my $fh, "$ENV{HOME}/RPi/config.ini") 
+   open(my $fh, "$configpath/config.ini") 
                or die "Unable to open config.ini $!\n";;
    while( my $line = <$fh>) {
       $line =~ s/\R//g;
