@@ -90,7 +90,9 @@ sub trydBs {
 }
 
 if (defined($ARGV[0]) && ($ARGV[0] == 1) ) {
-   getdBs();
+   my @sounds = getdBs();
+   my $line = join(',',@sounds);
+   print "$line\n";
 } else {   
    while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
           ($sig{STOP} == 0) ) {
