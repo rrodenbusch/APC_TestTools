@@ -68,7 +68,7 @@ sub readBus {
    }  
 }
 
-if ( defined($ARGV[0]) &7 ($ARGV[0] == 1) ) { 
+if ( defined($ARGV[0]) && ($ARGV[0] == 1) ) { 
    readBus();
 } else { 
    while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
