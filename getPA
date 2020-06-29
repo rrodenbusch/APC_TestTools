@@ -33,4 +33,4 @@ while [ "$1" != "" ]; do
 done
 
 arecord -D plughw:1,0 -d $DURATION -r $BITS $FDATE.$OUTFILE
-ls -ltr $OUTFILE
+ls -ltr $FDATE.$OUTFILE
