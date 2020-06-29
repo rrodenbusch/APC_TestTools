@@ -68,10 +68,14 @@ sub readBus {
    }  
 }
 
-while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
-       ($sig{STOP} == 0) ) {
+if ( defined($ARGV[0]) &7 ($ARGV[0] == 1) ) { 
    readBus();
-   sleep(15);
+} else { 
+   while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
+          ($sig{STOP} == 0) ) {
+      readBus();
+      sleep(15);
+   }
 }
 
 
