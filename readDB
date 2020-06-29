@@ -16,7 +16,7 @@ $SIG{CONT} = sub {$sig{CONT} = 1};
 $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
-$SIG{SUSP} = sub {$sig{SUSP} = 1};
+$SIG{SUSP} = sub {$sig{SUSP} = 1}; 
 
 sub attach {
 	my ($addy) = @_;
