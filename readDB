@@ -16,7 +16,7 @@ $SIG{CONT} = sub {$sig{CONT} = 1};
 $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
-$SIG{SUSP} = sub {$sig{SUSP} = 1}; 
+#$SIG{SUSP} = sub {$sig{SUSP} = 1}; 
 
 sub attach {
 	my ($addy) = @_;
@@ -102,6 +102,5 @@ if (defined($ARGV[0]) && ($ARGV[0] == 1) ) {
    print "\nExit on Interrupt\n" if ($sig{INT} != 0);
    print "\nExit on Stop\n" if ($sig{STOP} != 0);
    print "\nExit on Quit\n" if ($sig{QUIT} != 0);
-
 }
 1;
