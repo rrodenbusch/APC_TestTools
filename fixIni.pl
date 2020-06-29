@@ -17,7 +17,7 @@ sub getCmdLine {
    my ($dateStr);
    my %options=();
    
-   getopts("hC:c:l:L:Nn", \%options);
+   getopts("hfC:c:l:L:Nn", \%options);
    dir $USAGE if (defined $options{h});
    $options{FORCE} = (defined($options{f}));
    $options{NUC} = (defined($options{N}));
