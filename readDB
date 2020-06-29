@@ -89,15 +89,19 @@ sub trydBs {
 	return($reading,$retries);
 }
 
+if (defined($ARGV[0]) && ($ARGV[0] == 1) ) {
+   getdBs();
+} else {   
+   while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
+          ($sig{STOP} == 0) ) {
+   	my @sounds = getdBs();
+   	my $line = join(',',@sounds);
+   	print "$line\n";
+       sleep(0.01);
+   }
+   print "\nExit on Interrupt\n" if ($sig{INT} != 0);
+   print "\nExit on Stop\n" if ($sig{STOP} != 0);
+   print "\nExit on Quit\n" if ($sig{QUIT} != 0);
 
-while( ($sig{INT}==0) && ($sig{QUIT} == 0) &&
-       ($sig{STOP} == 0) ) {
-	my @sounds = getdBs();
-	my $line = join(',',@sounds);
-	print "$line\n";
-    sleep(0.01);
 }
-print "\nExit on Interrupt\n" if ($sig{INT} != 0);
-print "\nExit on Stop\n" if ($sig{STOP} != 0);
-print "\nExit on Quit\n" if ($sig{QUIT} != 0);
 1;
