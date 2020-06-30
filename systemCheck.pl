@@ -144,7 +144,7 @@ sub cronCheck {
             print "cron add,$required->{$key}\n";
             $newfile = 1;
             my $curLine = $required->{$key};
-            push(@newLines,$curLine);
+            push(@newLines,$curLine) unless ($key eq 'WatchNUC.pl');
          }
       }
    }
