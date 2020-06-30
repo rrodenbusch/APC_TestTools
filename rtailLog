@@ -1,11 +1,11 @@
 #!/bin/bash
-IP="192.168.0.$1"
-RPATH="$2"
-[ "$2" == "rLog" ] && export RPATH="/data/rLog"
-[ "$2" == "Watch" ] && export RPATH="/home/pi"
-[ "$2" == "WatchDog" ] && export RPATH="/home/pi/RPi"
-[ "$2" == "power" ] && export RPATH="/home/pi  power"
-[ "$2" == "sysmon" ] && export RPATH="/var/log/sysmon"
-[ "$2" == "fire" ] && export RPATH="/var/log/fire"
+IP="192.168.0.$1";
+RPATH="$2";
+[[  "$2" == "rLog"     ]] && export RPATH="/data/rLog";
+[[  "$2" == "Watch"    ]] && export RPATH="/home/pi";
+[[  "$2" == "WatchDog" ]] && export RPATH="/home/pi/RPi";
+[[  "$2" == "power"    ]] && export RPATH="/home/pi/power";
+[[  "$2" == "sysmon"   ]] && export RPATH="/var/log/sysmon";
+[[  "$2" == "fire"     ]] && export RPATH="/var/log/fire"
 echo "$RPATH at $IP"
 ssh pi@"$IP" "/home/pi/APC_TestTools/tailLog $RPATH"
