@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "cmd line $1 $2"
 if [ -z "$1" ] 
 then
    FPATH="*.log";
