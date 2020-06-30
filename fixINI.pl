@@ -121,8 +121,8 @@ foreach my $line (@file) {
          print $fh "subnet=192.168.0\n";
          print     "subnet=192.168.0\n";
       } elsif ($var eq 'SysMonLogDir') {
-         print $fh "subnet=/var/log/sysmon\n";
-         print     "subnet=/var/log/sysmon\n";
+         print $fh "SysMonLogDir=/var/log/sysmon\n";
+         print     "SysMonLogDir=/var/log/sysmon\n";
       } elsif  ( ($var eq 'myNVN1') && ($options->{NVN})) {
          print $fh "myNVN1=$NVNmac1\n";
          print     "myNVN1=$NVNmac1\n";
