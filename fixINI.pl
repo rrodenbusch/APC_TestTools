@@ -52,8 +52,8 @@ sub readINI {
       chomp;
       my ($key, $val) = split /=/;
       $key =~ s/\R//g;
-      $val =~ s/\R//g;
-      $val =~ s/ //g if ($key eq 'myRole');
+      $val =~ s/\R//g if (defined($val));
+      $val =~ s/ //g if ( defined($val) && ($key eq 'myRole'));
       $ini{$key} = $val;
    }
    
