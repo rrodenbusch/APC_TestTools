@@ -1,11 +1,11 @@
 #!/bin/bash
-echo "cmd line $1 $2"
+
 if [ -z "$1" ] 
 then
    FPATH="*.log";
 else
    FPATH="$1/*.log";
-   [ -z "$2" ] && FPATH="$1/$2.log";
+   [ [ -z "$2" ] ] && FPATH="$1/$2.log";
 fi
 FNAME=`ls -Art $FPATH | tail -n 1`;
 echo $FNAME;
