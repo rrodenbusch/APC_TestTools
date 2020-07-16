@@ -93,22 +93,21 @@ sub bytesToint {
 }
 my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
-my ($cmd,$addy,$register,$data) = @ARGV;
+my $cmd = shift(@ARGV);
+my $addy = shift(@ARGV);
+my $register = $ARGV[0];
+
 $addy = hex $addy if (defined($addy));
 $register = hex $register if (defined($register));
-$data = hex $data if (defined($data));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
-	if ($device = attach($addy)) {              
-		#sleep(1);
-		my $byte1 = $device->read_byte($register);
-		#while ( ($byte1 = $device->read_byte($register)) == -1) {
-		#	print "Read Error\n";
-		#	#sleep(1);
-		#}
-		my $str = sprintf("%02X %02X %03d %02X %08b" ,$addy,$register,$byte1,$byte1,$byte1);
-		print "0x$str\n" if ($byte1 != -1);
-		print "-1\n" if ($byte1 == -1);
+	if ($device = attach($addy)) { 
+		while (my $register = shift(@ARGV) ) {
+			my $byte1 = $device->read_byte($register);
+			my $str = sprintf("%02X %02X %03d %02X %08b" ,$addy,$register,$byte1,$byte1,$byte1);
+			print "0x$str\n" if ($byte1 != -1);
+			print "-1\n" if ($byte1 == -1);
+		}
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
@@ -147,16 +146,19 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 }	elsif (defined($cmd) && ($cmd eq 'readblock')) {
+	my $data;
 	if ($device = attach($addy)) {
 		my @buf = readI2Cblock($device,$register,1000,$data);
-      my $curVal = bytesToint($buf[0],$buf[1]) / 10;
-      my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
-      my $minVal = bytesToint($buf[4],$buf[5]) / 10;
-      print "$curVal  $maxVal $minVal\n";
+		my $curVal = bytesToint($buf[0],$buf[1]) / 10;
+		my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
+		my $minVal = bytesToint($buf[4],$buf[5]) / 10;
+        print "$curVal  $maxVal $minVal\n";
 	} else {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 }  elsif (defined($cmd) && ($cmd eq 'write') ) {
+	my $data = shift(@ARGV);
+	$data = hex $data if (defined($data));
 	if ($device = attach($addy)) {
 		sleep(1);
 		my ($byte1,$byte2);
@@ -178,6 +180,8 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}	
 } elsif (defined($cmd) && ($cmd eq 'write0') ) {
+	my $data = shift(@ARGV);
+	$data = hex $data if (defined($data));
 	if ($device = attach($addy)) {
 		sleep(1);
 		while ($device->write_byte($data, $register) == -1) {
@@ -188,6 +192,8 @@ if (defined($cmd) && ($cmd eq 'read')) {
 		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
 	}
 } elsif (defined($cmd) && ($cmd eq 'writeword') ) {
+	my $data = shift(@ARGV);
+	$data = hex $data if (defined($data));
 	if ($device = attach($addy)) {
 		sleep(1);
 		my $byte1 = $device->read_word($register);
