@@ -96,13 +96,13 @@ my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 my $cmd = shift(@ARGV);
 my $addy = shift(@ARGV);
 my $register = $ARGV[0];
-
 $addy = hex $addy if (defined($addy));
 $register = hex $register if (defined($register));
 my $device;
 if (defined($cmd) && ($cmd eq 'read')) {
 	if ($device = attach($addy)) { 
 		while (my $register = shift(@ARGV) ) {
+			$register = hex $register;
 			my $byte1 = $device->read_byte($register);
 			my $str = sprintf("%02X %02X %03d %02X %08b" ,$addy,$register,$byte1,$byte1,$byte1);
 			print "0x$str\n" if ($byte1 != -1);
