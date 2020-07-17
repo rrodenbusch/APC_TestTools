@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use RPi::I2C;
+use Getopt::Std;
 
 my $minLoops = 0;
 
@@ -17,6 +18,7 @@ $SIG{QUIT} = sub {$sig{QUIT} = 1};
 $SIG{STOP} = sub {$sig{STOP} = 1};
 $SIG{INT}  = sub {$sig{INT} = 1};
 
+##################### Sense Bits ######################
 my $PwrBit  = 0x01;
 my $CapBit  = 0x02;
 my $PiBit   = 0x04;
@@ -25,6 +27,73 @@ my $TNetBit = 0x10;
 my $BrdgBit = 0x20;
 my $NVNBit  = 0x40;
 my $SnsrBit = 0x80;
+##################### Control Bits #####################
+my $SnsrRly = 0x01;
+my $CamRly  = 0x02;
+my $BrdgRly = 0x03;
+my $NARly   = 0x04;
+my $NVNRly  = 0x10;
+my $TNetRly = 0x20;
+my $NUC2Rly = 0x40;
+my $NUC1Rly = 0x80;
+
+
+
+
+
+my $USAGE = "Usage: getClip.pl\n".
+                  "\t   -c Coach(es) {csv}   \n" .
+                  "\t   -d date      yyyymmdd\n" .
+                  "\t   -D local dir         \n" . 
+                  "\t   -T target dir        \n" . 
+                  "\t   -l log file appendix \n" .                  
+                  "\t   -s Set(s)    {csc}   \n" ;
+
+sub getCmdLine {
+   my ($dateStr);
+   my %options=();
+   
+   getopts("hqc:s:d:l:", \%options);
+   if (defined $options{h})   {
+      die $USAGE;
+   }
+   if (defined($options{d})) {
+      $options{dateStr} = $options{d};
+   } else {
+      my $epoch = time();
+      $epoch -= 7*3600;  # backup 7 hours of gmtime to get 2am eastern
+      my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($epoch);
+      my $dateStr = sprintf("%04d%02d%02d",$year+1900,$mon+1,$mday);
+      $options{dateStr} = $dateStr;
+   }
+   if (defined($options{D})) {
+      $options{localDir} = $options{D} . "$options{dateStr}";
+   } else {
+      $options{localDir} = "$ENV{HOME}/MBTA/Working/$options{dateStr}";
+   }
+   if (defined($options{T})) {
+      $options{targDir} = $options{T};
+   } else {
+      $options{targDir} = "/home/mthinx/MBTA/Working"
+   }
+   
+   if (defined($options{l})) {
+      $options{logname} = "getSetClips.$options{l}.log";
+   } else {
+      $options{logname} = "getSetClips.log";   
+   }
+   
+   if (defined($options{s})) {
+      $options{sets} = $options{s};
+   }
+   if (defined($options{c})) {
+      $options{coaches} = $options{c};
+   }
+   $options{quiet} = 0;
+   $options{quiet} = 1 if (defined($options{q}));
+   
+   return(\%options);
+}
 
 sub attach {
    my $addy = shift;
