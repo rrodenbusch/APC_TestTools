@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -z "$1" ] 
+then
+   FPATH="*.wav";
+else
+   FPATH="$1/*.wav";
+   [ [ -z "$2" ] ] && FPATH="$1/$2.wav";
+fi
+FNAME=`ls -Art $FPATH | tail -n 1`;
+echo $FNAME;
+omxplayer -o local $FNAME;
