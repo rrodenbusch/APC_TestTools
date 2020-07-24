@@ -5,7 +5,7 @@ use RPi::I2C;
 
 
 my $UID_addy = 0x51;
-if (defined($ARGV[0]) $UID_addy = $ARGV[0];
+if (defined($ARGV[0]) ){ $UID_addy = hex($ARGV[0]);
 my $UID;
 my ($byte1,$byte2,$byte3, $byte4);
 
