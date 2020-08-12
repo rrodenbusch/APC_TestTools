@@ -137,8 +137,8 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
-   $Pwr1   = `gpio -g read 21`;
-   $Cap1   = `gpio -g read 20`;
+   $Pwr1   = `gpio -g read 20`;
+   $Cap1   = `gpio -g read 21`;
    $gpio11 = `gpio -g read 11`;
    if ( ($gpio11 & 0x01) == 0x01) {$Line1 = 0;}
    if ( ($gpio11 & 0x01) == 0x00) {$Line1 = 1;}
@@ -150,6 +150,14 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    $resp = $devA->read_word(0x0A);
    $resp = $resp & 0xFF;
    my $LineVolt = $LOADscale * $resp / 10;
+
+   $resp = $devA->read_byte(0x10);
+   $resp =~ s/\R//g;
+   $resp += 0;
+   my $Pwr2 = 0;
+   my $Cap2 = 0;
+   $Pwr2 = 1 if (($resp & 0x80) > 0);
+   $Cap2 = 1 if (($resp & 0x20) > 0);
 
    my $Bits = $devG->read_byte(0x09);
    $Pwr  = 1 if ($Bits & $PwrBit);
@@ -169,11 +177,11 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
    my $outline = "\nCap %3.2f Volt Line %3.2f Volt\n".
                    "              Line %01d DIO %01d\n".
-                   "              Cap  %01d %01d\n" .
-                   "              Pwr  %01d %01d\n" .
+                   "              Cap  %01d %01d %01d (GPIO,Pi,Ard)\n" .
+                   "              Pwr  %01d %01d %01d (GPI0,Pi,Ard)\n" .
                    "              NUC  %01d NVN  %01d\n" .
                    "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
-   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Pwr,$Pwr1,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
+   $line = sprintf($outline,$CapVolt,$LineVolt,$Line1,$gpio11,$Cap, $Cap1,$Cap2,$Pwr,$Pwr1,$Pwr2,$NUC,$NVN,$TNet,$Brdg,$Snsr,$Pi);
    if ($line ne $prevLine) {
       print $line;
       $prevLine = $line;
