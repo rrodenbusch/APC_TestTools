@@ -145,6 +145,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    if ( ($gpio11 & 0x01) == 0x00) {$Line1 = 1;}
    
    my $CapVolt = -1;
+   my $LineVolt = -1;
    my $Pwr2 = -1;
    my $Cap2 = -1;
    if ( defined($devA) ) {
