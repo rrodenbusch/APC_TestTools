@@ -134,6 +134,7 @@ print "Using Load Scale $LOADscale  CAP scale $CAPscale\n";
 
 while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
     $minLoops-- if ($minLoops > 0);
+    my $resp;
 
    ($Pwr,$Cap,$Pi,$NUC,$TNet,$Brdg,$NVN,$Snsr) = (0,0,0,0,0,0,0,0);
 
@@ -143,32 +144,38 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
    if ( ($gpio11 & 0x01) == 0x01) {$Line1 = 0;}
    if ( ($gpio11 & 0x01) == 0x00) {$Line1 = 1;}
    
-   my $resp = $devA->read_word(0x0B);
-   $resp = $resp & 0xFF;
-   my $CapVolt = $CAPscale * $resp / 10;
+   my $CapVolt = -1;
+   my $Pwr2 = -1;
+   my $Cap2 = -1;
+   if ( defined($devA) ) {
+      $resp = $devA->read_word(0x0B);
+      $resp = $resp & 0xFF;
+      $CapVolt = $CAPscale * $resp / 10;
 
-   $resp = $devA->read_word(0x0A);
-   $resp = $resp & 0xFF;
-   my $LineVolt = $LOADscale * $resp / 10;
-
-   $resp = $devA->read_byte(0x10);
-   $resp =~ s/\R//g;
-   $resp += 0;
-   my $Pwr2 = 0;
-   my $Cap2 = 0;
-   $Pwr2 = 1 if (($resp & 0x80) > 0);
-   $Cap2 = 1 if (($resp & 0x20) > 0);
-
-   my $Bits = $devG->read_byte(0x09);
-   $Pwr  = 1 if ($Bits & $PwrBit);
-   $Cap  = 1 if ($Bits & $CapBit);
-   $Pi   = 1 if ($Bits & $PiBit);
-   $NUC  = 1 if ($Bits & $NUCBit);
-   $TNet = 1 if ($Bits & $TNetBit);
-   $Brdg = 1 if ($Bits & $BrdgBit);
-   $NVN  = 1 if ($Bits & $NVNBit);
-   $Snsr = 1 if ($Bits & $SnsrBit);
-
+      $resp = $devA->read_word(0x0A);
+      $resp = $resp & 0xFF;
+      $LineVolt = $LOADscale * $resp / 10;
+   
+      $resp = $devA->read_byte(0x10);
+      $resp =~ s/\R//g;
+      $resp += 0;
+      $Pwr2 = 1 if (($resp & 0x80) > 0);
+      $Cap2 = 1 if (($resp & 0x20) > 0);
+   }
+   
+   my $Bits;
+   if ( defined($devG) ) {   
+      $Bits = $devG->read_byte(0x09);
+      $Pwr  = 1 if ($Bits & $PwrBit);
+      $Cap  = 1 if ($Bits & $CapBit);
+      $Pi   = 1 if ($Bits & $PiBit);
+      $NUC  = 1 if ($Bits & $NUCBit);
+      $TNet = 1 if ($Bits & $TNetBit);
+      $Brdg = 1 if ($Bits & $BrdgBit);
+      $NVN  = 1 if ($Bits & $NVNBit);
+      $Snsr = 1 if ($Bits & $SnsrBit);
+   }
+   
    $ScapVolts = $CapVolt if (($Cap == 1) && ($prevScap == 0) && ($CapVolt < $ScapVolts) );
    $NVNVolts = $CapVolt if (($NVN == 1) && ($prevNVN == 0)   && ($CapVolt < $NVNVolts) );
    $NUCVolts = $CapVolt if (($NUC == 1) && ($prevNUC == 0)   && ($CapVolt < $NUCVolts) );
