@@ -1,9 +1,9 @@
 #!/bin/bash
 declare -a repos=('updates/PiInstall' 'updates/RPi' 'APC_TestTools'
                   'Arduino/Arduino' 'updates/NUC' 'NUC' 'tools')
-                  
+
 for i in "${repos[@]}" 
-do        
+do 
    if [ -d $HOME/$i ] && [ -d $HOME/$i/.git ]
    then
          cd $HOME/$i
