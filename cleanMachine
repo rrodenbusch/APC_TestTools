@@ -1,0 +1,7 @@
+#!/bin/bash
+sudo systemctl stop fire
+sudo rm -rf /var/fire/*
+sudo rm /etc/machine-id
+touch /etc/machine-id
+
+
