@@ -30,8 +30,8 @@ my $hostName = $role . '-' . $UID . '-' . $MID;
 `sudo hostnamectl set-hostname $hostName`;
 print "Hostname set to $hostName\n";
 $ENV{HOME}/APC_TestTools/fixHostName.pl
-ifconfig |grep wlan1
-$ENV{HOME}/APC_TestTools/getTun
+`ifconfig |grep wlan1`;
+`$ENV{HOME}/APC_TestTools/getTun`;
 print "Reboot now? [Y/n] ";
 my $ans = <STDIN>;
 $ans =~ s/\R//g;
