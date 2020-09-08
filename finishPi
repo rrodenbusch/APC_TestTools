@@ -25,7 +25,7 @@ if  [ $end -eq 3 ];then
    Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
    echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x55
-   $HOME/APC_TestTools/fixHostname.pl
+   $HOME/APC_TestTools/fixHostName.pl
 elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    sudo $HOME/APC_TestTools/rmNMAP.sh
    echo "Configured end $end"
@@ -56,7 +56,7 @@ elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
    echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x51
-   $HOME/APC_TestTools/fixHostname.pl
+   $HOME/APC_TestTools/fixHostName.pl
 else
    echo "Must enter end 1  2 or 3"
 fi
