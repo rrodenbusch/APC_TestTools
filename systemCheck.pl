@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+
 sub readINI {
    #
    # Read the config.ini 
@@ -37,13 +38,28 @@ sub readINI {
          $devices{$I2addy}->{name} = $I2name;
          $devices{$I2addy}->{optional} = $I2optional;
          $devices{$I2addy}->{type} = $I2device;
-      } else {
          $ini{$key}=$val;
       }
    }
    
    return(\%ini);
 }
+
+sub checkNetwork {
+   my $config = shift;
+
+   if ($config->{myRole} eq 'rLog') {
+   } elsif (index($config->{myRole},'Pi') == 0) {
+      my $retval = `sudo cat /etc/network/interfaces.d/eth0`;
+      print "\ncheckNetwork $config->{myRole}\n$retval\n\n";
+   } elsif (index($config->{myRole},'NUC') == 0) {
+      my $retval = `sudo cat /etc/network/interfaces.d/eno1`;
+      print "\ncheckNetwork $config->{myRole}\n$retval\n\n";
+   } else { # unknown device
+      print "\ncheckNetwork Unknown device $config->{myRole}\n";
+   }
+   
+};
 
 sub oneOf {
    my $matchHash = shift;
@@ -219,5 +235,8 @@ foreach my $curKey (@cmdKeys) {
       print "\n$delim  $cmdNames{$curKey}  $delim\n$resp\n";     
    }
 }
+
+checkNetwork($config);
+
 
 1;
