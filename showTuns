@@ -12,7 +12,7 @@ while (1) {
          my $online = `fping -c 1 -t 500 -4 $addy 2>/dev/null |wc -l`;
          $online =~ s/\R//g;
          if ($online) {
-            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"ether\" \" ";
+            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"10.50.\" \" ";
             my $retval = `$cmd`;
             print "$addy   $retval";
             print "==========================\n";
@@ -21,7 +21,7 @@ while (1) {
          my $online = `fping -c 1 -t 500 -4 $addy 2>/dev/null |wc -l`;
          $online =~ s/\R//g;
          if ($online) {
-            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"ether\" \" ";
+            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"10.50.\" \" ";
             my $retval = `$cmd`;
             print "$addy  $retval";
             print "==========================\n";
