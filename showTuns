@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+
+while (1) {
+   print ".\n";
+   `sudo nmap -p 80 192.168.0.1/24`;
+   my $arps = `arp`;
+   my @lines = split("\n",$arps);
+   shift(@lines);
+   foreach $curLine (@lines) {
+      my ($addy,$hw,$mac,$flag,$iface) = split(" ", $curLine);
+      if ( index($mac,"b8:27:eb") == 0 ) {
+         my $online = `fping -c 1 -t 500 -4 $addy 2>/dev/null |wc -l`;
+         $online =~ s/\R//g;
+         if ($online) {
+            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"ether\" \" ";
+            my $retval = `$cmd`;
+            print "$addy   $retval";
+            print "==========================\n";
+         }
+      } elsif ( index ($mac, "54:b2:03") == 0) {
+         my $online = `fping -c 1 -t 500 -4 $addy 2>/dev/null |wc -l`;
+         $online =~ s/\R//g;
+         if ($online) {
+            my $cmd = "ssh pi\@$addy \"/bin/hostname;/sbin/ifconfig | grep -e \"b8:27:eb\" -e \"ether\" \" ";
+            my $retval = `$cmd`;
+            print "$addy  $retval";
+            print "==========================\n";
+        }
+      }
+   }
+   sleep(1);
+}
+
+
+
+1;
+
