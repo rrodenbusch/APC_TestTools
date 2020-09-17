@@ -39,6 +39,8 @@ sub readINI {
          $devices{$I2addy}->{optional} = $I2optional;
          $devices{$I2addy}->{type} = $I2device;
          $ini{$key}=$val;
+      } else {
+         $ini{$key}=$val;
       }
    }
    
