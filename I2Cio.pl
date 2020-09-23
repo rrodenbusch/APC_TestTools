@@ -7,47 +7,7 @@ use Time::HiRes qw(time sleep usleep);
 
 use RPi::I2C;
 
-sub readI2Cbyte {
-	my ($device,$timeout) = @_;
-	my ($data,$retData) = (-1,-1);
-	my $cnt = 0;
-	my $delaytics = 10;
-	my $loopcnt = $timeout / $delaytics;
 
-	do {  # wait for return a max of one second
-		$data = $device->read();
-		Time::HiRes::usleep($delaytics) if (!defined($data) || ($data == -1)); # milliseconds
-	} while ( (!defined($data)  || ($data == -1)) && ($cnt++ < $loopcnt) );
-	$retData = $data if ($data != -1);  # return undefined in no return values available
-	
-	return ($retData,$cnt);
-}
-sub readI2Cword {
-	my ($device,$cmd,$timeout) = @_;
-	my ($data,$retData,@bytes);
-	my $cnt = 0;
-	my $delaytics = 10;
-	my $loopcnt = $timeout / $delaytics;
-
-	do {  # wait for return a max of one second
-		@bytes = $device->read_block(2,$cmd);
-		Time::HiRes::usleep($delaytics) if (!defined($bytes[0])); # milliseconds
-	} while ( (!defined($bytes[0])) && ($cnt++ < $loopcnt) );
-	return (@bytes);
-}
-
-sub readI2Cblock {
-	my ($device,$cmd,$timeout,$cnt) = @_;
-	my ($data,$retData,@bytes);
-	my $delaytics = 10;
-	my $loopcnt = $timeout / $delaytics;
-
-	do {  # wait for return a max of one second
-		@bytes = $device->read_block($cnt,$cmd);
-		Time::HiRes::usleep($delaytics) if (!defined($bytes[0])); # milliseconds
-	} while ( (!defined($bytes[0])) && ($cnt++ < $loopcnt) );
-	return (@bytes);
-}
 sub getI2CdataByte {
 	my ($device,$cmd,$timeout) = @_;
 	$timeout = 1000 if !defined($timeout);  # default time is 1 second
@@ -93,121 +53,187 @@ sub bytesToint {
 }
 my @Bits = (0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80);
 
-my $cmd = shift(@ARGV);
-my $addy = shift(@ARGV);
-my $register = $ARGV[0];
-$addy = hex $addy if (defined($addy));
-$register = hex $register if (defined($register));
-my $device;
-if (defined($cmd) && ($cmd eq 'read')) {
-	if ($device = attach($addy)) { 
-		while (my $register = shift(@ARGV) ) {
-			$register = hex $register;
-			my $byte1 = $device->read_byte($register);
-			my $str = sprintf("%02X %02X %03d %02X %08b" ,$addy,$register,$byte1,$byte1,$byte1);
-			print "0x$str\n" if ($byte1 != -1);
-			print "-1\n" if ($byte1 == -1);
-		}
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} elsif (defined($cmd) && ($cmd eq 'readword')) {
-	if ($device = attach($addy)) {
-		sleep(1);
-		my $word1;
-		while ( ($word1 = $device->read_word($register)) == -1) {
-			print "Read Error\n";
-			sleep(1);	
-		}
-		my $str = sprintf("%04X %06d %16b" ,$word1 & 0xFFFF,
-				$word1 & 0xFFFF, $word1 & 0xFFFF );
-		print "Word $word1 :: $str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}
-} elsif (defined($cmd) && ($cmd eq 'readwordchk')) {
-	if ($device = attach($addy)) {
-		my $cnt = 0;
-		my ($word1,$retries1) = getI2CdataWord($device,$register);
-		my ($word2,$retries2) = getI2CdataWord($device,$register+1);
-		my $totTries = $retries1 + $retries2;
-		while (~$word1 != $word2) {
-			$cnt++;
-			my $str2 = sprintf("Chksum Error $cnt %04X %04X\n",$word1,$word2);
-			usleep(50);
-			($word1,$retries1) = getI2CdataWord($device,$register);
-			($word2,$retries2) = getI2CdataWord($device,$register+1);
-			$totTries += $retries1 + $retries2;
-		}
-		my $str = sprintf("%04X %06d %16b @%02d" ,$word1 & 0xFFFF,
-				$word1 & 0xFFFF, $word1 & 0xFFFF, $totTries );
-		print "Word $word1 :: $str\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}	elsif (defined($cmd) && ($cmd eq 'readblock')) {
-	my $data;
-	if ($device = attach($addy)) {
-		my @buf = readI2Cblock($device,$register,1000,$data);
-		my $curVal = bytesToint($buf[0],$buf[1]) / 10;
-		my $maxVal = bytesToint($buf[2],$buf[3]) / 10;
-		my $minVal = bytesToint($buf[4],$buf[5]) / 10;
-        print "$curVal  $maxVal $minVal\n";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-}  elsif (defined($cmd) && ($cmd eq 'write') ) {
-	my $data = shift(@ARGV);
-	$data = hex $data if (defined($data));
-	if ($device = attach($addy)) {
-		sleep(1);
-		my ($byte1,$byte2);
-		while ( ($byte1 = $device->read_byte($register)) == -1) {
-			print "Read Error\n ";
-			sleep(1);
-		};
-		while ($device->write_byte($data, $register) == -1) {
-    		print "Write Error\n";    	
-            sleep(1);
-        }
-		while ( ($byte2 = $device->read_byte($register)) == -1) {
-			print "Read Error2\n ";
-			sleep(1);
-		}
-        my $str = sprintf("Register %02X was %02X is %02x\n",$register,$byte1,$byte2);
-        print "$str";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} elsif (defined($cmd) && ($cmd eq 'write0') ) {
-	my $data = shift(@ARGV);
-	$data = hex $data if (defined($data));
-	if ($device = attach($addy)) {
-		sleep(1);
-		while ($device->write_byte($data, $register) == -1) {
-    		print "Write Error\n";    	
-            sleep(1);
-        }
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}
-} elsif (defined($cmd) && ($cmd eq 'writeword') ) {
-	my $data = shift(@ARGV);
-	$data = hex $data if (defined($data));
-	if ($device = attach($addy)) {
-		sleep(1);
-		my $byte1 = $device->read_word($register);
-		$device->write_word($data & 0xFFFF, $register);
-                sleep(1);
-		my $byte2 = $device->read_word($register);
-                my $str = sprintf("Register %04X was %04X is %04X\n",$register,$byte1,$byte2);
-                print "$str";
-	} else {
-		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
-	}	
-} else {
-	warn "Usage I2Cio.pl [read|write] addy data";
+sub readnibble {
+   my ($dev,$reg) = @_;
+   my $retval = -1;
+   my $retries = 0;
+   $dev = hex($dev) if defined($dev);
+   $reg = hex($reg) if defined($reg);
+   
+   if (my $device = attach($dev)) {
+      while ( ($retval == -1) && ($retries < 5) ) {
+         $retval = $device->read_byte($reg);
+         if ($retval == -1) {
+            $retries++;
+            sleep(0.20) if ($retries < 5);
+         }
+         $retries++;
+      }
+   } else {
+      die "Unable to attach to $dev";
+   }
+   die "Comm Error $reg" if ($retries >= 5);
+   outputNibble($dev,$reg,$retval);
+   return($retval);
 }
+
+
+sub readbyte {
+   my ($dev,$reg) = @_;
+   my $retval = -1;
+   my $retries = 0;
+   $dev = hex($dev) if defined($dev);
+   $reg = hex($reg) if defined($reg);
+   
+   if (my $device = attach($dev)) {
+      while ( ($retval == -1) && ($retries < 5) ) {
+         $retval = $device->read_byte($reg);
+         if ($retval == -1) {
+            $retries++;
+            sleep(0.20) if ($retries < 5);
+         }
+         $retries++;
+      }
+   } else {
+      die "Unable to attach to $dev";
+   }
+   die "Comm Error $reg" if ($retries >= 5);
+   outputByte($dev,$reg,$retval);
+   return($retval);
+}
+
+sub writebyte {
+   my ($devstr,$regstr,$valstr) = @_;
+   my $retval = -1;
+   my $retries = 0;
+   my $dev = hex($devstr) if defined($devstr);
+   my $reg = hex($regstr) if defined($regstr);
+   my $val = hex($valstr) if defined($valstr);
+   
+   print "Was: ";
+   readbyte($devstr,$regstr);
+   if (my $device = attach($dev)) {
+      while ( ($retval == -1) && ($retries < 5) ) {
+         $retval = $device->write_byte($val,$reg);
+         if ($retval == -1) {
+            $retries++;
+            sleep(0.20) if ($retries < 5);
+         }
+         $retries++;
+      }
+   } else {
+      die "Unable to attach to $dev";
+   }
+   die "Comm Error $reg" if ($retries >= 5);
+   print " Is: ";
+   readbyte($devstr,$regstr);
+   return($retval);
+}
+
+sub readword {
+   my ($dev,$reg) = @_;
+   my $retval = -1;
+   my $retries = 0;
+   $dev = hex($dev) if defined($dev);
+   $reg = hex($reg) if defined($reg);
+   
+   if (my $device = attach($dev)) {
+      while ( ($retval == -1) && ($retries < 5) ) {
+         $retval = $device->read_word($reg);
+         if ($retval == -1) {
+            $retries++;
+            sleep(0.20) if ($retries < 5);
+         }
+         $retries++;
+      }
+   } else {
+      die "Unable to attach to $dev";
+   }
+   die "Comm Error $reg" if ($retries >= 5);
+   outputWord($dev,$reg,$retval);
+   return($retval);
+}
+
+sub writeword {
+   my ($devstr,$regstr,$valstr) = @_;
+   my $retval = -1;
+   my $retries = 0;
+   my $dev = hex($devstr) if defined($devstr);
+   my $reg = hex($regstr) if defined($regstr);
+   my $val = hex($valstr) if defined($valstr);
+   
+   print "Was: ";
+   readword($devstr,$regstr);
+   if (my $device = attach($dev)) {
+      while ( ($retval == -1) && ($retries < 5) ) {
+         $retval = $device->write_word($val,$reg);
+         if ($retval == -1) {
+            $retries++;
+            sleep(0.20) if ($retries < 5);
+         }
+         $retries++;
+      }
+   } else {
+      die "Unable to attach to $dev";
+   }
+   die "Comm Error $reg" if ($retries >= 5);
+   print " Is: ";
+   readword($devstr,$regstr);
+   return($retval);
+}
+
+sub outputByte {
+   my ($dev,$reg,$retval) = @_;
+   my $str = sprintf("%02X %02X %03d %02X %08b" ,$dev,$reg,$retval,$retval,$retval);
+   print "$str\n";
+}
+
+sub outputWord {
+   my ($dev,$reg,$retval) = @_;
+   my $str = sprintf("%02X %02X %08d %04X %016b" ,$dev,$reg,$retval,$retval,$retval);
+   print "$str\n";
+}
+
+
+my $cmd = shift(@ARGV);
+die "No command provided" unless defined($cmd);
+if ( ($cmd eq 'read') || ($cmd eq 'readbyte') ) {
+   my $retval = readbyte(@ARGV);
+} elsif ( ($cmd eq 'write') || ($cmd eq 'writebyte' ) ) {
+   writebyte(@ARGV);
+} elsif ($cmd eq 'readword') {
+   readword(@ARGV);
+} elsif ($cmd eq 'readnibbles') {
+   readnibbles(@ARGV);
+} elsif ($cmd eq 'writeword') {
+   writeword(@ARGV);
+} else {
+   die "Invalid cmd $cmd"
+}
+
+
+#} elsif (defined($cmd) && ($cmd eq 'readwordchk')) {
+#	if ($device = attach($addy)) {
+#		my $cnt = 0;
+#		my ($word1,$retries1) = getI2CdataWord($device,$register);
+#		my ($word2,$retries2) = getI2CdataWord($device,$register+1);
+#		my $totTries = $retries1 + $retries2;
+#		while (~$word1 != $word2) {
+#			$cnt++;
+#			my $str2 = sprintf("Chksum Error $cnt %04X %04X\n",$word1,$word2);
+#			usleep(50);
+#			($word1,$retries1) = getI2CdataWord($device,$register);
+#			($word2,$retries2) = getI2CdataWord($device,$register+1);
+#			$totTries += $retries1 + $retries2;
+#		}
+#		my $str = sprintf("%04X %06d %16b @%02d" ,$word1 & 0xFFFF,
+#				$word1 & 0xFFFF, $word1 & 0xFFFF, $totTries );
+#		print "Word $word1 :: $str\n";
+#	} else {
+#		warn "Device $addy NOT READY\n" unless ($device = attach($addy));
+#	}	
+
+
 
 
 1;
