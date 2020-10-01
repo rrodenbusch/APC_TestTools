@@ -91,7 +91,7 @@ sub readINI {
       chomp;
       my ($key, $val) = split /=/;
       $key =~ s/\R//g;
-      $val =~ s/\R//g;
+      $val =~ s/\R//g if (defined($val));
       $val =~ s/ //g if ($key eq 'myRole');
       $self->{$key}=$val;
       $ini{$key}=$val;
