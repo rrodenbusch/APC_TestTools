@@ -38,16 +38,16 @@ for dir in "${repos[@]}" ; do
       if [ $ERR -eq 0 ] ; then
          [[ -z $QUIET ]] && echo "Checking $i"
          cd $i
-         [[ -z QUIET ]] && echo "Refresh repo /$i"
-         [[ -z STATUS ]] && RESULT=`git pull origin master 2>&1`
+         [[ -z $QUIET ]] && echo "Refresh repo /$i"
+         [[ -z $STATUS ]] && RESULT=`git pull origin master 2>&1`
          RESERR=$?
-         [[ -z STATUS ]] || RESULT=`git status -s 2>&1`
+         [[ -z $STATUS ]] || RESULT=`git status -s 2>&1`
          RESERR=$?
          if [ $RESERR -ne 0 ]; then
             echo "$i ERR: $RESERR\n$RESULT" 1>&2
          else
-            [[ -z STATUS ]] && echo "$i UPDATE OK"
-            [[ -z STATUS ]] || echo "$i${NEW} $RESULT"
+            [[ -z $STATUS ]] && echo "$i UPDATE OK"
+            [[ -z $STATUS ]] || echo "$i${NEW} $RESULT"
             [[ -z $QUIET ]] && echo "$RESULT"
          fi
       else
