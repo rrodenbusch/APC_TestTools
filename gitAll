@@ -1,13 +1,57 @@
 #!/bin/bash
-declare -a repos=('updates/PiInstall' 'updates/RPi' 'APC_TestTools'
-                  'Arduino/Arduino' 'updates/NUC' 'NUC' 'tools')
+#declare -a repos=('updates/PiInstall' 'updates/RPi' 'updates/NUCsetup' 'updates/PiSetup'
+#                  'APC_TestTools'   'tools'
+#                  'Arduino/Arduino' 'updates/NUC' 'NUC' )
+declare -a repos=( "$HOME"  "$HOME/updates" )
 
-for i in "${repos[@]}" 
-do 
-   if [ -d $HOME/$i ] && [ -d $HOME/$i/.git ]
-   then
-         cd $HOME/$i
-         echo "Refresh repo $HOME/$i"
-         git pull origin master
-   fi
+usage () {
+   NEW=$'\n'
+   u="Usage:  gitAll -opts dir1 dir2 dir3${NEW}"
+   u="$u          -q (--quiet)${NEW}"
+   u="$u          -h (--help)${NEW}"
+   echo "$u";
+}
+NEW=$'\n'
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -q | --quiet )          #shift
+                                QUIET=1
+                                ;;
+        -s | --status )         #shift
+                                STATUS=1
+                                ;;                                
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+for dir in "${repos[@]}" ; do 
+   [ -z $QUIET ] && echo "Checking directory $dir"
+   for i in $(find $dir -maxdepth 1 -type d); do
+      ISREPO=`git -C $i rev-parse 2>&1`
+      ERR=$?
+      if [ $ERR -eq 0 ] ; then
+         [[ -z $QUIET ]] && echo "Checking $i"
+         cd $i
+         [[ -z QUIET ]] && echo "Refresh repo /$i"
+         [[ -z STATUS ]] && RESULT=`git pull origin master 2>&1`
+         RESERR=$?
+         [[ -z STATUS ]] || RESULT=`git status -s 2>&1`
+         RESERR=$?
+         if [ $RESERR -ne 0 ]; then
+            echo "$i ERR: $RESERR\n$RESULT" 1>&2
+         else
+            [[ -z STATUS ]] && echo "$i UPDATE OK"
+            [[ -z STATUS ]] || echo "$i${NEW} $RESULT"
+            [[ -z $QUIET ]] && echo "$RESULT"
+         fi
+      else
+         [[ -z $QUIET ]] && echo "$i ERR: Not a Repo" 1>&2
+      fi
+   done
 done
