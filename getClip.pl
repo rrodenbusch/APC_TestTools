@@ -123,9 +123,9 @@ sub getCmdLine {
    
    `mkdir $options{t}` if (defined($options{t})  && (!(-d $options{t})));
    
-   my $config = readINI() if (defined($ip));
    my %NVNhash;
    if (defined($ip)) {
+      my $config = readINI() if (defined($ip));
       $ip =~ s/\R//g;
       if (my $NVNmap = $config->{NVNmap} ) {
          $NVNmap =~ s/\R//g if defined($NVNmap);
