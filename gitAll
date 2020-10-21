@@ -53,7 +53,7 @@ for dir in "${repos[@]}" ; do
          fi
          if   [ $GITERR -ne 0 ] ; then
             echo "$i PULL: $GITERR"
-            edcho "$RESULT" 
+            echo "$RESULT" 
          elif [ $STATERR -ne 0 ]; then
             echo "$i STATUS: $STATERR,$RESULT"
          else
