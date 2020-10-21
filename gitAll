@@ -7,16 +7,18 @@ declare -a repos=( "$HOME"  "$HOME/updates" )
 usage () {
    NEW=$'\n'
    u="Usage:  gitAll -opts dir1 dir2 dir3${NEW}"
-   u="$u          -q (--quiet)${NEW}"
+   u="$u          -v (--verbose)${NEW}"
    u="$u          -h (--help)${NEW}"
    echo "$u";
 }
 NEW=$'\n'
 
+QUIET=1
+STATUS=0
 while [ "$1" != "" ]; do
     case $1 in
-        -q | --quiet )          #shift
-                                QUIET=1
+        -v | --verbose )        #shift
+                                QUIET=0
                                 ;;
         -s | --status )         #shift
                                 STATUS=1
@@ -33,25 +35,37 @@ done
 for dir in "${repos[@]}" ; do 
    [ -z $QUIET ] && echo "Checking directory $dir"
    for i in $(find $dir -maxdepth 1 -type d); do
+      GITERR=0
+      STATERR=0
       ISREPO=`git -C $i rev-parse 2>&1`
       ERR=$?
       if [ $ERR -eq 0 ] ; then
          [[ -z $QUIET ]] && echo "Checking $i"
          cd $i
-         [[ -z $QUIET ]] && echo "Refresh repo /$i"
-         [[ -z $STATUS ]] && RESULT=`git pull origin master 2>&1`
-         RESERR=$?
-         [[ -z $STATUS ]] || RESULT=`git status -s 2>&1`
-         RESERR=$?
-         if [ $RESERR -ne 0 ]; then
-            echo "$i ERR: $RESERR\n$RESULT" 1>&2
+         [[ -z $QUIET ]] && echo "Refresh repo /$i"cd /home   
+         if [ $STATUS -eq 0 ] ; then
+             RESULT=`git pull origin master 2>&1`
+             GITERR=$?
+         fi
+         if [ $STATUS -eq 1 ] ; then
+             RESULT=`git status -s 2>&1`
+             STATERR=$?
+         fi
+         if   [ $GITERR -ne 0 ] ; then
+            echo "$i PULL: $GITERR"
+            edcho "$RESULT" 
+         elif [ $STATERR -ne 0 ]; then
+            echo "$i STATUS: $STATERR,$RESULT"
          else
-            [[ -z $STATUS ]] && echo "$i UPDATE OK"
-            [[ -z $STATUS ]] || echo "$i${NEW} $RESULT"
-            [[ -z $QUIET ]] && echo "$RESULT"
+            if [ $STATUS -eq 0 ] ; then
+               echo "$i UPDATE OK"
+               [[ $QUIET -eq 0 ]] && echo "$RESULT"
+            else
+               echo "$i STATUS ${NEW} $RESULT"
+            fi
          fi
       else
-         [[ -z $QUIET ]] && echo "$i ERR: Not a Repo" 1>&2
+         [[ -z $QUIET ]] && echo "$i ERR: Not a Repo"
       fi
    done
 done
