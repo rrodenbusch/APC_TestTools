@@ -2,7 +2,7 @@
 #declare -a repos=('updates/PiInstall' 'updates/RPi' 'updates/NUCsetup' 'updates/PiSetup'
 #                  'APC_TestTools'   'tools'
 #                  'Arduino/Arduino' 'updates/NUC' 'NUC' )
-declare -a repos=( "$HOME"  "$HOME/updates" )
+declare -a repos=( "$HOME"  "$HOME/updates" "$HOME/src" )
 
 usage () {
    NEW=$'\n'
