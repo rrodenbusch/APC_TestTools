@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use lib "$ENV{HOME}/RPi";
 use strict;
 use warnings;
 use RPi::I2C;
