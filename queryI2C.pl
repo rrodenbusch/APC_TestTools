@@ -110,7 +110,7 @@ sub bytesToint {
 sub queryI2Cbus {
    my $ValidI2C = shift;
    
-   my $return = `i2cdetect -y 1`;
+   my $return = `/usr/sbin/i2cdetect -y 1`;
    # print $return;
    my @lines = split("\n",$return);
    shift(@lines); # header
