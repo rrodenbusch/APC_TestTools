@@ -1,7 +1,6 @@
 #!/bin/bash
 sudo systemctl stop fire
-sudo rm -rf /var/fire/*
+sudo rm -rf /var/fire/config/*
 sudo rm /etc/machine-id
-touch /etc/machine-id
-
+sudo touch /etc/machine-id
 
