@@ -1,4 +1,5 @@
 #!/bin/bash
+/home/pi/APC_TestTools/stopRPi.pl kill
 /home/pi/APC_TestTools/i2c_testMPU.pl
 /home/pi/APC_TestTools/queryI2C.pl
 echo "run i2c_testMPU.pl and return"
