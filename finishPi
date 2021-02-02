@@ -18,8 +18,8 @@ if  [ $end -eq 3 ];then
    $HOME/APC_TestTools/EnableFire.sh
    echo " ### Updating cron"
    crontab $HOME/updates/PiInstall/cron2.tab
-   echo " #### Setup SSD"
-   $HOME/updates/PiInstall/setupSSD.sh
+   #echo " #### Setup SSD"
+   #$HOME/updates/PiInstall/setupSSD.sh
    echo " ##### Gtting UIDs"
    $HOME/APC_TestTools/queryI2C.pl
    Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
