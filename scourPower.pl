@@ -63,6 +63,7 @@ sub getEvents {
    foreach my $curLine (@fLines) {
       $curLine =~ s/\R//g;
       my @flds = split(',',$curLine);
+      my $srcfile = $flds[4];
       my $epoch = shift(@flds);
       my $power = pop(@flds);
       if ($EID ne '') {
@@ -70,7 +71,7 @@ sub getEvents {
          $end = $epoch;
          if ($power eq 'ON') {
             my $delta = $end - $start;
-            push (@Events,"$start,$EID,$end,$delta,$fname");
+            push (@Events,"$start,$EID,$end,$delta,$srcfile,$fname");
             $EID = '';
             $start = $epoch;
          }
@@ -193,7 +194,7 @@ my $Events = getEvents($config,$outname);
 
 my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
 if (open ($ofh, ">$eventname") ) {
-   print $ofh "Start,EID,End,Duration,FileName\n";
+   print $ofh "Start,EID,End,Duration,SrcFile,FileName\n";
    foreach my $curLine (@{$Events}) { print $ofh "$curLine\n";}
    close $ofh;
    `gzip $eventname`;
