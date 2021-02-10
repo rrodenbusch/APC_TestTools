@@ -115,6 +115,8 @@ close $ofh;
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.logs.csv";
 `sort -k1 -t, $tmpName > $outname`;
 `rm $tmpName`;
+`gzip $outname`;
+
 exit 0;
 
 1;
