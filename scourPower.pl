@@ -54,6 +54,36 @@ sub getMAC  {
    return($mac);
 }
 
+sub getEvents {
+   my ($config,$fname) = @_;
+   my ($start,$end,$EID,$mac) = (0,0,'',$config->{MAC});
+   my @Events;
+   
+   my @fLines = `cat $fname`;
+   foreach my $curLine (@fLines) {
+      $curLine =~ s/\R//g;
+      my @flds = split(',',$curLine);
+      my $epoch = shift(@flds);
+      my $power = pop(@flds);
+      if ($EID ne '') {
+         # active event
+         $end = $epoch;
+         if ($power eq 'ON') {
+            my $delta = $end - $start;
+            push (@Events,"$start,$EID,$end,$delta,$fname");
+            $EID = '';
+            $start = $epoch;
+         }
+      } elsif ($power eq 'OFF') {
+         # begin event
+         $EID   = "$mac.$epoch";
+         $start = $epoch;
+         $end   = $start;
+      }
+   }
+   return (\@Events);
+}
+
 sub getFlist {
    my $fname = shift;
    my @flist=glob($fname);
@@ -155,9 +185,19 @@ foreach my $curType (@fTypes) {
 #$dateStr = time2str("%c",$config->{end},'EST');
 #print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
-my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
+my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
 `sort -k1 -t, $tmpName > $outname`;
 `rm $tmpName`;
-exit 0;
+my $Events = getEvents($config,$outname);
+`gzip $outname`;
 
+my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
+if (open ($ofh, ">$eventname") ) {
+   print $ofh "Start,EID,End,Duration,FileName\n";
+   foreach my $curLine (@{$Events}) { print $ofh "$curLine\n";}
+   close $ofh;
+   `gzip $eventname`;
+} else { warn "Unable to open $eventname\t$!\n" };
+
+exit 0;
 1;
