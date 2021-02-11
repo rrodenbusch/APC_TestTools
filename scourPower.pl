@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Cwd qw(cwd);
+use Cwd;
 use Time::Local;
 use Getopt::Std;
 use Date::Format;
