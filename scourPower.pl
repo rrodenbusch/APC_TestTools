@@ -154,6 +154,7 @@ sub scourFile {
 }  # scourFile
 
 
+my $cdir = getcwd();
 my $config = getCmdLine();
 my $tmpName = time() . ".tmp";
 die "Unable to open tmp file $tmpName\t$!" unless open(my $ofh,">$tmpName");
@@ -187,17 +188,18 @@ foreach my $curType (@fTypes) {
 #print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
-`sort -k1 -t, $tmpName > $outname`;
-`rm $tmpName`;
-my $Events = getEvents($config,$outname);
-`gzip $outname`;
+`sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
+print "Sort Error on file $tmpName" unless (-e "$outname");
+`rm $cdir/$tmpName` if (-e "$outname");
+my $Events = getEvents($config,"$cdir/$outname");
+system("gzip $cdir/$outname");
 
 my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
 if (open ($ofh, ">$eventname") ) {
    print $ofh "Start,EID,End,Duration,SrcFile,FileName\n";
    foreach my $curLine (@{$Events}) { print $ofh "$curLine\n";}
    close $ofh;
-   `gzip $eventname`;
+   `gzip $cdir/$eventname`;
 } else { warn "Unable to open $eventname\t$!\n" };
 
 exit 0;
