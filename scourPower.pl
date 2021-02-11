@@ -209,7 +209,8 @@ if (open ($ofh, ">$eventname") ) {
    `gzip $cdir/$eventname`;
 } else { warn "Unable to open $eventname\t$!\n" };
 
-my $ret = `rsync -r $cdir/B827EB* mthinx@$config->{H}:/extdata/power`;
+my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+my $ret = `$cmd`;
 print "Synce return: $ret\n";
 
 exit 0;
