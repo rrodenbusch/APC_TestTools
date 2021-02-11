@@ -164,7 +164,7 @@ sub scourFile {
 my $cdir = getcwd();
 my $config = getCmdLine();
 $config->{MAC} = getMAC();
-my $tmpName = "$config->{MAC}" . time() . ".tmp";
+my $tmpName = "$config->{MAC}." . time() . ".tmp";
 die "Unable to open tmp file $tmpName\t$!" unless open(my $ofh,">$tmpName");
 
 #print "Epoch,MAC,COACH,ID,fType,fName,Data\n";
