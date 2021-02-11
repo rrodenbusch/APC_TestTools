@@ -58,8 +58,14 @@ sub getEvents {
    my ($config,$fname) = @_;
    my ($start,$end,$EID,$mac) = (0,0,'',$config->{MAC});
    my @Events;
+   my @fLines;
    
-   my @fLines = `cat $fname`;
+   if (open(my $fh, $fname) ) {
+      chomp(@fLines = <$fh>);
+      close $fh;
+   } else {
+      print "Error opening $fname\$!\n";
+   }
    foreach my $curLine (@fLines) {
       $curLine =~ s/\R//g;
       my @flds = split(',',$curLine);
