@@ -42,6 +42,7 @@ sub getCmdLine {
       $options{start} = $options{end} - 3600 * $options{H} if defined($options{H});
    }
 
+   $options{H} = '45.17.125.128' unless defined($options{H});
    return(\%options);
 }  #getCmdLine
 
@@ -162,9 +163,9 @@ sub scourFile {
 
 my $cdir = getcwd();
 my $config = getCmdLine();
-my $tmpName = time() . ".tmp";
-die "Unable to open tmp file $tmpName\t$!" unless open(my $ofh,">$tmpName");
 $config->{MAC} = getMAC();
+my $tmpName = "$config->{MAC}" . time() . ".tmp";
+die "Unable to open tmp file $tmpName\t$!" unless open(my $ofh,">$tmpName");
 
 #print "Epoch,MAC,COACH,ID,fType,fName,Data\n";
 my $dateStr = time2str("%c",$config->{start},'EST');
@@ -207,6 +208,9 @@ if (open ($ofh, ">$eventname") ) {
    close $ofh;
    `gzip $cdir/$eventname`;
 } else { warn "Unable to open $eventname\t$!\n" };
+
+my $ret = `rsync -r $cdir/B827EB* mthinx@$config->{H}:/extdata/power`;
+print "Synce return: $ret\n";
 
 exit 0;
 1;
