@@ -2,10 +2,9 @@
 
 [ -z "$1" ] && echo "Enter target IP" && exit 1;
 PARTS=`echo "$1" | awk -F. '{print NF - 1}' `
-IP=$1
-[ "$PARTS" == "0" ] &&  IP="192.$1";
+[ "$PARTS" == "2" ] &&  IP="192.$1";
 [ "$PARTS" == "1" ] &&  IP="192.168.$1";
-[ "$PARTS" == "2" ] &&  IP="192.168.0.$1";
+[ "$PARTS" == "0" ] &&  IP="192.168.0.$1";
 
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null mthinx@$IP
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null pi@$IP
 
