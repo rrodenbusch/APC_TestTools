@@ -118,9 +118,11 @@ sub scourVoltage {
       next unless ($logtime =~ /^[+-]?\d+$/);
       $flds[2] = -1 unless defined($flds[2]);
       $flds[3] = -1 unless defined($flds[3]);
-      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ($flds[2] >= $flds[3]);
-      next unless $cnt > 0;
       next if ($flds[2] == -1) || ($flds[3] == -1);
+#      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
+      $cnt = 3 unless  ( $flds[2] > 14.3 ) || ( ($flds[2] >= $flds[3]) && ($flds[2] < 14.3) );
+      next unless $cnt > 0;
+#      next if ($flds[2] == -1) || ($flds[3] == -1);
       my $state='OFF';
       $state = 'ON' if ($cnt < 3);
       push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
