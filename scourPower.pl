@@ -197,19 +197,21 @@ foreach my $curType (@fTypes) {
 #print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
-`sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
-print "Sort Error on file $tmpName" unless (-e "$outname");
+my $resp = `sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
+print "Sort Error on file $tmpName: $resp\n" unless (-e "$cdir/$outname");
 `rm $cdir/$tmpName` if (-e "$outname");
 my $Events = getEvents($config,"$cdir/$outname");
 system("gzip $cdir/$outname");
 
 my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
-if (open ($ofh, ">$eventname") ) {
+if (open ($ofh, ">$cdir/$eventname") ) {
    print $ofh "Start,EID,End,Duration,SrcFile,FileName\n";
    foreach my $curLine (@{$Events}) { print $ofh "$curLine\n";}
    close $ofh;
    `gzip $cdir/$eventname`;
-} else { warn "Unable to open $eventname\t$!\n" };
+} else {
+   warn "Unable to open $cdir/$eventname  $!\n" 
+};
 
 my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
 my $ret = `$cmd`;
