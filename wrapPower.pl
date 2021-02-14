@@ -174,9 +174,9 @@ $lineCnt = 0 unless defined($lineCnt);
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
 my $resp = `sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
 print "Sort Error on file $lineCnt $cdir/$tmpName: $resp\n" unless (-e "$cdir/$outname");
-`rm $cdir/$tmpName` if (-e "$outname");
+`rm $cdir/$tmpName` if (-e "$cdir/$outname");
 my $Events = getEvents($config,"$cdir/$outname");
-system("gzip $cdir/$outname");
+`gzip $cdir/$outname`;
 
 my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
 if (open (my $ofh, ">$cdir/$eventname") ) {
@@ -188,9 +188,9 @@ if (open (my $ofh, ">$cdir/$eventname") ) {
    warn "Unable to open $cdir/$eventname  $!\n" 
 };
 
-my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
-my $ret = `$cmd`;
-print "Synce return: $ret\n";
+#my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+#my $ret = `$cmd`;
+#print "Synce return: $ret\n";
 
 exit 0;
 1;
