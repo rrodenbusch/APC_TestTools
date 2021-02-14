@@ -168,6 +168,7 @@ my $config = getCmdLine();
 $config->{MAC} = getMAC();
 my $tmpName = $ARGV[0];
 
+print "Starting wrap-up of $cdir/$tmpName\n";
 my $lineCnt = `wc -l $cdir/$tmpName`;
 $lineCnt  =~ s/\R//g if defined($lineCnt);
 $lineCnt = 0 unless defined($lineCnt);
