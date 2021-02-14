@@ -196,6 +196,8 @@ foreach my $curType (@fTypes) {
 #$dateStr = time2str("%c",$config->{end},'EST');
 #print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
+sleep 5;
+`sync`;
 my $lineCnt = `wc -l $cdir/$tmpName`;
 $lineCnt  =~ s/\R//g if defined($lineCnt);
 $lineCnt = 0 unless defined($lineCnt);
