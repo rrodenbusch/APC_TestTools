@@ -196,9 +196,12 @@ foreach my $curType (@fTypes) {
 #$dateStr = time2str("%c",$config->{end},'EST');
 #print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
+my $lineCnt = `wc -l $cdir/$tmpName`;
+$lineCnt  =~ s/\R//g if defined($lineCnt);
+$lineCnt = 0 unless defined($lineCnt);
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
 my $resp = `sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
-print "Sort Error on file $tmpName: $resp\n" unless (-e "$cdir/$outname");
+print "Sort Error on file $lineCnt $cdir/$tmpName: $resp\n" unless (-e "$cdir/$outname");
 `rm $cdir/$tmpName` if (-e "$outname");
 my $Events = getEvents($config,"$cdir/$outname");
 system("gzip $cdir/$outname");
