@@ -111,6 +111,8 @@ sub scourVoltage {
       @fLines = `cat $fname`;
    }
    
+   my $prevLine = '';
+   my $prevState = 'OFF';
    foreach my $line (@fLines) {
       $line =~ s/\R//g;
       my @flds = split(',',$line);
@@ -119,14 +121,18 @@ sub scourVoltage {
       $flds[2] = -1 unless defined($flds[2]);
       $flds[3] = -1 unless defined($flds[3]);
       next if ($flds[2] == -1) || ($flds[3] == -1);
+      
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
-      $cnt = 3 unless  ( $flds[2] > 14.5 ) || ( ($flds[2] > 14.0) && ($flds[2] >= $flds[3] + 0.275) );
-      next unless $cnt > 0;
-#      next if ($flds[2] == -1) || ($flds[3] == -1);
+      $cnt = 3 unless  ( $flds[3] > 14.6 ) || ( ($flds[3] > 14.0) && ($flds[2] >= $flds[3] + 0.275) );
       my $state='OFF';
       $state = 'ON' if ($cnt < 3);
-      push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
-      $cnt--;
+      if ($cnt > 0) {
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$prevLine,$state") if ($state eq 'OFF') && ($prevState eq 'ON');
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
+         $cnt--;         
+      }
+      $prevLine = $line;
+      $prevState = $state;
    }
    return(\@lines);
 }  # scourVoltage
@@ -137,27 +143,40 @@ sub scourFile {
    my @fLines;
    my $cnt = 0;
    
+   print "Starting $fname: ";
    if (substr($fname,-2) eq 'gz') {
       @fLines = `gunzip -c $fname | grep -i -e Power -e pwr`;
    } else {
       @fLines = `grep -i -e Power -e pwr $fname`;
    }
-   
+   my $recCnt = scalar @fLines;
+   my ($state,$device,%LastOn,%LastState);
+
+   print " Processing $recCnt records:";
    foreach my $line (@fLines) {
+      $device=$curType;
       $line =~ s/\R//g;
       $line =~ s/^Unable to connect log: //g;
       my @flds = split(',',$line);
       my $logtime = $flds[0];
+      $device = $flds[3] unless $curType eq 'Watch';
       $logtime =~ s/ //g;
-      next unless ($logtime =~ /^[+-]?\d+$/);
-
+      next unless ($logtime =~ /^[+-]?\d+$/);      
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
-      $cnt = 3 if ( (index($tmpline,'POWER:0') >= 0) || (index($tmpline,'PWR:0') >= 0) );
-      next unless $cnt > 0;
-
-      push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
-      $cnt--;
+      if ( (index($tmpline,'POWER:0') >= 0) || (index($tmpline,'PWR:0') >= 0) ) {
+         if ($cnt > 0) {
+            push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line"); 
+            $cnt--;      
+         }
+         $LastState{$device} = 'ON';
+         $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
+      } else {
+         $cnt = 3;
+         push(@lines,$LastOn{$device}) if ($LastState{$device} eq 'ON') && defined($LastOn{$device}); 
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
+         $LastState{$device} = 'OFF';
+      }
    }
    return(\@lines);
 }  # scourFile
