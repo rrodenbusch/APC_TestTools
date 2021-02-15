@@ -151,7 +151,7 @@ sub scourFile {
       `gunzip -c $fname >$fname.tmp`;
       open($fh,"$fname.tmp");
    } else {
-      open(my $fh, $fname);
+      open($fh, $fname);
    }
    while (my $curLine = <$fh>) {
       $curLine =~ s/\R//g;
