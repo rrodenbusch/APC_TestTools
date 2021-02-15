@@ -196,6 +196,12 @@ sub scourFile {
 }  # scourFile
 
 
+
+my $oldfh = select(STDOUT); # default
+$| = 1;
+select($oldfh);
+
+
 my $cdir = getcwd();
 my $config = getCmdLine();
 $config->{MAC} = getMAC();
