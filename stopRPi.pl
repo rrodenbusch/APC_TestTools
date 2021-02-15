@@ -18,6 +18,9 @@ foreach my $curProc (@ProcList) {
       push(@pidList,$pid) if defined($pid);
  	}
 }
+$ret0 = join(',',@pidList);
+print "pids: $ret0\n";
+
 $ret0 = `ps -eopid,command |grep openRTSP |grep -v grep`;
 print "$ret0\n";
 
