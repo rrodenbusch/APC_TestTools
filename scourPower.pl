@@ -105,12 +105,14 @@ sub scourVoltage {
    my @fLines;
    my $cnt = 0;
    
+   print "Starting $fname: ";
    if (substr($fname,-2) eq 'gz') {
       @fLines = `gunzip -c $fname `;
    } else {
       @fLines = `cat $fname`;
    }
-   
+   my $recCnt = scalar @fLines;
+   print " $recCnt records:";
    my $prevLine = '';
    my $prevState = 'OFF';
    foreach my $line (@fLines) {
@@ -134,25 +136,35 @@ sub scourVoltage {
       $prevLine = $line;
       $prevState = $state;
    }
+   $recCnt = scalar @lines;
+   print " $recCnt kept\n";
    return(\@lines);
 }  # scourVoltage
 
 sub scourFile {
    my ($config,$curType,$fname) = @_;
-   my @lines;
-   my @fLines;
-   my $cnt = 0;
+   my (@lines,@fLines,$fh); 
+   my $cnt = 0; 
    
    print "Starting $fname: ";
    if (substr($fname,-2) eq 'gz') {
-      @fLines = `gunzip -c $fname | grep -i -e Power -e pwr`;
+      `gunzip -c $fname >$fname.tmp`;
+      open($fh,"$fname.tmp");
    } else {
-      @fLines = `grep -i -e Power -e pwr $fname`;
+      open(my $fh, $fname);
    }
+   while (my $curLine = <$fh>) {
+      $curLine =~ s/\R//g;
+      my $tmpLine = uc($curLine);
+      push (@fLines, $curLine) if (index($tmpLine,'POWER') > -1) || (index($tmpLine,'PWR') > -1);   
+   }
+   close($fh);
+   `rm $fname.tmp` if (-e "$fname.tmp");
+      
    my $recCnt = scalar @fLines;
    my ($state,$device,%LastOn,%LastState);
 
-   print " Processing $recCnt records:";
+   print " $recCnt records:";
    foreach my $line (@fLines) {
       $device=$curType;
       $line =~ s/\R//g;
@@ -173,11 +185,13 @@ sub scourFile {
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
       } else {
          $cnt = 3;
-         push(@lines,$LastOn{$device}) if ($LastState{$device} eq 'ON') && defined($LastOn{$device}); 
+         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') ); 
          push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
          $LastState{$device} = 'OFF';
       }
    }
+   $recCnt = scalar @lines;
+   print " $recCnt kept\n";
    return(\@lines);
 }  # scourFile
 
@@ -200,20 +214,17 @@ foreach my $curType (@fTypes) {
    foreach my $fname (@{$fList}) {
       if ($curType eq 'voltage') {
          $retList = scourVoltage($config,$curType,$fname);
+         my $cnt = scalar @$retList;
+         print "Found $cnt lines in $fname\n" if ($cnt > 0);
       } else {
          $retList = scourFile($config,$curType,$fname);
       }
-      my $cnt = scalar @$retList;
-      print "Found $cnt lines in $fname\n" if ($cnt > 0);
       push (@Data,@{$retList}) ;
       foreach my $myLine (@{$retList}) {
          print $ofh "$myLine\n";
       }
    }
 }
-
-#$dateStr = time2str("%c",$config->{end},'EST');
-#print $ofh "$config->{end},$config->{MAC} ,END,$dateStr EST\n";
 close $ofh;
 sleep 5;
 `sync`;
@@ -239,7 +250,7 @@ if (open ($ofh, ">$cdir/$eventname") ) {
 
 my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
 my $ret = `$cmd`;
-print "Synce return: $ret\n";
+print "Synce return: $ret\n" if (defined($ret));
 
 exit 0;
 1;
