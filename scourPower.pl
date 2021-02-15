@@ -120,7 +120,7 @@ sub scourVoltage {
       $flds[3] = -1 unless defined($flds[3]);
       next if ($flds[2] == -1) || ($flds[3] == -1);
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
-      $cnt = 3 unless  ( $flds[2] > 14.3 ) || ( ($flds[2] >= $flds[3]) && ($flds[2] < 14.3) );
+      $cnt = 3 unless  ( $flds[2] > 14.5 ) || ( ($flds[2] > 14.0) && ($flds[2] >= $flds[3] + 0.275) );
       next unless $cnt > 0;
 #      next if ($flds[2] == -1) || ($flds[3] == -1);
       my $state='OFF';
