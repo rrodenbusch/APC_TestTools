@@ -105,14 +105,14 @@ sub scourVoltage {
    my @fLines;
    my $cnt = 0;
    
-   print "Starting $fname: ";
+   print "Starting $fname\n";
    if (substr($fname,-2) eq 'gz') {
       @fLines = `gunzip -c $fname `;
    } else {
       @fLines = `cat $fname`;
    }
    my $recCnt = scalar @fLines;
-   print " $recCnt records:";
+   print " $recCnt records\n";
    my $prevLine = '';
    my $prevState = 'OFF';
    foreach my $line (@fLines) {
@@ -137,7 +137,7 @@ sub scourVoltage {
       $prevState = $state;
    }
    $recCnt = scalar @lines;
-   print " $recCnt kept\n";
+   print "  $recCnt kept\n";
    return(\@lines);
 }  # scourVoltage
 
@@ -146,7 +146,7 @@ sub scourFile {
    my (@lines,@fLines,$fh); 
    my $cnt = 0; 
    
-   print "Starting $fname:\n";
+   print "Starting $fname\n";
    if (substr($fname,-2) eq 'gz') {
       `gunzip -c $fname >$fname.tmp`;
       open($fh,"$fname.tmp");
@@ -164,7 +164,7 @@ sub scourFile {
    my $recCnt = scalar @fLines;
    my ($state,$device,%LastOn,%LastState);
 
-   print "                   $recCnt records:\n";
+   print "  $recCnt records:\n";
    foreach my $line (@fLines) {
       $device=$curType;
       $line =~ s/\R//g;
@@ -177,21 +177,21 @@ sub scourFile {
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
       if ( (index($tmpline,'POWER:0') >= 0) || (index($tmpline,'PWR:0') >= 0) ) {
+         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') ); 
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
+         $cnt = 3;
+         $LastState{$device} = 'OFF';
+      } else {
          if ($cnt > 0) {
             push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line"); 
             $cnt--;      
          }
          $LastState{$device} = 'ON';
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
-      } else {
-         $cnt = 3;
-         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') ); 
-         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
-         $LastState{$device} = 'OFF';
       }
    }
    $recCnt = scalar @lines;
-   print "                    $recCnt kept\n";
+   print "    $recCnt kept\n";
    return(\@lines);
 }  # scourFile
 
