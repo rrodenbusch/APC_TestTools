@@ -146,7 +146,7 @@ sub scourFile {
    my (@lines,@fLines,$fh); 
    my $cnt = 0; 
    
-   print "Starting $fname: ";
+   print "Starting $fname:\n";
    if (substr($fname,-2) eq 'gz') {
       `gunzip -c $fname >$fname.tmp`;
       open($fh,"$fname.tmp");
@@ -164,7 +164,7 @@ sub scourFile {
    my $recCnt = scalar @fLines;
    my ($state,$device,%LastOn,%LastState);
 
-   print " $recCnt records:";
+   print "                   $recCnt records:\n";
    foreach my $line (@fLines) {
       $device=$curType;
       $line =~ s/\R//g;
@@ -191,7 +191,7 @@ sub scourFile {
       }
    }
    $recCnt = scalar @lines;
-   print " $recCnt kept\n";
+   print "                    $recCnt kept\n";
    return(\@lines);
 }  # scourFile
 
