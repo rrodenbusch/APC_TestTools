@@ -31,11 +31,8 @@ if ( (scalar @pidList > 0) && defined($ARGV[0]) && ($ARGV[0] eq 'kill')) {
 } elsif (defined($ARGV[0])) {
    my $return = `ps -eo pid,command |grep $ARGV[0] |grep -v grep`;
    my @lines = split("\n",$return);
-   my $pid = -1;
-   if ( scalar @lines > 1) {
-      my @fields = split(" ",$lines[0]);
-      my $proc = pop(@fields);
-      $pid = $lines[1];
+   foreach my $curLine (@lines) {
+      my ($pid,$proc) = split(" ",$curLine);
       $pid =~ s/ //g;
       `kill $pid`;
    }
