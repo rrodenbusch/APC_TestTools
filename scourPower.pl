@@ -287,9 +287,9 @@ if (open ($ofh, ">$cdir/$transname") ) {
    warn "Unable to open $cdir/$transname  $!\n" 
 };
 
-my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+my $cmd = 'rsync -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
 my $ret = `$cmd`;
-print "Synce return: $ret\n" if (defined($ret));
+print "Sync return: $ret\n" if (defined($ret));
 
 exit 0;
 1;
