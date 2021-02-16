@@ -60,6 +60,7 @@ sub getEvents {
    my ($config,$fname) = @_;
    my ($start,$end,$EID,$mac) = (0,0,'',$config->{MAC});
    my @Events;
+   my @Trans;
    my @fLines;
    
    if (open(my $fh, $fname) ) {
@@ -68,12 +69,17 @@ sub getEvents {
    } else {
       print "Error opening $fname\$!\n";
    }
+   my $prevPower = '';
    foreach my $curLine (@fLines) {
       $curLine =~ s/\R//g;
       my @flds = split(',',$curLine);
       my $srcfile = $flds[4];
       my $epoch = shift(@flds);
       my $power = pop(@flds);
+      if ( ( ($power eq 'ON') && ($prevPower eq 'OFF')) ||
+           ( ($power eq 'OFF') && ($prevPower eq 'ON')) ) {
+         push (@Trans,"$start,$EID,$fname,$curLine");
+           }
       if ($EID ne '') {
          # active event
          $end = $epoch;
@@ -91,8 +97,9 @@ sub getEvents {
       } elsif ( !defined($power) || ($power ne 'ON') ) {
          print "Unknown data:$curLine\n";
       }
+      $prevPower = $power if ($power eq 'ON') || ($power eq 'OFF');
    }
-   return (\@Events);
+   return (\@Events,\@Trans);
 }
 
 sub getFlist {
@@ -185,9 +192,11 @@ sub scourFile {
       my $logtime = $flds[0];
       $device = $flds[3] unless $curType eq 'Watch';
       $logtime =~ s/ //g;
-      next unless ($logtime =~ /^[+-]?\d+$/);      
+      next unless ($logtime =~ /^[+-]?\d+$/);
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
+      next if ( (index($tmpline,'TRANSITIONTO') >= 0) || (index($tmpline,'POWERING') >= 0) ||
+                (index($tmpline,'DELAYEDMESSAGE') >=0) );
       if ( (index($tmpline,'POWER:1') >= 0) || (index($tmpline,'PWR:1') >= 0) ||
             (index($tmpline,'POWERON') >= 0) ) {
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line,ON";
@@ -256,7 +265,7 @@ my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
 my $resp = `sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
 print "Sort Error on file $lineCnt $cdir/$tmpName: $resp\n" unless (-e "$cdir/$outname");
 `rm $cdir/$tmpName` if (-e "$outname");
-my $Events = getEvents($config,"$cdir/$outname");
+my ($Events,$Trans) = getEvents($config,"$cdir/$outname");
 system("gzip $cdir/$outname");
 
 my $eventname = "$config->{MAC}.$config->{start}.$config->{end}.powerEvents.csv";
@@ -267,6 +276,15 @@ if (open ($ofh, ">$cdir/$eventname") ) {
    `gzip $cdir/$eventname`;
 } else {
    warn "Unable to open $cdir/$eventname  $!\n" 
+};
+
+my $transname = "$config->{MAC}.$config->{start}.$config->{end}.powerTrans.csv";
+if (open ($ofh, ">$cdir/$transname") ) {
+   foreach my $curLine (@{$Trans}) { print $ofh "$curLine\n";}
+   close $ofh;
+   `gzip $cdir/$transname`;
+} else {
+   warn "Unable to open $cdir/$transname  $!\n" 
 };
 
 my $cmd = 'rsync -r $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
