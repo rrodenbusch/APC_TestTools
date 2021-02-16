@@ -143,6 +143,7 @@ sub scourVoltage {
          }
       }
    }
+   push (@lines,$prevLine) if ($prevLine ne '');
    $recCnt = scalar @lines;
    print "  $recCnt kept\n";
    return(\@lines);
