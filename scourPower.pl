@@ -183,13 +183,14 @@ sub scourFile {
       next unless ($logtime =~ /^[+-]?\d+$/);      
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
-      if ( (index($tmpline,'POWER:1') >= 0) || (index($tmpline,'PWR:1') >= 0) ) {
+      if ( (index($tmpline,'POWER:1') >= 0) || (index($tmpline,'PWR:1') >= 0) ||
+            (index($tmpline,'POWERON') >= 0) ) {
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
          $LastState{$device} = 'ON';
          if ($cnt > 0) {
             push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line"); 
             $cnt--;   
-            $LastOn{$device} =''   
+            $LastOn{$device} = ''   
          }
       } else {         
          push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') &&
