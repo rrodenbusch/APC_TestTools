@@ -83,11 +83,13 @@ sub getEvents {
             $EID = '';
             $start = $epoch;
          }
-      } elsif ($power eq 'OFF') {
+      } elsif ( defined($power) && ($power eq 'OFF') ) {
          # begin event
          $EID   = "$mac.$epoch";
          $start = $epoch;
          $end   = $start;
+      } else {
+         print "Unknown data:$curLine\n";
       }
    }
    return (\@Events);
@@ -119,6 +121,7 @@ sub scourVoltage {
    foreach my $line (@fLines) {
       $line =~ s/\R//g;
       my @flds = split(',',$line);
+      next if (index($line,"epoch,") >= 0);
       my $logtime = $flds[0];
       next unless ($logtime =~ /^[+-]?\d+$/);
       $flds[2] = -1 unless defined($flds[2]);
