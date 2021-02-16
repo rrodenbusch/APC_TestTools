@@ -24,7 +24,7 @@ sub getCmdLine {
    my ($dateStr);
    my %options=();
    
-   getopts("hs:d:H:c:", \%options);
+   getopts("hs:d:H:c:v:g:", \%options);
    if ( defined($options{h}) ) {
       die $USAGE;
    } 
@@ -41,7 +41,8 @@ sub getCmdLine {
       $options{start} = $options{end} - $options{d} if defined($options{d});
       $options{start} = $options{end} - 3600 * $options{H} if defined($options{H});
    }
-
+   $options{v} = 14.2 unless defined($options{v});
+   $options{g} = 0.257 unless defined($options{g});
    $options{H} = '45.17.125.128' unless defined($options{H});
    return(\%options);
 }  #getCmdLine
@@ -126,7 +127,7 @@ sub scourVoltage {
       # Vicor flds[2]  SCAP flds[3]
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
       my $state='OFF';
-      $state = 'ON'  if ( $flds[2] > 14.2 ) || ( $flds[2] >= $flds[3] + 0.275 );
+      $state = 'ON'  if ( $flds[2] > $config->{v} ) || ( $flds[2] >= $flds[3] + $config->{g} );
       if ($state eq 'OFF') {
          push (@lines,$prevLine) if ($prevState eq 'ON') && ($prevLine ne '');
          push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
@@ -134,7 +135,7 @@ sub scourVoltage {
          $prevState = 'OFF';
       } else {
          $prevState = 'ON';
-         if ( ($cnt > 0) || ($prevState eq '') ) {
+         if ( ($cnt > 0) || ($prevState ne 'OFF') ) {
            push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
            $cnt--;
            $prevLine = '';
