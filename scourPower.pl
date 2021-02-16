@@ -183,13 +183,7 @@ sub scourFile {
       next unless ($logtime =~ /^[+-]?\d+$/);      
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
-      if ( (index($tmpline,'POWER:0') >= 0) || (index($tmpline,'PWR:0') >= 0) ) {
-         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') &&
-                                            defined($LastOn{$device}) && ($LastOn{$device} ne '') ); 
-         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
-         $cnt = 3;
-         $LastState{$device} = 'OFF';
-      } else {
+      if ( (index($tmpline,'POWER:1') >= 0) || (index($tmpline,'PWR:1') >= 0) ) {
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
          $LastState{$device} = 'ON';
          if ($cnt > 0) {
@@ -197,6 +191,12 @@ sub scourFile {
             $cnt--;   
             $LastOn{$device} =''   
          }
+      } else {         
+         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') &&
+                                            defined($LastOn{$device}) && ($LastOn{$device} ne '') ); 
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
+         $cnt = 3;
+         $LastState{$device} = 'OFF';
       }
    }
    $recCnt = scalar @lines;
