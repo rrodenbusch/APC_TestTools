@@ -190,7 +190,7 @@ sub scourFile {
       $tmpline =~ s/ //g;
       if ( (index($tmpline,'POWER:1') >= 0) || (index($tmpline,'PWR:1') >= 0) ||
             (index($tmpline,'POWERON') >= 0) ) {
-         $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
+         $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line,ON";
          $LastState{$device} = 'ON';
          if ($cnt > 0) {
             push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,ON"); 
