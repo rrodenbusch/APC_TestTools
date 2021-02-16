@@ -177,17 +177,19 @@ sub scourFile {
       my $tmpline = uc($line);
       $tmpline =~ s/ //g;
       if ( (index($tmpline,'POWER:0') >= 0) || (index($tmpline,'PWR:0') >= 0) ) {
-         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') ); 
+         push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') &&
+                                            defined($LastOn{$device}) && ($LastOn{$device} ne '') ); 
          push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
          $cnt = 3;
          $LastState{$device} = 'OFF';
       } else {
+         $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
+         $LastState{$device} = 'ON';
          if ($cnt > 0) {
             push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line"); 
-            $cnt--;      
+            $cnt--;   
+            $LastOn{$device} =''   
          }
-         $LastState{$device} = 'ON';
-         $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
       }
    }
    $recCnt = scalar @lines;
@@ -221,7 +223,7 @@ foreach my $curType (@fTypes) {
       if ($curType eq 'voltage') {
          $retList = scourVoltage($config,$curType,$fname);
          my $cnt = scalar @$retList;
-         print "Found $cnt lines in $fname\n" if ($cnt > 0);
+#         print "Found $cnt lines in $fname\n" if ($cnt > 0);
       } else {
          $retList = scourFile($config,$curType,$fname);
       }
