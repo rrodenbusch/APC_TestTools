@@ -19,7 +19,7 @@ foreach my $curProc (@ProcList) {
  	}
 }
 $ret0 = join(',',@pidList);
-print "pids: $ret0\n";
+print "pids: $ret0\n\n";
 
 $ret0 = `ps -eopid,command |grep openRTSP |grep -v grep`;
 print "$ret0\n";

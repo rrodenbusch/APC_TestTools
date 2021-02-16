@@ -114,7 +114,7 @@ sub scourVoltage {
    }
    my $recCnt = scalar @fLines;
    print " $recCnt records\n";
-   my $prevLine = '';
+   my $prevLine = '1st';
    my $prevState = '';
    foreach my $line (@fLines) {
       $line =~ s/\R//g;
@@ -135,10 +135,10 @@ sub scourVoltage {
          $prevState = 'OFF';
       } else {
          $prevState = 'ON';
-         if ( ($cnt > 0) || ($prevState ne 'OFF') ) {
-           push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
-           $cnt--;
-           $prevLine = '';
+         if ( ($cnt > 0) || ($prevState eq '1st') ) {
+            push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
+            $cnt--;
+            $prevLine = '';
          } else {
             $prevLine = "$logtime,$config->{MAC},,$curType,$fname,$line,$state";
          }
