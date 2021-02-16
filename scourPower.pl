@@ -88,7 +88,7 @@ sub getEvents {
          $EID   = "$mac.$epoch";
          $start = $epoch;
          $end   = $start;
-      } else {
+      } elsif ( !defined($power) || ($power ne 'ON') ) {
          print "Unknown data:$curLine\n";
       }
    }
@@ -116,8 +116,8 @@ sub scourVoltage {
    }
    my $recCnt = scalar @fLines;
    print " $recCnt records\n";
-   my $prevLine = '1st';
-   my $prevState = '';
+   my $prevLine = '';
+   my $prevState = '1st';
    foreach my $line (@fLines) {
       $line =~ s/\R//g;
       my @flds = split(',',$line);
@@ -193,14 +193,14 @@ sub scourFile {
          $LastOn{$device} = "$logtime,$config->{MAC},,$curType,$fname,$line";
          $LastState{$device} = 'ON';
          if ($cnt > 0) {
-            push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line"); 
+            push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,ON"); 
             $cnt--;   
             $LastOn{$device} = ''   
          }
       } else {         
          push(@lines,$LastOn{$device}) if ( defined($LastState{$device}) && ($LastState{$device} eq 'ON') &&
                                             defined($LastOn{$device}) && ($LastOn{$device} ne '') ); 
-         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line");
+         push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,OFF");
          $cnt = 3;
          $LastState{$device} = 'OFF';
       }
