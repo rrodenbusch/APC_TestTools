@@ -70,6 +70,7 @@ sub getEvents {
       print "Error opening $fname\$!\n";
    }
    my $prevPower = '';
+   my $prevLine;
    foreach my $curLine (@fLines) {
       $curLine =~ s/\R//g;
       my @flds = split(',',$curLine);
@@ -78,8 +79,13 @@ sub getEvents {
       my $power = pop(@flds);
       if ( ( ($power eq 'ON') && ($prevPower eq 'OFF')) ||
            ( ($power eq 'OFF') && ($prevPower eq 'ON')) ) {
-         push (@Trans,"$start,$EID,$fname,$curLine");
-           }
+         push (@Trans,"$epoch,$EID,$mac,$prevLine");
+         push (@Trans,"$epoch,$EID,$mac,$curLine");
+      }
+      if ( ($power eq 'ON') || ($power eq 'OFF')){
+         $prevPower = $power;
+         $prevLine = $curLine;      
+      }
       if ($EID ne '') {
          # active event
          $end = $epoch;
@@ -97,7 +103,6 @@ sub getEvents {
       } elsif ( !defined($power) || ($power ne 'ON') ) {
          print "Unknown data:$curLine\n";
       }
-      $prevPower = $power if ($power eq 'ON') || ($power eq 'OFF');
    }
    return (\@Events,\@Trans);
 }
