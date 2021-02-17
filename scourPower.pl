@@ -71,6 +71,7 @@ sub getEvents {
    }
    my $prevPower = '';
    my $prevLine;
+   my $prevEpoch;
    foreach my $curLine (@fLines) {
       $curLine =~ s/\R//g;
       my @flds = split(',',$curLine);
@@ -79,12 +80,13 @@ sub getEvents {
       my $power = pop(@flds);
       if ( ( ($power eq 'ON') && ($prevPower eq 'OFF')) ||
            ( ($power eq 'OFF') && ($prevPower eq 'ON')) ) {
-         push (@Trans,"$epoch,$EID,$mac,$prevLine");
+         push (@Trans,"$prevEpoch,$EID,$mac,$prevLine");
          push (@Trans,"$epoch,$EID,$mac,$curLine");
       }
       if ( ($power eq 'ON') || ($power eq 'OFF')){
          $prevPower = $power;
-         $prevLine = $curLine;      
+         $prevLine = $curLine;    
+         $prevEpoch = $epoch;  
       }
       if ($EID ne '') {
          # active event
