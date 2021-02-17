@@ -141,8 +141,9 @@ sub scourVoltage {
       next if ($flds[2] == -1) || ($flds[3] == -1);
       # Vicor flds[2]  SCAP flds[3]
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
-      my $state='OFF';
-      $state = 'ON'  if ( $flds[2] > $config->{v} ) || ( $flds[2] >= $flds[3] + $config->{g} );
+      my $state='ON';
+#      $state = 'ON'  if ( $flds[2] > $config->{v} ) || ( $flds[2] >= $flds[3] + $config->{g} );
+      $state = 'OFF'  if ( $flds[2] < $config->{v} ) || ( ($flds[2] > $config->{v}) && ($flds[3] > $flds[2]+ $config->{g}) );
       if ($state eq 'OFF') {
          push (@lines,$prevLine) if ($prevState eq 'ON') && ($prevLine ne '');
          push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
