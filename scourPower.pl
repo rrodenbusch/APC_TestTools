@@ -11,7 +11,7 @@ my @fTypes = ('rLog','voltage','Watch');
 my %fNames = ( 'rLog'=>'/data/rLog/remote*.log*',
                'Watch'=> '/home/pi/Watch.*',
                'voltage'=> '/home/pi/I2C/i2cdata/voltage/Voltage*.csv*' );
-      
+my @powerDist;
 
 my $USAGE = "Usage: scourLogs.pl\n".
                   "   -s Start epoch        [default now]\n".
@@ -141,6 +141,9 @@ sub scourVoltage {
       $flds[2] = -1 unless defined($flds[2]);
       $flds[3] = -1 unless defined($flds[3]);
       next if ($flds[2] == -1) || ($flds[3] == -1);
+      my $idx = int($flds[2] * 10);
+      $powerDist[$idx] = 0 unless defined($powerDist[$idx]);
+      $powerDist[$idx]++;
       # Vicor flds[2]  SCAP flds[3]
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
       my $state='ON';
@@ -293,6 +296,18 @@ if (open ($ofh, ">$cdir/$transname") ) {
    `gzip $cdir/$transname`;
 } else {
    warn "Unable to open $cdir/$transname  $!\n" 
+};
+
+my $distname = "$config->{MAC}.$config->{start}.$config->{end}.powerDist.csv";
+if (open ($ofh, ">$cdir/$distname") ) {
+   for (my $i=0; $i < scalar @powerDist; $i++) { 
+      $powerDist[$i] = 0 unless defined($powerDist[$i]);
+      print $ofh "$i,$powerDist[$i]\n";
+   }
+   close $ofh;
+   `gzip $cdir/$distname`;
+} else {
+   warn "Unable to open $cdir/$distname  $!\n" 
 };
 
 my $cmd = 'rsync -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
