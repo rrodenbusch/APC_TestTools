@@ -11,20 +11,28 @@ my @fTypes = ('rLog','voltage','Watch');
 my %fNames = ( 'rLog'=>'/data/rLog/remote*.log*',
                'Watch'=> '/home/pi/Watch.*',
                'voltage'=> '/home/pi/I2C/i2cdata/voltage/Voltage*.csv*' );
-my @powerDist;
+my (@powerDistOn,@powerDistOff,@powerLoss);
 
 my $USAGE = "Usage: scourLogs.pl\n".
                   "   -s Start epoch        [default now]\n".
-                  "   -d Duration (seconds) [default 1 hr]\n".
-                  "   -H Duration (Hours)\n".
-                  "   -c coach # \n".
+                  "   -d Distribution\n".
+                  "   -o power Losses\n".
+                  "   -l log extracts\n".
+                  "   -o power Losses\n".
+                  "   -t Transitions\n".
+                  "   -H target IP\n".
                   "   -h help\n" ;
 
 sub getCmdLine {
    my ($dateStr);
    my %options=();
    
-   getopts("hs:d:H:c:v:g:", \%options);
+   my $lastStart = `grep lastPowerScour $ENV{HOME}/RPi/config.ini`;
+   if ($lastStart) {
+      ($options{INI},$options{s}) = split('=',$lastStart);
+   }
+   
+   getopts("s:dlthH:", \%options);
    if ( defined($options{h}) ) {
       die $USAGE;
    } 
@@ -142,19 +150,22 @@ sub scourVoltage {
       $flds[3] = -1 unless defined($flds[3]);
       next if ($flds[2] == -1) || ($flds[3] == -1);
       my $idx = int($flds[2] * 10);
-      $powerDist[$idx] = 0 unless defined($powerDist[$idx]);
-      $powerDist[$idx]++;
+      $powerDistOn[$idx] = 0 unless defined($powerDistOn[$idx]);
+      $powerDistOff[$idx] = 0 unless defined($powerDistOff[$idx]);
       # Vicor flds[2]  SCAP flds[3]
 #      $cnt = 3 unless ($flds[2] == -1) || ($flds[3] == -1) || ( $flds[2] < 14) || ($flds[2] >= $flds[3]);
       my $state='ON';
 #      $state = 'ON'  if ( $flds[2] > $config->{v} ) || ( $flds[2] >= $flds[3] + $config->{g} );
       $state = 'OFF'  if ( $flds[2] < $config->{v} ) || ( ($flds[2] > $config->{v}) && ($flds[3] > $flds[2]+ $config->{g}) );
       if ($state eq 'OFF') {
+         $powerDistOff[$idx]++;
          push (@lines,$prevLine) if ($prevState eq 'ON') && ($prevLine ne '');
          push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
          $cnt = 3;
+         push(@powerLoss,$logtime) if ($prevState eq 'ON');
          $prevState = 'OFF';
       } else {
+         $powerDistOn[$idx]++;
          $prevState = 'ON';
          if ( ($cnt > 0) || ($prevState eq '1st') ) {
             push (@lines,"$logtime,$config->{MAC},,$curType,$fname,$line,$state");
@@ -272,6 +283,7 @@ sleep 5;
 my $lineCnt = `wc -l $cdir/$tmpName`;
 $lineCnt  =~ s/\R//g if defined($lineCnt);
 $lineCnt = 0 unless defined($lineCnt);
+
 my $outname = "$config->{MAC}.$config->{start}.$config->{end}.powerLogs.csv";
 my $resp = `sort -k1 -t, $cdir/$tmpName > $cdir/$outname`;
 print "Sort Error on file $lineCnt $cdir/$tmpName: $resp\n" unless (-e "$cdir/$outname");
@@ -300,9 +312,10 @@ if (open ($ofh, ">$cdir/$transname") ) {
 
 my $distname = "$config->{MAC}.$config->{start}.$config->{end}.powerDist.csv";
 if (open ($ofh, ">$cdir/$distname") ) {
-   for (my $i=0; $i < scalar @powerDist; $i++) { 
-      $powerDist[$i] = 0 unless defined($powerDist[$i]);
-      print $ofh "$i,$powerDist[$i]\n";
+   for (my $i=0; $i < scalar @powerDistOn; $i++) { 
+      $powerDistOn[$i] = 0 unless defined($powerDistOn[$i]);
+      $powerDistOff[$i] = 0 unless defined($powerDistOff[$i]);
+      print $ofh "$i,$powerDistOn[$i],$powerDistOff[$i]\n";
    }
    close $ofh;
    `gzip $cdir/$distname`;
@@ -310,9 +323,11 @@ if (open ($ofh, ">$cdir/$distname") ) {
    warn "Unable to open $cdir/$distname  $!\n" 
 };
 
-my $cmd = 'rsync -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
-my $ret = `$cmd`;
-print "Sync return: $ret\n" if (defined($ret));
+if (defined($config->{H})) {
+   my $cmd = 'rsync --remove-source-file -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+   my $ret = `$cmd`;
+   print "Sync return: $ret\n" if (defined($ret));
+}
 
 exit 0;
 1;
