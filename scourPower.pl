@@ -324,7 +324,7 @@ if (open ($ofh, ">$cdir/$distname") ) {
 };
 
 if (defined($config->{H})) {
-   my $cmd = 'rsync --remove-source-files -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+   my $cmd = 'rsync --remove-source-files -rv '.$cdir.'/B827EB* mthinx@'.$config->{H}.':/extdata/power';
    my $ret = `$cmd`;
    print "Sync return: $ret\n" if (defined($ret));
 }
