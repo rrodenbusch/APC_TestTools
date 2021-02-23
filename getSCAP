@@ -161,6 +161,7 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
       $resp = $devA->read_byte(0x10);
       $resp =~ s/\R//g;
       $resp += 0;
+      ($Pwr2,$Cap2) = (0,0);
       $Pwr2 = 1 if (($resp & 0x80) > 0);
       $Cap2 = 1 if (($resp & 0x20) > 0);
    }
