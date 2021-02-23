@@ -7,10 +7,10 @@ use Time::Local;
 use Getopt::Std;
 use Date::Format;
 
-my @fTypes = ('rLog','voltage','Watch');
+my @fTypes = ( 'rLog','voltage','Watch');
 my %fNames = ( 'rLog'=>'/data/rLog/remote*.log*',
                'Watch'=> '/home/pi/Watch.*',
-               'voltage'=> '/home/pi/I2C/i2cdata/voltage/Voltage*.csv*' );
+               'voltage'=> '/home/pi/I2C/i2cdata/voltage/*oltage*.csv*' );
 my (@powerDistOn,@powerDistOff,@powerLoss);
 
 my $USAGE = "Usage: scourLogs.pl\n".
