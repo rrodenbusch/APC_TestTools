@@ -5,16 +5,15 @@ sudo rm -rf /var/fire/config/*
 sudo rm /etc/machine-id
 sudo touch /etc/machine-id
 
-[ -d $HOME/I2C/i2cdata/voltage ]  && [ rm $HOME/I2C/i2cdata/voltage/* ]
-[ -d $HOME/I2C/i2cdata/status ]   && [ rm $HOME/I2C/i2cdata/status/* ]
-[ -d $HOME/I2C/i2cdata/i2c ]      && [ rm $HOME/I2C/i2cdata/i2c/* ]
-[ -d $HOME/I2C/i2cdata/gpio ]     && [ rm $HOME/I2C/i2cdata/gpio/* ]
-[ -d $HOME/I2C/i2cdata/temp ]     && [ rm $HOME/I2C/i2cdata/temp/* ]
-[ -d $HOME/I2C/i2cdata/MPU ]      && [ rm $HOME/I2C/i2cdata/MPU/* ]
-[ -d $HOME/I2C/i2cdata/doorTemp ] && [ rm $HOME/I2C/i2cdata/doorTemp/* ]
-[ -d $HOME/I2C/i2cdata/door ]     && [ rm $HOME/I2C/i2cdata/door/* ]
-[ -d $HOME/I2C/i2cdata/dB ]       && [ rm $HOME/I2C/i2cdata/dB/* ]
+[ -d /home/pi/I2C/i2cdata/voltage ]  && [ rm /home/pi/I2C/i2cdata/voltage/* ]
+[ -d /home/pi/I2C/i2cdata/status ]   && [ rm /home/pi/I2C/i2cdata/status/* ]
+[ -d /home/pi/I2C/i2cdata/i2c ]      && [ rm /home/pi/I2C/i2cdata/i2c/* ]
+[ -d /home/pi/I2C/i2cdata/gpio ]     && [ rm /home/pi/I2C/i2cdata/gpio/* ]
+[ -d /home/pi/I2C/i2cdata/temp ]     && [ rm /home/pi/pi/I2C/i2cdata/temp/* ]
+[ -d /home/pi/I2C/i2cdata/MPU ]      && [ rm /home/pi/I2C/i2cdata/MPU/* ]
+[ -d /home/pi/I2C/i2cdata/doorTemp ] && [ rm /home/pi/I2C/i2cdata/doorTemp/* ]
+[ -d /home/pi/I2C/i2cdata/door ]     && [ rm /home/pi/I2C/i2cdata/door/* ]
+[ -d /home/pi/I2C/i2cdata/dB ]       && [ rm /home/pi/I2C/i2cdata/dB/* ]
 
-rm $HOME/Watch.log
-rm $HOME/Watch.bak
-
+[ -e /home/pi/Watch.log ] && rm /home/pi/Watch.log
+[ -e /home/pi/Watch.bak ] && rm /home/pi/Watch.bak
