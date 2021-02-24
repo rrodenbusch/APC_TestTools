@@ -7,10 +7,10 @@ use Time::Local;
 use Getopt::Std;
 use Date::Format;
 
-my @fTypes = ( 'rLog','voltage','Watch');
+my @fTypes = ('rLog','voltage','Watch');
 my %fNames = ( 'rLog'=>'/data/rLog/remote*.log*',
                'Watch'=> '/home/pi/Watch.*',
-               'voltage'=> '/home/pi/I2C/i2cdata/voltage/*oltage*.csv*' );
+               'voltage'=> '/home/pi/I2C/i2cdata/voltage/Voltage*.csv*' );
 my (@powerDistOn,@powerDistOff,@powerLoss);
 
 my $USAGE = "Usage: scourLogs.pl\n".
@@ -18,7 +18,6 @@ my $USAGE = "Usage: scourLogs.pl\n".
                   "   -d Distribution\n".
                   "   -o power Losses\n".
                   "   -l log extracts\n".
-                  "   -o power Losses\n".
                   "   -t Transitions\n".
                   "   -H target IP\n".
                   "   -h help\n" ;
@@ -32,7 +31,7 @@ sub getCmdLine {
       ($options{INI},$options{s}) = split('=',$lastStart);
    }
    
-   getopts("s:dlthH:", \%options);
+   getopts("s:dolthH:", \%options);
    if ( defined($options{h}) ) {
       die $USAGE;
    } 
@@ -324,7 +323,7 @@ if (open ($ofh, ">$cdir/$distname") ) {
 };
 
 if (defined($config->{H})) {
-   my $cmd = 'rsync --remove-source-files -rv '.$cdir.'/B827EB* mthinx@'.$config->{H}.':/extdata/power';
+   my $cmd = 'rsync --remove-source-files -rv $cdir/B827EB* mthinx@'.$config->{H}.':/extdata/power';
    my $ret = `$cmd`;
    print "Sync return: $ret\n" if (defined($ret));
 }
