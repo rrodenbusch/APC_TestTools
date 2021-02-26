@@ -58,7 +58,7 @@ sub readBus {
             }
          }
          $line = sprintf( "Device %02d : %02X %02X %02X %02X %02X %02X %02X %02X\n",
-            $devNum,@Address);
+            $devNum, $Address[4],$Address[5],$Address[6],$Address[7],$Address[0],$Address[1],$Address[2],$Address[3]);
          print $line;
          $devNum++;
          $numDevs--;
