@@ -68,7 +68,7 @@ sub readBus {
          $tmp1 = $device->read_word(0x06) if ($tempCnt > 0);
          $tmp1 =  ( ((($tmp1 & 0x00FF) << 8) & 0xFF00) | ((($tmp1 & 0xFF00)>>8) & 0x00FF) ) / 10 
                    unless ($tmp1 == -1);
-         sleep(1) if ($tmp == -1);
+         sleep(1) if ($tmp1 == -1);
       }
       while ($tmp2 == -1) {
          $tmp2 = $device->read_word(0x08) if ($tempCnt > 1);
