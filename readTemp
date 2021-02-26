@@ -36,7 +36,11 @@ sub attach {
          
 sub readBus {
    if (my $device = attach(0x0f)) {
-      my $numDevs = $device->read_byte(0x04);
+      my $numDevs = -1;
+      while ($numDevs == -1 ) {
+         $numDevs = $device->read_byte(0x04);
+         sleep(1) if ($numDevs == -1 );
+      }
       my $tempCnt = $numDevs;
       my $line = sprintf( "Found %02d devices on 1 Wire Bus\n",$numDevs);
       print $line;
@@ -47,7 +51,11 @@ sub readBus {
          my @Address;
          for (my $i = 0; $i < 8; $i++ ) { 
             my $reg = 0xA1 + $i;
-            $Address[$i] = $device->read_byte($reg);
+            $Address[$i] = -1;
+            while ($Address[$i] == -1 ) {
+               $Address[$i]  = $device->read_byte($reg);
+               sleep(1) if $Address[$i] == -1;
+            }
          }
          $line = sprintf( "Device %02d : %02X %02X %02X %02X %02X %02X %02X %02X\n",
             $devNum,@Address);
@@ -56,12 +64,18 @@ sub readBus {
          $numDevs--;
       }
       my ($tmp1, $tmp2) = (-1,-1);
-      $tmp1 = $device->read_word(0x06) if ($tempCnt > 0);
-      $tmp1 =  ( ((($tmp1 & 0x00FF) << 8) & 0xFF00) | ((($tmp1 & 0xFF00)>>8) & 0x00FF) ) / 10 
+      while ($tmp1 == -1 ) {
+         $tmp1 = $device->read_word(0x06) if ($tempCnt > 0);
+         $tmp1 =  ( ((($tmp1 & 0x00FF) << 8) & 0xFF00) | ((($tmp1 & 0xFF00)>>8) & 0x00FF) ) / 10 
                    unless ($tmp1 == -1);
-      $tmp2 = $device->read_word(0x08) if ($tempCnt > 1);
-      $tmp2 =  ( ((($tmp2 & 0x00FF) << 8) & 0xFF00) | ((($tmp2 & 0xFF00)>>8) & 0x00FF) ) / 10
-         unless ($tmp2 == -1);
+         sleep(1) if ($tmp == -1);
+      }
+      while ($tmp2 == -1) {
+         $tmp2 = $device->read_word(0x08) if ($tempCnt > 1);
+         $tmp2 =  ( ((($tmp2 & 0x00FF) << 8) & 0xFF00) | ((($tmp2 & 0xFF00)>>8) & 0x00FF) ) / 10
+            unless ($tmp2 == -1);
+         sleep(1) if ($tmp2 == -1);
+      }
        print "Temp1 $tmp1   Temp2  $tmp2\n"
    } else {
       print "Error attaching to device 0x0F\n";
