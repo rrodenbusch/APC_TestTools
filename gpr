@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+   gpio readall
+else
+   gpio -g read $1
+fi
