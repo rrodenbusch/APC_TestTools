@@ -1,4 +1,4 @@
 #!/bin/bash
 [ -z "$1" ] && echo "No PIN sepecified" && echo "gpw -g \$1 write 1; mode out " && exit 1;
-gpio -g $1 write 1
-gpio -g $1 mode out
+gpio -g write $1 1
+gpio -g mode $1 out
