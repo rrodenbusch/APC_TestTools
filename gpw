@@ -1,0 +1,4 @@
+#!/bin/bash
+[ -z "$1" ] && echo "gpw PIN Value" && exit 1;
+[ -z "$2" ] && echo "gpw Pin VALUE" && exit 1;
+gpio -g $1 write $2

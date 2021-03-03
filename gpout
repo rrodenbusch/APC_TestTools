@@ -1,0 +1,3 @@
+#!/bin/bash
+[ -z "$1" ] && echo "No Pin Specified" &&  echo "gpw -g \$1 mode out" && exit 1;
+gpio -g $1 mode out
