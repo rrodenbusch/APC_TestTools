@@ -2,8 +2,18 @@
 sudo systemctl stop fire
 sudo rm -rv /var/log/fbd/*
 sudo rm -rf /var/fire/config/*
-sudo rm /etc/machine-id
+
 sudo touch /etc/machine-id
+if [ "$?" == 0 ]; then
+   sudo rm /etc/machine-id
+   sudo touch /etc/machine-id
+else
+   # root is mounted ro, remount and try
+   sudo mount -O remount,rw /
+   sudo rm /etc/machine-id
+   sudo touch /etc/machine-id
+   sudo mount -O remount,ro /
+fi
 
 [ -d /home/pi/I2C/i2cdata/voltage ]  && `rm /home/pi/I2C/i2cdata/voltage/*`
 [ -d /home/pi/I2C/i2cdata/status ]   && `rm /home/pi/I2C/i2cdata/status/*`
