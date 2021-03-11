@@ -6,36 +6,34 @@ else
    end=$1
 fi
 
+sudo $HOME/APC_TestTools/cleanMachine.sh
+
+sudo mount -o remount,rw /
+sudo mount -o remount,rw /boot
+sudo systemctl stop fire
+echo  " # Refresh git"
+$HOME/APC_TestTools/stopRPi.pl kill
+$HOME/APC_TestTools/gitAll
+$HOME/APC_TestTools/pushRPi.sh
+
 if  [ $end -eq 3 ];then
-   sudo $HOME/APC_TestTools/rmNMAP.sh
-   $HOME/APC_TestTools/stopRPi.pl kill
    echo  "Configure rLog"
-   echo  " # Refresh git"
-   $HOME/APC_TestTools/gitAll
-   $HOME/APC_TestTools/pushRPi.sh
-   echo " ## Clean up fire"
-   sudo $HOME/APC_TestTools/cleanFire.sh
-   $HOME/APC_TestTools/EnableFire.sh
    echo " ### Updating cron"
    crontab $HOME/updates/PiInstall/cron2.tab
+
    #echo " #### Setup SSD"
    #$HOME/updates/PiInstall/setupSSD.sh
    echo " ##### Gtting UIDs"
    $HOME/APC_TestTools/queryI2C.pl
-   Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
-   echo "Arduino Version $Ard"
+
+   sudo systemctl enable fire
    $HOME/APC_TestTools/setPiHostname 0x55
 elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
-   sudo $HOME/APC_TestTools/rmNMAP.sh
    echo "Configured end $end"
-   $HOME/APC_TestTools/stopRPi.pl kill
    sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
    echo " # Refresh git "
-   $HOME/APC_TestTools/gitAll
-   $HOME/APC_TestTools/pushRPi.sh
    echo " ## Clean up fire "
-   sudo $HOME/APC_TestTools/cleanFire.sh
-   $HOME/APC_TestTools/EnableFire.sh
+   #$HOME/APC_TestTools/EnableFire.sh
    echo " ### Updating cron "
    if [ $end -eq 1 ]; then 
       crontab $HOME/updates/PiInstall/cron1.tab
@@ -54,6 +52,7 @@ elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
    $HOME/APC_TestTools/getUID
    Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
    echo "Arduino Version $Ard"
+   sudo systemctl enable fire
    $HOME/APC_TestTools/setPiHostname 0x51
 else
    echo "Must enter end 1  2 or 3"
