@@ -10,11 +10,11 @@ usage () {
 ##### Get Command Line
 while [ "$1" != "" ]; do
     case $1 in
-        -e | --date )         shift
+        -e | --end )         shift
                               END=$1
                               ;;
         -h | --help )         usage
-                              exit
+                              exit 1
                               ;;
         * )                   usage
                               exit 1
@@ -24,19 +24,17 @@ done
 ##### Check for specified end and UID on I2C
 [ -z "$END" ] && usage && exit 1
 [ "$END" == "1" ] || [ "$END" == "2" ] || [ "$END" == "3" ] || usage
-i2cdetect -y 1 | grep "-- 55 --"
+i2cdetect -y 1 | grep '-- 55 --'
 [ "$?" == 0 ] && UID='0x55'
-i2cdetect -y 1 | grep "-- 51 --"
+i2cdetect -y 1 | grep '-- 51 --'
 [ "$?" == 0 ] && UID='0x51'
 [ -z "$UID" ] && echo "No UID found at 0x51 or 0x55" && exit 1
 [ "$END" == 3 ] && [ "$UID" != "0x55" ] && echo "End 3 must have UID at 0x55" && exit 1
 [ "$END" != 3 ] && [ "$UID" != "0x51" ] && echo "End 1 or 2 must have UID at 0x51" && exit 1
-
 READONLY=$HOME/APC_TestTools/isreadOnly
 
-echo "Pause"
+echo "End $END  UID $UID Enter to continue...."
 read var
-
 
 echo  "### Refresh git"
 $HOME/APC_TestTools/stopRPi.pl kill
@@ -51,33 +49,33 @@ if [ "$READONLY" == "1" ]; then
    sudo mount -o remount,rw /boot
 fi
 
-
-echo "Pause"
+echo "Enter to continue"
 read var
-
-$HOME/APC_TestTools/moveThumbLDATA
 
 if  [ $END -eq 3 ];then
    echo "### Configure ini file"
    sed -i 's/myRole=[^ ]*/myRole=rLog/' $HOME/RPi/config.ini
-   
+   $HOME/updates/PiInstall/staticIP.sh 31
    crontab $HOME/updates/PiInstall/cron3.tab
    $HOME/APC_TestTools/setupThumbDATA
-   #echo " #### Setup SSD"
-   #$HOME/updates/PiInstall/setupSSD.sh
    echo " ### Get UIDs"
    $HOME/APC_TestTools/queryI2C.pl
    $HOME/APC_TestTools/setPiHostname 0x55
    sudo systemctl enable fire
+   $HOME/APC_TestTools/setupThumbLDATA
 elif [ $END -eq 1 ]  || [ $END -eq 2 ]; then
    echo "### Configure End $end"
    if [ grep ^myRole=Pi1 ]; then
+      [ "$END" == "1" ] && $HOME/updates/PiInstall/staticIP.sh 11
+      [ "$END" == "2" ] && $HOME/updates/PiInstall/staticIP.sh 21
       echo "### Configure Pi1-End$END"
       sed -i 's/myRole=[^ ]*/myRole=Pi1-End$END/' $HOME/RPi/config.ini
       sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
       crontab $HOME/updates/PiInstall/cron1.tab
    else
       echo "### Configure Pi2-End$END"
+      [ "$END" == "1" ] && $HOME/updates/PiInstall/staticIP.sh 12
+      [ "$END" == "2" ] && $HOME/updates/PiInstall/staticIP.sh 22
       sed -i 's/myRole=[^ ]*/myRole=Pi2-End$END/' $HOME/RPi/config.ini
       crontab $HOME/updates/PiInstall/cron2.tab
    fi
@@ -87,6 +85,9 @@ elif [ $END -eq 1 ]  || [ $END -eq 2 ]; then
    sudo systemctl enable fire
    echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x51
+   $HOME/APC_TestTools/moveThumbLDATA
 fi
 
-sudo $HOME/APC_TestTools/cleanMachine
+echo "Restarting in 10..."
+sleep (10)
+sudo shutdown -r now
