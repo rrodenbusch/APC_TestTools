@@ -46,9 +46,6 @@ if [ "$READONLY" == "1" ]; then
    sudo mount -o remount,rw /boot
 fi
 
-echo "Enter to continue"
-read var
-
 if  [ $END -eq 3 ];then
    echo "### Configure ini file"
    sed -i 's/myRole=[^ ]*/myRole=rLog/' $HOME/RPi/config.ini
