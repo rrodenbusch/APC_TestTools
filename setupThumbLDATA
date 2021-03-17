@@ -45,7 +45,7 @@ my $sdDevs = `sudo blkid |grep /dev/sd`;
 foreach my $curFld (@flds) {
    my ($dev,$data) = split(':',$curFld);
    push (@SDs,$dev);
-   my $disk = substr($dev,0,-1);
+   my $disk = substr($dev,0,8);
    my $diskDesc = `sudo fdisk -l $disk |head -2`;
    my @data = split(' ',$diskDesc);
    my $diskSize = $data[2];
@@ -80,30 +80,46 @@ my $targDev = '';
 $targDev = $smallSDs[0] if (defined($smallSDs[0]));
 my $continue = 'N';
 if  ( ($fromDev eq '/dev/mmcblk0p5') && (scalar(@smallSDs) == 1) ) {
-   $continue = getYesNo("Move ldata from $fromDev to $targDev [Y,n] ?",'Y');   
+   $continue = getYesNo("\nMove ldata from $fromDev to $targDev [Y,n] ?",'Y');   
 }
 
 if ($continue eq 'Y') {
    print "Moving data.....\n";
-   my $resp =    `sudo sfdisk --delete $targDev`;
-   print "Delete partition table $targDev\n$resp\n";
-   $resp = `sudo parted -a opt $targDev mkpart primary ext4 0% 100%`;
-   print "Create partition $targDev\n$resp\n";
-   `sudo tune2fs -U \$(uuidgen) $targDev`;
-   $targDev .= '1';
+   my $targDrive = $targDev;
+   $targDev .= "1";
+   my $resp =    `sudo sfdisk --delete $targDrive`;
+   print "Delete partition table $targDrive\n$resp\n";
+   $resp = `sudo parted -a opt $targDrive mkpart primary ext4 0% 100%`;
+   print "Create partition $targDrive\n$resp\n";
+   ## File System
    $resp = `sudo mkfs.ext4 $targDev`;
    print "Create file system $targDev\n$resp\n";
-   $resp = `sudo tune2fs -U \$(uuidgen) $targDev`;
+   ## UUIDs
+   $resp = `sudo tune2fs -U \$(uuid) $targDrive`;
+   print "$targDrive UUID $resp\n";
+   $resp = `sudo tune2fs -U \$(uuid) $targDev`;
+   print "$targDev UUID $resp\n";
+   ## LABELs
    $resp = `sudo tune2fs -L RW-LDATA   $targDev`;
+   print "$targDev LABEL $resp\n";
    $resp = `sudo tune2fs -L SD-LDATA   $fromDev`;
+   print "$fromDev LABEL $resp\n";
+   ## Files   
    $resp = `sudo mount $targDev /mnt`;
    if ($? ne 0) { die "Unable to mount $targDev on /mnt\t$!\n"; }
    my $blkid = `sudo blkid`;
    print "$blkid\n";
    print "Syncing data to $targDev\n";
-   $resp .= `rsync -rav /ldata/ /mnt/`;
+   $resp = `sudo rsync -rav /ldata/ /mnt/`;
+   print "rsync $resp\n";
+   $resp = `sudo umount /ldata`;
+   $resp .= `sudo umount /mnt`;
+   $resp .= `sudo mount LABEL=RW-LDATA /ldata`;
+   print "Remount(s) $resp\n\n";
+   $resp = `mount`;
+   print "$resp\n";
 }
 
-
+print "On reboot thumbdrive will mount\n";
 
 0;
