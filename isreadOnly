@@ -2,13 +2,13 @@
 
 ##### Check for read only file system
 READONLY=0
-sudo mount |grep ldata
+sudo mount |grep ldata >/dev/null 2>&1
 [ "$?" == "0" ] && READONLY=1
-sudo blkid | grep RW-LDATA
+sudo blkid | grep RW-LDATA >/dev/null 2>&1
 [ "$?" == "0" ] && READONLY=1
-sudo mount |grep ' / ' | grep ro,
+sudo mount |grep ' / ' | grep ro, >/dev/null 2>&1
 [ "$?" == "0" ] && READONLY=1
-sudo mount |grep '/boot' | grep ro,
+sudo mount |grep '/boot' | grep ro, >/dev/null 2>&1
 [ "$?" == "0" ] && READONLY=1
 
 echo "$READONLY"
