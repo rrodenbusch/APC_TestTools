@@ -31,10 +31,9 @@ i2cdetect -y 1 | grep -e '-- 51 --' >/dev/null 2>&1
 [ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
 [ "$END" == 3 ] && [ "$UIDADDY" != "0x55" ] && echo "End 3 must have UID at 0x55" && exit 1
 [ "$END" != 3 ] && [ "$UIDADDY" != "0x51" ] && echo "End 1 or 2 must have UID at 0x51" && exit 1
-READONLY=$HOME/APC_TestTools/isreadOnly
+READONLY=`$HOME/APC_TestTools/isreadOnly`
 
-echo "End $END  UID $UIDADDY Enter to continue...."
-read var
+echo "ReadOnly $READONLY\n";
 
 echo  "### Refresh git"
 $HOME/APC_TestTools/stopRPi.pl kill
