@@ -1,8 +1,109 @@
-#!/bin/bash
+#!/usr/bin/perl
+use strict;
+use warnings;
+my (%diskInfo,@diskIDs,@SDs,@smallSDs,@largeSDs);
+
+sub getInputData {
+   my ($msg,$default) = @_;
+
+   print "$msg";
+   my $resp = '';
+   $resp = <STDIN>;
+   $resp =~ s/\R//g;
+   $resp =~ s/\s+//g;
+   $resp = uc($resp);
+   
+   $resp = $default if (defined($default) && ($resp eq ''));
+   return ($resp);
+}
+
+sub getYesNo {
+   my ($msg,$default) = @_;
+
+   print "$msg";
+   my $resp = '';
+   while ( ($resp ne 'Y') && ($resp ne 'N') ) {
+      $resp = <STDIN>;
+      $resp =~ s/\R//g;
+      $resp = uc($resp);
+      $resp = $default if (defined($default) && ($resp eq ''));
+   }
+   
+   return ($resp);
+}
+
+### Get the SD card information
+my $ldataDev = `sudo mount |grep /ldata`;
+$ldataDev =~ s/\R//g;
+my @flds = split(' ',$ldataDev);
+my $fromDev = $flds[0];
+die "Not device found mounted at /ldtata to copy\n" unless defined($fromDev);
+
+### Get USB disk information
+my $sdDevs = `sudo blkid |grep /dev/sd`;
+@flds = split("\n",$sdDevs);
+foreach my $curFld (@flds) {
+   my ($dev,$data) = split(':',$curFld);
+   push (@SDs,$dev);
+   my $disk = substr($dev,0,-1);
+   my $diskDesc = `sudo fdisk -l $disk |head -2`;
+   my @data = split(' ',$diskDesc);
+   my $diskSize = $data[2];
+   my $diskUnit = $data[3];
+   $diskUnit =~ s/,//g;
+   $diskInfo{$disk}->{size} = $diskSize;
+   $diskInfo{$disk}->{unit} = $diskUnit;
+   $diskInfo{$disk}->{desc} = $diskDesc;
+   push(@smallSDs, $disk) if  ( ($diskUnit eq 'GiB') && ($diskSize < 200) );
+   push(@largeSDs, $disk) if  ( ($diskUnit eq 'GiB') && ($diskSize > 200) );
+}
+
+### Display the disk information
+print "Current ldata\n\t$fromDev\n";
+### Display small SDs
+my $numTargs = scalar(@smallSDs);
+print "\n$numTargs small USB drives\n";
+foreach my $curDrive (@smallSDs) {
+   print"$curDrive \t$diskInfo{$curDrive}->{size} $diskInfo{$curDrive}->{unit}";
+   my @lines = split("\n",$diskInfo{$curDrive}->{desc});
+   print "\n\t" . join("\n\t",@lines) ."\n";
+}
+### Display Large SDs
+print "\n". scalar(@largeSDs) . " large USB drives\n";
+foreach my $curDrive (@largeSDs) {
+   print"$curDrive \t$diskInfo{$curDrive}->{size} $diskInfo{$curDrive}->{unit}";
+   my @lines = split("\n",$diskInfo{$curDrive}->{desc});
+   print "\n\t" . join("\n\t",@lines) ."\n";
+}
+
+my $targDev = '';
+$targDev = $smallSDs[0] if (defined($smallSDs[0]));
+my $continue = 'N';
+if  ( ($fromDev eq '/dev/mmcblk0p5') && (scalar(@smallSDs) == 1) ) {
+   $continue = getYesNo("Move ldata from $fromDev to $targDev [Y,n] ?",'Y');   
+}
+
+if ($continue eq 'Y') {
+   print "Moving data.....\n";
+   my $resp =    `sudo sfdisk --delete $targDev`;
+   print "Delete partition table $targDev\n$resp\n";
+   $resp = `sudo parted -a opt $targDev mkpart primary ext4 0% 100%`;
+   print "Create partition $targDev\n$resp\n";
+   `sudo tune2fs -U \$(uuidgen) $targDev`;
+   $targDev .= '1';
+   $resp = `sudo mkfs.ext4 $targDev`;
+   print "Create file system $targDev\n$resp\n";
+   $resp = `sudo tune2fs -U \$(uuidgen) $targDev`;
+   $resp = `sudo tune2fs -L RW-LDATA   $targDev`;
+   $resp = `sudo tune2fs -L SD-LDATA   $fromDev`;
+   $resp = `sudo mount $targDev /mnt`;
+   if ($? ne 0) { die "Unable to mount $targDev on /mnt\t$!\n"; }
+   my $blkid = `sudo blkid`;
+   print "$blkid\n";
+   print "Syncing data to $targDev\n";
+   $resp .= `rsync -rav /ldata/ /mnt/`;
+}
 
 
-BLKID=`blkid`
 
-echo "$BLKID"
-
-exit 0;
+0;
