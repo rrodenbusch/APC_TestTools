@@ -24,9 +24,9 @@ done
 ##### Check for specified end and UID on I2C
 [ -z "$END" ] && usage && exit 1
 [ "$END" == "1" ] || [ "$END" == "2" ] || [ "$END" == "3" ] || usage
-i2cdetect -y 1 | grep -e '-- 55 --'
+i2cdetect -y 1 | grep -e '-- 55 --' >/dev/null 2>&1
 [ "$?" == 0 ] && UIDADDY='0x55'
-i2cdetect -y 1 | grep -e '-- 51 --'
+i2cdetect -y 1 | grep -e '-- 51 --' >/dev/null 2>&1
 [ "$?" == 0 ] && UIDADDY='0x51'
 [ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
 [ "$END" == 3 ] && [ "$UIDADDY" != "0x55" ] && echo "End 3 must have UID at 0x55" && exit 1
