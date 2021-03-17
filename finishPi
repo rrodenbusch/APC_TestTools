@@ -1,49 +1,92 @@
 #!/bin/bash
-if [ $# -eq 0 ]; then
-   echo "Enter end to finish [1/2/3]  "
-   read end
-else 
-   end=$1
-fi
+
+usage () {
+   NEW=$'\n'
+   u="Usage:  finishPi -e [1|2|3]${NEW}"
+   u="$u          -e (--end [1: NEMA1; 2: NEMA2; 3:Bridge)${NEW}"   
+   echo "$u";
+   exit 1;
+}
+##### Get Command Line
+while [ "$1" != "" ]; do
+    case $1 in
+        -e | --date )         shift
+                              END=$1
+                              ;;
+        -h | --help )         usage
+                              exit
+                              ;;
+        * )                   usage
+                              exit 1
+    esac
+    shift
+done
+##### Check for specified end and UID on I2C
+[ -z "$END" ] && usage && exit 1
+[ "$END" == "1" ] || [ "$END" == "2" ] || [ "$END" == "3" ] || usage
+i2cdetect -y 1 | grep "-- 55 --"
+[ "$?" == 0 ] && UID='0x55'
+i2cdetect -y 1 | grep "-- 51 --"
+[ "$?" == 0 ] && UID='0x51'
+[ -z "$UID" ] && echo "No UID found at 0x51 or 0x55" && exit 1
+[ "$END" == 3 ] && [ "$UID" != "0x55" ] && echo "End 3 must have UID at 0x55" && exit 1
+[ "$END" != 3 ] && [ "$UID" != "0x51" ] && echo "End 1 or 2 must have UID at 0x51" && exit 1
+
+READONLY=$HOME/APC_TestTools/isreadOnly
+
+echo "Pause"
+read var
+
 
 echo  "### Refresh git"
 $HOME/APC_TestTools/stopRPi.pl kill
 $HOME/APC_TestTools/gitAll
 $HOME/APC_TestTools/pushRPi.sh
-
-echo "###   Cleanup for fire and machine id"
-sudo $HOME/APC_TestTools/cleanMachine
-echo "## Mount rw to enable updates "
-sudo mount -o remount,rw /
-sudo mount -o remount,rw /boot
+echo  "### Stop fire"
 sudo systemctl stop fire
-if  [ $end -eq 3 ];then
-   echo  "Configure rLog"
-   echo "###   Updating cron"
-   crontab $HOME/updates/PiInstall/cron2.tab
 
+if [ "$READONLY" == "1" ]; then
+   echo "## Mount rw to enable updates "
+   sudo mount -o remount,rw /
+   sudo mount -o remount,rw /boot
+fi
+
+
+echo "Pause"
+read var
+
+$HOME/APC_TestTools/moveThumbLDATA
+
+if  [ $END -eq 3 ];then
+   echo "### Configure ini file"
+   sed -i 's/myRole=[^ ]*/myRole=rLog/' $HOME/RPi/config.ini
+   
+   crontab $HOME/updates/PiInstall/cron3.tab
+   $HOME/APC_TestTools/setupThumbDATA
    #echo " #### Setup SSD"
    #$HOME/updates/PiInstall/setupSSD.sh
-   echo " ##### Gtting UIDs"
+   echo " ### Get UIDs"
    $HOME/APC_TestTools/queryI2C.pl
-
-   sudo systemctl enable fire
    $HOME/APC_TestTools/setPiHostname 0x55
-elif [ $end -eq 1 ]  || [ $end -eq 2 ]; then
-   echo "Configured end $end"
-   sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
-   echo " ### Updating cron "
-   if [ $end -eq 1 ]; then 
+   sudo systemctl enable fire
+elif [ $END -eq 1 ]  || [ $END -eq 2 ]; then
+   echo "### Configure End $end"
+   if [ grep ^myRole=Pi1 ]; then
+      echo "### Configure Pi1-End$END"
+      sed -i 's/myRole=[^ ]*/myRole=Pi1-End$END/' $HOME/RPi/config.ini
+      sed -i 's/I2C_sleep=[^ ]*/I2C_sleep=0.01/' $HOME/RPi/config.ini
       crontab $HOME/updates/PiInstall/cron1.tab
    else
+      echo "### Configure Pi2-End$END"
+      sed -i 's/myRole=[^ ]*/myRole=Pi2-End$END/' $HOME/RPi/config.ini
       crontab $HOME/updates/PiInstall/cron2.tab
    fi
    echo " ##### Getting UIDs "
    $HOME/APC_TestTools/getUID
    Ard=`$HOME/APC_TestTools/I2Cio.pl read 0x0A 0x00 | cut -d' ' -f4`
-   echo "Arduino Version $Ard"
    sudo systemctl enable fire
+   echo "Arduino Version $Ard"
    $HOME/APC_TestTools/setPiHostname 0x51
-else
-   echo "Must enter end 1  2 or 3"
 fi
+
+sudo $HOME/APC_TestTools/cleanMachine

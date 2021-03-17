@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BLKID=`blkid`
+
+echo "$BLKID"
+
+exit 0;

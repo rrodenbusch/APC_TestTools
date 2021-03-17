@@ -34,13 +34,14 @@ my $retval=`/sbin/ifconfig |grep -A 1 -e tun0 -e wlan1`;
 print $retval;
 $retval = `/usr/bin/hostnamectl`;
 print $retval;
-print "Reboot now? [Y/n] ";
-my $ans = <STDIN>;
-$ans =~ s/\R//g;
-if ( (length($ans) == 0) || (uc($ans) eq 'Y') || (uc($ans) eq 'YES') ) {
-   print "Rebooting....";
-   sleep 1;
-   `sudo shutdown  -r now`;
-}
+
+#print "Reboot now? [Y/n] ";
+#my $ans = <STDIN>;
+#$ans =~ s/\R//g;
+#if ( (length($ans) == 0) || (uc($ans) eq 'Y') || (uc($ans) eq 'YES') ) {
+#   print "Rebooting....";
+#   sleep 1;
+#   `sudo shutdown  -r now`;
+#}
 
 1;
