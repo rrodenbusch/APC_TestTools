@@ -94,6 +94,8 @@ if ($continue eq 'Y') {
    ## File System
    $resp = `sudo mkfs.ext4 $targDev`;
    print "Create file system $targDev\n$resp\n";
+   $resp = `sudo e2fsck -p -f $targDev`;
+   print "e2fsck\n$resp\n";
    ## UUIDs
    $resp = `sudo tune2fs -U \$(uuid) $targDrive`;
    print "$targDrive UUID $resp\n";
