@@ -1,17 +1,17 @@
 #!/bin/bash
 
 ##### Check for read only file system
-EPOCH=$HOME/APC_TestTools/epoch | awk -F " " '{print $1}'
+EPOCH=`$HOME/APC_TestTools/epoch | awk -F " " '{print \$1}'`
 sudo touch /$EPOCH.txt
 if [ "$?" == 0 ]; then
-   echo "Read-write fs"
+   #echo "Read-write fs"
    READONLY=0
    sudo rm /$EPOCH.txt
    df |grep /ldata
    [ "$?" == 0 ] && READONLY = 1   
 else
    # root is mounted ro, /var/lib/dbus/machine-id is actual file
-   echo "Read-only fs"
+   #echo "Read-only fs"
    READONLY=1
 fi
 
