@@ -114,12 +114,10 @@ if ($continue eq 'Y') {
    print "rsync $resp\n";
    $resp = `sudo umount /ldata`;
    $resp .= `sudo umount /mnt`;
-   $resp .= `sudo mount LABEL=RW-LDATA /ldata`;
+   $resp .= `sudo mount -a`;
    print "Remount(s) $resp\n\n";
-   $resp = `mount`;
-   print "$resp\n";
+   $resp = `df`;
+   print "df\n$resp\n";
 }
-
-print "On reboot thumbdrive will mount\n";
 
 0;
