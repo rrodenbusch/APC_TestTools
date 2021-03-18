@@ -61,7 +61,7 @@ if [ "$READONLY" == "1" ]; then
 fi
 
 
-$HOME/updates/PiInstall/staticIP.sh $PI
+$HOME/updates/PiInstall/staticIP.sh -s $PI
 [ "$PI" == "211" ] && crontab $HOME/updates/PiInstall/cron1.tab
 [ "$PI" == "221" ] && crontab $HOME/updates/PiInstall/cron1.tab
 [ "$PI" == "212" ] && crontab $HOME/updates/PiInstall/cron2.tab
