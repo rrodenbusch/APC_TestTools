@@ -31,7 +31,7 @@ while [ "$1" != "" ]; do
 done
 ##### Check for specified end and UID on I2C
 [ -z "$PI" ] && usage && exit 1
-[ "$PI" == "211" ] || [ "$PI" == "212" ] || \ 
+[ "$PI" == "211" ] || [ "$PI" == "212" ] || \
      [ "$PI" == "221" ] || [ "$PI" == "222" ] || \
      [ "$PI" == "231" ] || usage
 
