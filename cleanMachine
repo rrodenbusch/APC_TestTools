@@ -25,5 +25,8 @@ cat /etc/machine-id
 [ -d /home/pi/I2C/i2cdata/door ]     && `rm /home/pi/I2C/i2cdata/door/*`
 [ -d /home/pi/I2C/i2cdata/dB ]       && `rm /home/pi/I2C/i2cdata/dB/*`
 
-[ -e /home/pi/Watch.log ] && rm /home/pi/Watch.log
-[ -e /home/pi/Watch.bak ] && rm /home/pi/Watch.bak
+[ -e /home/pi/Watch.log ]                     && rm /home/pi/Watch.log
+[ -e /home/pi/Watch.bak ]                     && rm /home/pi/Watch.bak
+[ -e /home/pi/fixhost.sh ]                    && rm /home/pi/fixhost.sh
+[ -e /home/pi/I2C/i2cdata/SystemStatus.csv ]  && rm /home/pi/I2C/i2cdata/SystemStatus.csv
+[ -e /home/pi/I2C/i2cdata/SystemStatus.old ]  && rm /home/pi/I2C/i2cdata/SystemStatus.old
