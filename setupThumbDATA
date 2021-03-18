@@ -33,6 +33,8 @@ sub getYesNo {
 }
 
 ### Get USB disk information
+my $FORCE=0;
+$FORCE=1 if ($ARGV[0] eq '-f');
 my $sdDevs = `sudo blkid |grep /dev/sd`;
 my @flds = split("\n",$sdDevs);
 foreach my $curFld (@flds) {
@@ -72,7 +74,12 @@ my $targDev = '';
 $targDev = $largeSDs[0] if (defined($largeSDs[0]));
 my $continue = 'N';
 if  ( scalar(@largeSDs) == 1 ) {
-   $continue = getYesNo("\nSetup data disk on $targDev [Y,n] ?",'Y');   
+   if (defined($FORCE) ) {
+      $continue = 'Y';
+      print "Setting up data disk on $targDev\n";
+   } else {
+      $continue = getYesNo("\nSetup data disk on $targDev [Y,n] ?",'Y');   
+   }
 }
 
 if ($continue eq 'Y') {

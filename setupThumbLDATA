@@ -32,6 +32,10 @@ sub getYesNo {
    return ($resp);
 }
 
+
+my $FORCE=0;
+$FORCE=1 if ($ARGV[0] eq '-f');
+
 ### Get the SD card information
 my $ldataDev = `sudo mount |grep /ldata`;
 $ldataDev =~ s/\R//g;
@@ -80,7 +84,12 @@ my $targDev = '';
 $targDev = $smallSDs[0] if (defined($smallSDs[0]));
 my $continue = 'N';
 if  ( ($fromDev eq '/dev/mmcblk0p5') && (scalar(@smallSDs) == 1) ) {
-   $continue = getYesNo("\nMove ldata from $fromDev to $targDev [Y,n] ?",'Y');   
+   if (defined($FORCE) ) {
+      $continue = 'Y';
+      print "Moving read-write data from $fromDev to $targDev\n";
+   } else {
+      $continue = getYesNo("\nMove ldata from $fromDev to $targDev [Y,n] ?",'Y');     
+   }
 }
 
 if ($continue eq 'Y') {
