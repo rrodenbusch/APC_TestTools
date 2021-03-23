@@ -104,20 +104,20 @@ if ($continue eq 'Y') {
    print "blkid\n$blkid\n";
    ## Files   
    `sudo mkdir /xdata` unless (-d '/xdata');
-   $resp = `sudo mount $targDev /data`;
-   if ($? ne 0) { die "Unable to mount $targDev on /data\t$!\n"; }
+   $resp = `sudo mount $targDev /xdata`;
+   if ($? ne 0) { die "Unable to mount $targDev on /xdata\t$!\n"; }
    print "/data mounted";
    `sudo chmod 1777 /data`;
-   `mkdir /data/NVR`           unless (-d '/data/NVR');
-   `mkdir /data/NVR/Pending`   unless (-d '/data/NVR/Pending');
-   `mkdir /data/NVR/Working`   unless (-d '/data/NVR/Working');
-   `mkdir /data/NVR/Complete`  unless (-d '/data/NVR/Complete');
-   `mkdir /data/rdata`         unless (-d '/data/rdata' );
-   `mkdir /data/rdata/in`      unless (-d '/data/rdata/in' );
-   `mkdir /data/rdata/out`     unless (-d '/data/rdata/out' );
-   `mkdir /data/rdata/working` unless (-d '/data/rdata/working' );
-   `mkdir /data/rLog`          unless (-d '/data/rLog' );
-   `sudo umount  /data`;   
+   `mkdir /xdata/NVR`           unless (-d '/xdata/NVR');
+   `mkdir /xdata/NVR/Pending`   unless (-d '/xdata/NVR/Pending');
+   `mkdir /xdata/NVR/Working`   unless (-d '/xdata/NVR/Working');
+   `mkdir /xdata/NVR/Complete`  unless (-d '/xdata/NVR/Complete');
+   `mkdir /xdata/rdata`         unless (-d '/xdata/rdata' );
+   `mkdir /xdata/rdata/in`      unless (-d '/xdata/rdata/in' );
+   `mkdir /xdata/rdata/out`     unless (-d '/xdata/rdata/out' );
+   `mkdir /xdata/rdata/working` unless (-d '/xdata/rdata/working' );
+   `mkdir /xdata/rLog`          unless (-d '/xdata/rLog' );
+   `sudo umount  /xdata`;   
 }
 
 0;

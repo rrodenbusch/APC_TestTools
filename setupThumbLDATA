@@ -34,14 +34,14 @@ sub getYesNo {
 
 
 my $FORCE=0;
-$FORCE=1 if ($ARGV[0] eq '-f');
+$FORCE=1 if (defined($ARGV[0]) && ($ARGV[0] eq '-f'));
 
 ### Get the SD card information
 my $ldataDev = `sudo mount |grep /ldata`;
 $ldataDev =~ s/\R//g;
 my @flds = split(' ',$ldataDev);
 my $fromDev = $flds[0];
-die "Not device found mounted at /ldtata to copy\n" unless defined($fromDev);
+die "No device found mounted at /ldata to copy\n" unless defined($fromDev);
 
 ### Get USB disk information
 my $sdDevs = `sudo blkid |grep /dev/sd`;

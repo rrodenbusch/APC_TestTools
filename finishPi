@@ -75,12 +75,16 @@ $HOME/updates/PiInstall/staticIP.sh -s $PI
 [ "$PI" == "231" ] && crontab $HOME/updates/PiInstall/cron3.tab
 
 [ "$PI" == "231" ] && $HOME/APC_TestTools/setupThumbDATA $FORCE
+[ "$?" != "0" ] && [ "$PI" == 231 ] && echo "Error: Aborting..." && exit 1;
 
 
 sudo $HOME/APC_TestTools/cleanMachine
 sudo systemctl enable fire
+[ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 $HOME/APC_TestTools/setupThumbLDATA $FORCE
+[ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 $HOME/APC_TestTools/setPiHostname $UIDADDY
+[ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 echo ""
 $HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
 echo ""
