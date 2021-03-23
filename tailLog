@@ -22,7 +22,7 @@ else
 fi
 
 echo "###  $FNAME ###";
-[ "$1" == "fire" ]; then
+if [ "$1" == "fire" ]; then
    sudo tail -f $FNAME;
 else
    tail -f $FNAME;
