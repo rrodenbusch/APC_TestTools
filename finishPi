@@ -57,7 +57,7 @@ if [ "$READONLY" == "1" ]; then
    echo "### Mount rw to enable updates "
    sudo mount -o remount,rw /
    sudo mount -o remount,rw /boot
-   sudo umount /ldata
+   #sudo umount /ldata
    sudo umount /data
    sudo umount /xdata
 fi
