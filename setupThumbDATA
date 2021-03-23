@@ -106,8 +106,8 @@ if ($continue eq 'Y') {
    `sudo mkdir /xdata` unless (-d '/xdata');
    $resp = `sudo mount $targDev /xdata`;
    if ($? ne 0) { die "Unable to mount $targDev on /xdata\t$!\n"; }
-   print "/data mounted";
-   `sudo chmod 1777 /data`;
+   print "Mounted $targDev at /xdata mounted \n";
+   `sudo chmod 1777 /xdata`;
    `mkdir /xdata/NVR`           unless (-d '/xdata/NVR');
    `mkdir /xdata/NVR/Pending`   unless (-d '/xdata/NVR/Pending');
    `mkdir /xdata/NVR/Working`   unless (-d '/xdata/NVR/Working');
