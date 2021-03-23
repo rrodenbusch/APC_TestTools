@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ -z "$1" ] || [ -d "$1" ]; then
-   FPATH="$1/*.log";
-   FNAME=`ls -Art $FPATH | tail -n 1`;
-else if [ -f "$1" ]; then
+   FPATH="$1/*.log"
+   FNAME=`ls -Art $FPATH | tail -n 1`
+elif [ -f "$1" ]; then
    FNAME="$1";
 else
    [ "$1" == "rLog" ]      && export FPATH="/data/rLog"
@@ -21,9 +21,9 @@ else
    fi
 fi
 
-echo "###  $FNAME ###";
+echo "###  $FNAME ###"
 if [ "$1" == "fire" ]; then
-   sudo tail -f $FNAME;
+   sudo tail -f $FNAME
 else
-   tail -f $FNAME;
+   tail -f $FNAME
 fi
