@@ -1,11 +1,29 @@
 #!/bin/bash
 
-if [ -z "$1" ] 
-then
-   FPATH="*.log";
-else
+if [ -z "$1" ] || [ -d "$1" ]; then
    FPATH="$1/*.log";
+   FNAME=`ls -Art $FPATH | tail -n 1`;
+else if [ -f "$1" ]; then
+   FNAME="$1";
+else
+   [ "$1" == "rLog" ]      && export FPATH="/data/rLog"
+   [ "$1" == "xLog" ]      && export FPATH="/xdata/rLog"
+   [ "$1" == "Watch" ]     && export FPATH="/home/pi/Watch.log"
+   [ "$1" == "WatchDog" ]  && export FPATH="/home/pi/RPi/WatchDog.log"
+   [ "$1" == "power" ]     && export FPATH="/home/pi/power"
+   [ "$1" == "sysmon" ]    && export FPATH="/var/log/sysmon"
+   [ "$1" == "fire" ]      && export FPATH="/var/log/fire/fire.log"
+
+   if [ -d "$FPATH" ]; then
+      FNAME=`ls -Art $FPATH | tail -n 1`
+   else
+      FNAME="$FPATH"
+   fi
 fi
-FNAME=`ls -Art $FPATH | tail -n 1`;
-echo $FNAME;
-tail -f $FNAME;
+
+echo "###  $FNAME ###";
+[ "$1" == "fire" ]; then
+   sudo tail -f $FNAME;
+else
+   tail -f $FNAME;
+fi

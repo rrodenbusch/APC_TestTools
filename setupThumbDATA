@@ -103,7 +103,7 @@ if ($continue eq 'Y') {
    my $blkid = `sudo blkid`;
    print "blkid\n$blkid\n";
    ## Files   
-   `mkdir /data` unless (-d '/data');
+   `sudo mkdir /xdata` unless (-d '/xdata');
    $resp = `sudo mount $targDev /data`;
    if ($? ne 0) { die "Unable to mount $targDev on /data\t$!\n"; }
    print "/data mounted";

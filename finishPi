@@ -57,8 +57,15 @@ if [ "$READONLY" == "1" ]; then
    echo "### Mount rw to enable updates "
    sudo mount -o remount,rw /
    sudo mount -o remount,rw /boot
+   sudo umount /ldata
+   sudo umount /data
+   sudo umount /xdata
 fi
 
+##  Create mount points if they don't exist
+[ -d /ldata ] || sudo mkdir /ldata
+[ -d /xdata ] || sudo mkdir /xdata
+[ -d /data ]  || sudo mkdir /data
 
 $HOME/updates/PiInstall/staticIP.sh -s $PI
 [ "$PI" == "211" ] && crontab $HOME/updates/PiInstall/cron1.tab

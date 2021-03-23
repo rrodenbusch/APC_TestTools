@@ -121,9 +121,9 @@ if ($continue eq 'Y') {
    my $blkid = `sudo blkid`;
    print "$blkid\n";
    print "Syncing data to $targDev\n";
-   $resp = `sudo rsync -rav /ldata/ /mnt/`;
+   $resp = `sudo rsync -rapv /ldata/ /mnt/`;
    print "rsync $resp\n";
-   $resp = `sudo umount /ldata`;
+   $resp =  `sudo umount /ldata`;
    $resp .= `sudo umount /mnt`;
    $resp .= `sudo mount -a`;
    print "Remount(s) $resp\n\n";
