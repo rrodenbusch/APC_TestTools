@@ -3,8 +3,8 @@
 FPATH="$1"
 [ -z "$1" ] && FPATH="$HOME"
 
-if [ [ "$1" == "/data/rLog" ] || [ "$1" == "/data/xLog" ] ||
-     [ "$1" == "xLog" ]       || [ "$1" == "rLog" ] ]; then
+if   [ "$1" == "/data/rLog" ] || [ "$1" == "/data/xLog" ] ||
+     [ "$1" == "xLog" ]       || [ "$1" == "rLog" ]; then
     [ -d "/data/rLog" ]    && FPATH="/data/rLog"
     [ -d "/xdata/rLog" ]   && FPATH="/xdata/rLog"
 elif [ "$1" == "WatchDog" ]; then
