@@ -1,7 +1,10 @@
-if [ -d /data/NVR/Working ]; 
-then
+#!/bin/bash
+
+if [ -d /xdata/NVR/Working ]; then
+   find /xdata/NVR/Working/*.mp4 -type f -mmin -5 -exec du -k --time {} \;
+elif [ -d /data/NVR/Working ]; then
    find /data/NVR/Working/*.mp4 -type f -mmin -5 -exec du -k --time {} \;
-else 
-   echo '/data/NVR/Working not mounted'
+else
+   echo '/xdata/NVR/Working not mounted'
 fi
 
