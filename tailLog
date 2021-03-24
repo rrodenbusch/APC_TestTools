@@ -1,13 +1,13 @@
 #!/bin/bash
 
-FPATH = $1
+FPATH="$1"
 [ -z "$1" ] && FPATH="$HOME"
 
-if [ [ "$1" == "/data/rLog" ] || "$1" == "/data/xLog" ] || 
-     [ "$1" == "xLog" ] || [ "$1" == "rLog" ] ]; then
+if   [ "$1" == "/data/rLog" ] || [ "$1" == "/data/xLog" ] ||
+     [ "$1" == "xLog" ]       || [ "$1" == "rLog" ]; then
     [ -d "/data/rLog" ]    && FPATH="/data/rLog"
     [ -d "/xdata/rLog" ]   && FPATH="/xdata/rLog"
-elif [ "$1" == "WatchDog" ]  
+elif [ "$1" == "WatchDog" ]; then
    [ -d "$HOME/RPi" ]      && FPATH="/home/pi/RPi/WatchDog.log"
    [ -d "$HOME/NUC" ]      && FPATH="/home/pi/NUC/WatchDog.log"
 else
@@ -17,11 +17,11 @@ else
    [ "$1" == "fire" ]      && FPATH="/var/log/fire/fire.log"
    [ -d "$1" ]             && FPATH="$1"
 fi
-   
+
 ## Check for file/dir existence
 if [ -f "$FPATH" ]; then
    FNAME="$FPATH"
-elif [ -d "$FPATH" ]; then 
+elif [ -d "$FPATH" ]; then
    FNAME=`ls -Art $FPATH/*.log | tail -n 1`
 else
    FNAME="$HOME/Watch.log"
