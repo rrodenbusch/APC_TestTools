@@ -5,7 +5,7 @@ RPATH="$2"
 [ "$2" == "xLog" ]      && export RPATH="/xdata/rLog"
 [ "$2" == "Watch" ]     && export RPATH="/home/pi/Watch.log"
 [ "$2" == "WatchDog" ]  && export RPATH="/home/pi/RPi/WatchDog.log"
-[ "$2" == "power" ]     && export RPATH="/home/pi  power"
+[ "$2" == "power" ]     && export RPATH="/home/pi/power"
 [ "$2" == "sysmon" ]    && export RPATH="/var/log/sysmon"
 #[ "$2" == "fire" ]      && export RPATH="/var/log/fire"
 

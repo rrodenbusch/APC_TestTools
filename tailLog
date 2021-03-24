@@ -1,26 +1,33 @@
 #!/bin/bash
 
-if [ -z "$1" ] || [ -d "$1" ]; then
-   FPATH="$1/*.log"
-   FNAME=`ls -Art $FPATH | tail -n 1`
-elif [ -f "$1" ]; then
-   FNAME="$1";
-else
-   [ "$1" == "rLog" ]      && export FPATH="/data/rLog"
-   [ "$1" == "xLog" ]      && export FPATH="/xdata/rLog"
-   [ "$1" == "Watch" ]     && export FPATH="/home/pi/Watch.log"
-   [ "$1" == "WatchDog" ]  && export FPATH="/home/pi/RPi/WatchDog.log"
-   [ "$1" == "power" ]     && export FPATH="/home/pi/power"
-   [ "$1" == "sysmon" ]    && export FPATH="/var/log/sysmon"
-   [ "$1" == "fire" ]      && export FPATH="/var/log/fire/fire.log"
+FPATH = $1
+[ -z "$1" ] && FPATH="$HOME"
 
-   if [ -d "$FPATH" ]; then
-      FNAME=`ls -Art $FPATH | tail -n 1`
-   else
-      FNAME="$FPATH"
-   fi
+if [ [ "$1" == "/data/rLog" ] || "$1" == "/data/xLog" ] || 
+     [ "$1" == "xLog" ] || [ "$1" == "rLog" ] ]; then
+    [ -d "/data/rLog" ]    && FPATH="/data/rLog"
+    [ -d "/xdata/rLog" ]   && FPATH="/xdata/rLog"
+elif [ "$1" == "WatchDog" ]  
+   [ -d "$HOME/RPi" ]      && FPATH="/home/pi/RPi/WatchDog.log"
+   [ -d "$HOME/NUC" ]      && FPATH="/home/pi/NUC/WatchDog.log"
+else
+   [ "$1" == "Watch" ]     && FPATH="$HOME/Watch.log"
+   [ "$1" == "power" ]     && FPATH="/home/pi/power"
+   [ "$1" == "sysmon" ]    && FPATH="/var/log/sysmon"
+   [ "$1" == "fire" ]      && FPATH="/var/log/fire/fire.log"
+   [ -d "$1" ]             && FPATH="$1"
+fi
+   
+## Check for file/dir existence
+if [ -f "$FPATH" ]; then
+   FNAME="$FPATH"
+elif [ -d "$FPATH" ]; then 
+   FNAME=`ls -Art $FPATH/*.log | tail -n 1`
+else
+   FNAME="$HOME/Watch.log"
 fi
 
+## Tail the log file
 echo "###  $FNAME ###"
 if [ "$1" == "fire" ]; then
    sudo tail -f $FNAME
