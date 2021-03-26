@@ -89,7 +89,7 @@ echo ""
 $HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
 echo ""
 echo "MAC"
-ifconfig |grep -A3 eth0 | tail -f | awk -F " " '{print toupper($2)}'
+ifconfig |grep -A3 eth0 | tail -3 | awk -F " " '{print toupper($2)}'
 echo "" 
 echo "Restarting in 10..."
 sleep 10
