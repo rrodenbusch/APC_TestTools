@@ -80,9 +80,6 @@ $HOME/updates/PiInstall/staticIP.sh -s $PI
 MA
 sudo $HOME/APC_TestTools/cleanMachine
 sudo systemctl enable fire
-echo "MAC"
-ifconfig |grep -A3 eth0 | tail -f | awk -F " " '{print toupper($2)}'
-
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 $HOME/APC_TestTools/setupThumbLDATA $FORCE
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
@@ -91,6 +88,9 @@ $HOME/APC_TestTools/setPiHostname $UIDADDY
 echo ""
 $HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
 echo ""
+echo "MAC"
+ifconfig |grep -A3 eth0 | tail -f | awk -F " " '{print toupper($2)}'
+echo "" 
 echo "Restarting in 10..."
 sleep 10
 sudo shutdown -r now
