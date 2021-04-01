@@ -88,11 +88,11 @@ sudo systemctl enable fire
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 $HOME/APC_TestTools/setupThumbLDATA $FORCE
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
-[ -z "$NOCHECK" ] || $HOME/APC_TestTools/setPiHostname $UIDADDY
-[ -z "$NOCHECK" ] && echo "Skipping final hostname setup, no I2C"
+[ -z "$NOCHECK" ] && $HOME/APC_TestTools/setPiHostname $UIDADDY
+[ -z "$NOCHECK" ] || echo "Skipping final hostname setup, no I2C"
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 echo ""
-$HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
+[ -z "$NOCHECK" ] && $HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
 echo ""
 echo "MAC"
 ifconfig |grep -A3 eth0 | tail -3 | awk -F " " '{print toupper($2)}'
