@@ -123,12 +123,13 @@ if ($continue eq 'Y') {
    print "Syncing data to $targDev\n";
    $resp = `sudo rsync -rapv /ldata/ /mnt/`;
    print "rsync $resp\n";
-   $resp =  `sudo umount /ldata`;
-   $resp .= `sudo umount /mnt`;
-   $resp .= `sudo mount -a`;
-   print "Remount(s) $resp\n\n";
+   #$resp =  `sudo umount /ldata`;
+   $resp = `sudo umount /mnt`;
+   #$resp .= `sudo mount -a`;
+   #print "Remount(s) $resp\n\n";
    $resp = `df`;
    print "df\n$resp\n";
+   print "Reboot required to mount new drive\n";
 }
 
 0;
