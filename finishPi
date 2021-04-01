@@ -4,10 +4,12 @@ usage () {
    NEW=$'\n'
    u="Usage:  finishPi -f -p (--pi)  [211|212|221|222|231]${NEW}"
    u="$u              -f Force (non-interactive)          ${NEW}"   
+   u="$u              -n --nocheck (Skip I2C validation)  ${NEW}"   
    echo "$u";
    exit 1;
 }
 ##### Get Command Line
+
 while [ "$1" != "" ]; do
     case $1 in
         -p | --pi )           shift
@@ -19,6 +21,8 @@ while [ "$1" != "" ]; do
                               [ "$PI" == "212" ] && END=1
                               ;;
         -f | --force )        FORCE="-f"
+                              ;;
+        -n | --nocheck )      NOCHECK=1
                               ;;
         -h | --help )         usage
                               exit 1
@@ -35,13 +39,13 @@ done
      [ "$PI" == "231" ] || usage
 
 #### Check for I2C UID chip
-#i2cdetect -y 1 | grep -e '-- 55 --' >/dev/null 2>&1
-#[ "$?" == 0 ] && UIDADDY='0x55'
-#i2cdetect -y 1 | grep -e '-- 51 --' >/dev/null 2>&1
-#[ "$?" == 0 ] && UIDADDY='0x51'
-#[ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
-#[ "$PI" == "231" ] && [ "$UIDADDY" != "0x55" ]   && echo "Unable to find UID at 0x55" && exit 1
-#[ "$PI" != "231" ] && [ "$UIDADDY" != "0x51" ]   && echo "Unable to find UID at 0x51" && exit 1
+i2cdetect -y 1 | grep -e '-- 55 --' >/dev/null 2>&1
+[ -z NOCHECK ] && [ "$?" == 0 ] && UIDADDY='0x55'
+i2cdetect -y 1 | grep -e '-- 51 --' >/dev/null 2>&1
+[ -z NOCHECK ] && [ "$?" == 0 ] && UIDADDY='0x51'
+[ -z NOCHECK ] && [ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
+[ -z NOCHECK ] && [ "$PI" == "231" ] && [ "$UIDADDY" != "0x55" ]   && echo "Unable to find UID at 0x55" && exit 1
+[ -z NOCHECK ] && [ "$PI" != "231" ] && [ "$UIDADDY" != "0x51" ]   && echo "Unable to find UID at 0x51" && exit 1
 
 #### Check for readonly FS
 READONLY=`$HOME/APC_TestTools/isreadOnly`
