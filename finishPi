@@ -72,12 +72,14 @@ $HOME/updates/PiInstall/staticIP.sh $FORCE -s $PI
 [ "$PI" == "221" ] && crontab $HOME/updates/PiInstall/cron1.tab
 [ "$PI" == "212" ] && crontab $HOME/updates/PiInstall/cron2.tab
 [ "$PI" == "222" ] && crontab $HOME/updates/PiInstall/cron2.tab
-[ "$PI" == "231" ] && crontab $HOME/updates/PiInstall/cron3.tab
+[ "$PI" != "231" ] && crontab $HOME/updates/PiInstall/cron3.tab
+[ "$PI" == "211" ] && crontab $HOME/updates/PiInstall/cron1.tab
 
 [ "$PI" == "231" ] && $HOME/APC_TestTools/setupThumbDATA $FORCE
 [ "$?" != "0" ] && [ "$PI" == 231 ] && echo "Error: Aborting..." && exit 1;
 
-MA
+sudo cp $HOME/updates/PiInstall/fstab.thumb /etc/fstab
+
 sudo $HOME/APC_TestTools/cleanMachine
 sudo systemctl enable fire
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
