@@ -111,8 +111,8 @@ if ($continue eq 'Y') {
    $resp = `sudo tune2fs -U \$(uuid) $targDev`;
    print "$targDev UUID $resp\n";
    ## LABELs
-   #$resp = `sudo tune2fs -L RW-LDATA   $targDev`;
-   #print "$targDev LABEL $resp\n";
+   $resp = `sudo tune2fs -L RW-LDATA   $targDev`;
+   print "$targDev LABEL $resp\n";
    $resp = `sudo tune2fs -L SD-LDATA   $fromDev`;
    print "$fromDev LABEL $resp\n";
    ## Files   
