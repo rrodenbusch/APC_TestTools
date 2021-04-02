@@ -4,10 +4,12 @@ usage () {
    NEW=$'\n'
    u="Usage:  finishPi -f -p (--pi)  [211|212|221|222|231]${NEW}"
    u="$u              -f Force (non-interactive)          ${NEW}"   
+   u="$u              -n --nocheck (Skip I2C validation)  ${NEW}"   
    echo "$u";
    exit 1;
 }
 ##### Get Command Line
+
 while [ "$1" != "" ]; do
     case $1 in
         -p | --pi )           shift
@@ -19,6 +21,8 @@ while [ "$1" != "" ]; do
                               [ "$PI" == "212" ] && END=1
                               ;;
         -f | --force )        FORCE="-f"
+                              ;;
+        -n | --nocheck )      NOCHECK=1
                               ;;
         -h | --help )         usage
                               exit 1
@@ -36,12 +40,12 @@ done
 
 #### Check for I2C UID chip
 i2cdetect -y 1 | grep -e '-- 55 --' >/dev/null 2>&1
-[ "$?" == 0 ] && UIDADDY='0x55'
+[ -z "$NOCHECK" ] && [ "$?" == 0 ] && UIDADDY='0x55'
 i2cdetect -y 1 | grep -e '-- 51 --' >/dev/null 2>&1
-[ "$?" == 0 ] && UIDADDY='0x51'
-[ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
-[ "$PI" == "231" ] && [ "$UIDADDY" != "0x55" ]   && echo "Unable to find UID at 0x55" && exit 1
-[ "$PI" != "231" ] && [ "$UIDADDY" != "0x51" ]   && echo "Unable to find UID at 0x51" && exit 1
+[ -z "$NOCHECK" ] && [ "$?" == 0 ] && UIDADDY='0x51'
+[ -z "$NOCHECK" ] && [ -z "$UIDADDY" ] && echo "No UID found at 0x51 or 0x55" && exit 1
+[ -z "$NOCHECK" ] && [ "$PI" == "231" ] && [ "$UIDADDY" != "0x55" ]   && echo "Unable to find UID at 0x55" && exit 1
+[ -z "$NOCHECK" ] && [ "$PI" != "231" ] && [ "$UIDADDY" != "0x51" ]   && echo "Unable to find UID at 0x51" && exit 1
 
 #### Check for readonly FS
 READONLY=`$HOME/APC_TestTools/isreadOnly`
@@ -72,8 +76,7 @@ $HOME/updates/PiInstall/staticIP.sh $FORCE -s $PI
 [ "$PI" == "221" ] && crontab $HOME/updates/PiInstall/cron1.tab
 [ "$PI" == "212" ] && crontab $HOME/updates/PiInstall/cron2.tab
 [ "$PI" == "222" ] && crontab $HOME/updates/PiInstall/cron2.tab
-[ "$PI" != "231" ] && crontab $HOME/updates/PiInstall/cron3.tab
-[ "$PI" == "211" ] && crontab $HOME/updates/PiInstall/cron1.tab
+[ "$PI" == "231" ] && crontab $HOME/updates/PiInstall/cron3.tab
 
 [ "$PI" == "231" ] && $HOME/APC_TestTools/setupThumbDATA $FORCE
 [ "$?" != "0" ] && [ "$PI" == 231 ] && echo "Error: Aborting..." && exit 1;
@@ -85,10 +88,11 @@ sudo systemctl enable fire
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 $HOME/APC_TestTools/setupThumbLDATA $FORCE
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
-$HOME/APC_TestTools/setPiHostname $UIDADDY
+[ -z "$NOCHECK" ] && $HOME/APC_TestTools/setPiHostname $UIDADDY
+[ -z "$NOCHECK" ] || echo "Skipping final hostname setup, no I2C"
 [ "$?" != "0" ] && echo "Error: Aborting..." && exit 1;
 echo ""
-$HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
+[ -z "$NOCHECK" ] && $HOME/APC_TestTools/queryI2C.pl |grep -e Ard -e UID -A 1 | grep -v 1B | grep -v 68
 echo ""
 echo "MAC"
 ifconfig |grep -A3 eth0 | tail -3 | awk -F " " '{print toupper($2)}'

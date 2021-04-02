@@ -106,8 +106,8 @@ if ($continue eq 'Y') {
    $resp = `sudo e2fsck -y -f $targDev`;
    print "e2fsck\n$resp\n";
    ## UUIDs
-   $resp = `sudo tune2fs -U \$(uuid) $targDrive`;
-   print "$targDrive UUID $resp\n";
+   #$resp = `sudo tune2fs -U \$(uuid) $targDrive`;
+   #print "$targDrive UUID $resp\n";
    $resp = `sudo tune2fs -U \$(uuid) $targDev`;
    print "$targDev UUID $resp\n";
    ## LABELs
@@ -123,12 +123,13 @@ if ($continue eq 'Y') {
    print "Syncing data to $targDev\n";
    $resp = `sudo rsync -rapv /ldata/ /mnt/`;
    print "rsync $resp\n";
-   $resp =  `sudo umount /ldata`;
-   $resp .= `sudo umount /mnt`;
-   $resp .= `sudo mount -a`;
-   print "Remount(s) $resp\n\n";
+   #$resp =  `sudo umount /ldata`;
+   $resp = `sudo umount /mnt`;
+   #$resp .= `sudo mount -a`;
+   #print "Remount(s) $resp\n\n";
    $resp = `df`;
    print "df\n$resp\n";
+   print "Reboot required to mount new drive\n";
 }
 
 0;
