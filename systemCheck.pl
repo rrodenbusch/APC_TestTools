@@ -202,10 +202,10 @@ my @cmdKeys = ( 'USAGE','PROCS','NVR','JPGS','CLIPD','CLIPS','UPTIME','VBOX');
 
 my %Commands = ('USAGE'    => 'df -h | grep -v ^none | ( read header ; echo "$header" ; sort -rn -k 5)',
                 'PROCS'    => "$ENV{HOME}/APC_TestTools/stopRPi.pl",
-                'NVR'      => 'ls -ltr /data/NVR/Working |tail -10 |grep mp4',
-                'CLIPD'    => "ls -ltr /data/NVR/clips |tail -4",
-                'CLIPS'    => "ls -ltr /data/NVR/clips/$runDate 2>&1|tail -10",
-                'JPGS'     => "tail -1 /data/NVR/jpgSizes.csv",
+                'NVR'      => 'ls -ltr /xdata/NVR/Working |tail -10 |grep mp4',
+                'CLIPD'    => "ls -ltr /xdata/NVR/clips |tail -4",
+                'CLIPS'    => "ls -ltr /xdata/NVR/clips/$runDate 2>&1|tail -10",
+                'JPGS'     => "tail -1 /xdata/NVR/jpgSizes.csv",
                 'UPTIME'   => 'uptime',
                 'VBOX'     => 'VBoxManage list runningvms'
                 );  
