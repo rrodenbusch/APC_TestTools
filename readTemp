@@ -64,19 +64,19 @@ sub readBus {
          $numDevs--;
       }
       my ($tmp1, $tmp2) = (-1,-1);
-      while ($tmp1 == -1 ) {
+      while ( ($numDevs > 0) && ($tmp1 == -1 ) ) {
          $tmp1 = $device->read_word(0x06) if ($tempCnt > 0);
          $tmp1 =  ( ((($tmp1 & 0x00FF) << 8) & 0xFF00) | ((($tmp1 & 0xFF00)>>8) & 0x00FF) ) / 10 
                    unless ($tmp1 == -1);
          sleep(1) if ($tmp1 == -1);
       }
-      while ($tmp2 == -1) {
+      while ( ($numDevs > 1) && ($tmp2 == -1) ) {
          $tmp2 = $device->read_word(0x08) if ($tempCnt > 1);
          $tmp2 =  ( ((($tmp2 & 0x00FF) << 8) & 0xFF00) | ((($tmp2 & 0xFF00)>>8) & 0x00FF) ) / 10
             unless ($tmp2 == -1);
          sleep(1) if ($tmp2 == -1);
       }
-       print "Temp1 $tmp1   Temp2  $tmp2\n"
+       print "Temp1 $tmp1   Temp2  $tmp2\n";
    } else {
       print "Error attaching to device 0x0F\n";
    }  
