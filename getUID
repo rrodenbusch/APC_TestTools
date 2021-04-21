@@ -24,7 +24,7 @@ sub getUID {
 my @Addys = (0x57,0x51,0x55);
 if (defined($ARGV[0])) { 
    my $UID_addy = hex($ARGV[0]);
-   print "Device $UID_addy UID error\n" if (getUID($UID_addy) == -1);
+   print "Device $UID_addy UID error\n" if (getUID($UID_addy) ne "-1");
 } else {
    my $found = 0;
    foreach my $curAddy (@Addys) {
