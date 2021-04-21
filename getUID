@@ -25,7 +25,7 @@ my @Addys = (0x57,0x51,0x55);
 if (defined($ARGV[0])) { 
    my $UID_addy = hex($ARGV[0]);
    if (getUID($UID_addy) eq "-1") {
-      my $line = sprintf "Device %02X UID error\n",$UID_addy;
+      my $line = sprintf "Device 0x%02X UID error\n",$UID_addy;
       print $line;
    }
 } else {
