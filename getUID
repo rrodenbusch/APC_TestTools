@@ -29,7 +29,7 @@ if (defined($ARGV[0])) {
    my $found = 0;
    foreach my $curAddy (@Addys) {
       while ($found == 0) {
-         $found = 1 if (getUID($curAddy) != -1);
+         $found = 1 if (getUID($curAddy) ne "-1");
       }
    }
    print "No UIDS found\n" unless ( $found );
