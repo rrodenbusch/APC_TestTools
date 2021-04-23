@@ -21,7 +21,7 @@ sub getUID {
    return ($UID);
 }  # getUID
 
-my @Addys = (0x57,0x51,0x55);
+my @Addys = (0x51,0x57,0x55);
 if (defined($ARGV[0])) { 
    my $UID_addy = hex($ARGV[0]);
    if (getUID($UID_addy) eq "-1") {
