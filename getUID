@@ -5,9 +5,9 @@ use RPi::I2C;
 
 sub getUID {
    my $UID_addy = shift;
-   my ($byte1,$byte2,$byte3, $byte4);
+   my ($byte1,$byte2,$byte3, $byte4,$device);
    my $UID = -1;
-   if (my $device = RPi::I2C->new($UID_addy)) {
+   if ( ($device = RPi::I2C->new($UID_addy)) && ($device->check_device($UID_addy)) ) {
       my $retries = 0;
       while ( ($retries++ < 20) && ( ($byte1 = $device->read_byte(0xFC)) == -1 ) ) {sleep 0.33;}
       while ( ($retries++ < 20) && ( ($byte2 = $device->read_byte(0xFD)) == -1 ) ) {sleep 0.33;}
@@ -21,7 +21,7 @@ sub getUID {
    return ($UID);
 }  # getUID
 
-my @Addys = (0x51,0x57,0x55);
+my @Addys = ('0x51','0x57','0x55');
 if (defined($ARGV[0])) { 
    my $UID_addy = hex($ARGV[0]);
    if (getUID($UID_addy) eq "-1") {
@@ -29,10 +29,11 @@ if (defined($ARGV[0])) {
       print $line;
    }
 } else {
-   my $found = 0;
+   my ($found,$retries) = (0,0);
    foreach my $curAddy (@Addys) {
-      while ($found == 0) {
-         $found = 1 if (getUID($curAddy) ne "-1");
+      while ( ($found == 0) && ($retries++ < 3) )  {
+         $found = 1 if (getUID(hex($curAddy)) ne "-1");
+         sleep(0.33) unless ($found == 1);
       }
    }
    print "No UIDS found\n" unless ( $found );
