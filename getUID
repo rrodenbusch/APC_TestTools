@@ -29,14 +29,15 @@ if (defined($ARGV[0])) {
       print $line;
    }
 } else {
-   my ($found,$retries) = (0,0);
+   my $found = 0;
    foreach my $curAddy (@Addys) {
+      my $retries = 0;
       while ( ($found == 0) && ($retries++ < 3) )  {
          $found = 1 if (getUID(hex($curAddy)) ne "-1");
          sleep(0.33) unless ($found == 1);
       }
    }
-   print "No UIDS found\n" unless ( $found );
+   print "No UIDS found at ".join(',',@Addys). "\n" unless ( $found );
 }
 
 my $mac = `cat /sys/class/net/eth0/address`;
