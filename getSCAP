@@ -187,11 +187,11 @@ while ( ($sig{INT} == 0) && ($sig{QUIT} == 0) && ($sig{ABRT} == 0) ) {
 
 
    my $outline = "\nCap %3.2f Volt Line %3.2f Volt\n".
-                   "              Line %01d DIO %01d\n".
-                   "              Cap  %01d %01d %01d (GPIO,Pi,Ard)\n" .
-                   "              Pwr  %01d %01d %01d (GPI0,Pi,Ard) Forced %01d\n" .
-                   "              NUC  %01d NVN  %01d\n" .
-                   "              TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
+                   "      Line %01d DIO %01d\n".
+                   "      Cap  %01d %01d %01d (GPIO,Pi,Ard)\n" .
+                   "      Pwr  %01d %01d %01d (GPI0,Pi,Ard) Forced %01d\n" .
+                   "      NUC  %01d NVN  %01d\n" .
+                   "      TNet %01d Brdg %01d Snsr %01d Pi %01d\n" ;
    $line = sprintf($outline,
                            $CapVolt,$LineVolt,
                            $Line1,$gpio11,
